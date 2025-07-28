@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>User Home</title>
+</head>
+<body>
+
+<section>
+    <h1>User Home Page</h1>
+    <h1>Name : [[${user.fullName}]]</h1>
+    <h1>Email : [[${user.email}]]</h1>
+    <h1>Address : [[${user.address}]]</h1>
+
+</section>
+
+</body>
+</html>

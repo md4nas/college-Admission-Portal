@@ -3,67 +3,111 @@
       th:replace="~{base::Layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>signin</title>
-
+    <title>Login Page</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 
-    <section>
-        <div class="container p-5">
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <div class="card">
-                        <div class="card-header text-center fs-4">Login Page</div>
+<section>
+    <div class="container p-5">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card shadow-lg">
+                    <div class="card-header text-center fs-4 bg-primary text-white py-3">
+                        <i class='bx bx-log-in-circle align-middle me-2'></i> Login to Your Account
+                    </div>
 
-                        <!-- Show error if login fails -->
-                        <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Login Failed!</strong> [[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <!-- Alerts Section (maintained all existing logic) -->
+                    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show m-3 rounded" role="alert">
+                        <i class='bx bx-error-circle me-2'></i>
+                        <strong>Login Failed!</strong> [[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
-                        <!-- Show message if logged out -->
-                        <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show" role="alert">
-                            <strong>Logged Out!</strong> You have been logged out successfully.
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show m-3 rounded" role="alert">
+                        <i class='bx bx-check-circle me-2'></i>
+                        <strong>Logged Out!</strong> You have been logged out successfully.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
-                        <!-- Show success message if password was changed -->
-                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                            <strong>Success!</strong> <span th:text="${success}"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show m-3 rounded" role="alert">
+                        <i class='bx bx-check-circle me-2'></i>
+                        <strong>Success!</strong> <span th:text="${success}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
-                        <!-- Show custom error messages -->
-                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Error!</strong> <span th:text="${error}"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show m-3 rounded" role="alert">
+                        <i class='bx bx-error-circle me-2'></i>
+                        <strong>Error!</strong> <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
-                        <div class="card-body">
-                            <form action="/login" method="post">
-                                <div class="mb-2">
-                                    <label>Enter Email</label>
-                                    <input type="text" name="email" class="form-control" required>
+                    <div class="card-body p-4">
+                        <form action="/login" method="post">
+                            <!-- Email Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Email Address</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class='bx bxs-envelope text-primary'></i>
+                                        </span>
+                                    <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
                                 </div>
+                            </div>
 
-                                <div class="mb-2">
-                                    <label>Enter Password</label>
-                                    <input type="password" name="password" class="form-control" required>
+                            <!-- Password Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Password</label>
+                                <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class='bx bxs-lock-alt text-primary'></i>
+                                        </span>
+                                    <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
                                 </div>
+                            </div>
 
-                                <div class="mb-2">
-                                    <a href="loadForgetPassword" class="text-decoration-none">Forget Password</a>
-                                </div>
+                            <!-- Forgot Password Link -->
+                            <div class="mb-3 text-center"> <!-- Changed to text-center -->
+                                <a href="loadForgetPassword" class="text-decoration-none text-primary">
+                                    <i class='bx bx-shield-quarter'></i> Forgot Password ?
+                                </a>
+                            </div>
 
-                                <button class="btn btn-primary col-md-12">Login</button>
-                            </form>
+                            <!-- Login Button -->
+                            <div class="d-grid mb-4">
+                                <button class="btn btn-primary btn-lg py-2 fw-semibold" type="submit">
+                                    <i class='bx bx-log-in-circle align-middle me-2'></i> Login
+                                </button>
+                            </div>
 
-                        </div>
+                            <!-- Social Login Divider -->
+                            <div class="position-relative my-4">
+                                <hr class="my-4">
+                                <div class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted">or continue with</div>
+                            </div>
+
+                            <!-- Social Icons -->
+                            <div class="d-flex justify-content-center gap-3 mb-3">
+                                <a href="#" class="social-icon google rounded-circle d-flex align-items-center justify-content-center p-2">
+                                    <i class='bx bxl-google fs-5'></i>
+                                </a>
+                                <a href="#" class="social-icon github rounded-circle d-flex align-items-center justify-content-center p-2">
+                                    <i class='bx bxl-github fs-5'></i>
+                                </a>
+                                <a href="#" class="social-icon linkedin rounded-circle d-flex align-items-center justify-content-center p-2">
+                                    <i class='bx bxl-linkedin fs-5'></i>
+                                </a>
+                                <a href="#" class="social-icon facebook rounded-circle d-flex align-items-center justify-content-center p-2">
+                                    <i class='bx bxl-facebook fs-5'></i>
+                                </a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
 </body>
 </html>

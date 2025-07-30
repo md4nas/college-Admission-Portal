@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register Page</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 
@@ -20,36 +21,92 @@
                     </th:block>
 
                     <div class="card-body">
-
                         <form action="createUser" method="post">
-                            <div class="mb-3">
-                                <label>Enter Full Name</label>
-                                <input type="text" name="fullName" class="form-control">
+                            <!-- Full Name Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Enter Full Name</label>
+                                <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class='bx bxs-user-pin text-primary'></i>
+                </span>
+                                    <input type="text" name="fullName" class="form-control border-start-0" placeholder="Mohd Anas">
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label>Enter Email</label>
-                                <input type="text" name="email" class="form-control">
+                            <!-- Email Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Enter Email</label>
+                                <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class='bx bxs-envelope text-primary'></i>
+                </span>
+                                    <input type="email" name="email" class="form-control border-start-0" placeholder="abc1234@email.com">
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label>Enter Address</label>
-                                <input type="text" name="address" class="form-control">
+                            <!-- Address Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Enter Address</label>
+                                <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class='bx bxs-home text-primary'></i>
+                </span>
+                                    <input type="text" name="address" class="form-control border-start-0" placeholder="123 Main Hall">
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label>Enter Mobile Number</label>
-                                <input type="number" name="mobileNumber" class="form-control">
+                            <!-- Mobile Number Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Enter Mobile Number</label>
+                                <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class='bx bxs-phone text-primary'></i>
+                </span>
+                                    <input type="tel" name="mobileNumber" class="form-control border-start-0" placeholder="+91 930-567-XXXX">
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label>Enter Password</label>
-                                <input type="password" name="password" class="form-control">
+                            <!-- Password Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Enter Password</label>
+                                <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class='bx bxs-lock-alt text-primary'></i>
+                </span>
+                                    <input type="password" name="password" class="form-control" placeholder="••••••••">
+                                </div>
                             </div>
 
-                            <button class="btn btn-primary col-md-12">Register</button>
+                            <!-- Register Button -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button class="btn btn-primary btn-lg" type="submit">Register</button>
+                            </div>
+
+                            <!-- Social Login Divider -->
+                            <div class="position-relative my-4">
+                                <hr>
+                                <div class="position-absolute top-50 start-50 translate-middle bg-white px-3">or</div>
+                            </div>
+
+                            <!-- Social Login Title -->
+                            <p class="text-center mb-4 fw-semibold">Continue with Social Platform</p>
+
+                            <!-- Social Icons -->
+                            <div class="d-flex justify-content-center gap-3 mb-4">
+                                <a href="#" class="social-icon google rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class='bx bxl-google fs-5'></i>
+                                </a>
+                                <a href="#" class="social-icon github rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class='bx bxl-github fs-5'></i>
+                                </a>
+                                <a href="#" class="social-icon linkedin rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class='bx bxl-linkedin fs-5'></i>
+                                </a>
+                                <a href="#" class="social-icon facebook rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class='bx bxl-facebook fs-5'></i>
+                                </a>
+                            </div>
                         </form>
-
                     </div>
                 </div>
             </div>

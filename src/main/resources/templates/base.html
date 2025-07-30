@@ -3,67 +3,111 @@
       th:fragment="Layout(content)">
 <head>
     <meta charset="UTF-8">
-    <title>User Management System </title>
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-            crossorigin="anonymous">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/css/user-portal-style.css">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1 0 auto;
+            padding-bottom: 20px; /* Add some space above footer */
+        }
+        footer {
+            flex-shrink: 0;
+        }
+    </style>
 </head>
-<body class="bg-Light">
+<body class="bg-light">
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- Enhanced Navbar with requested changes -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">User Management</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- Left-aligned User Management (smaller size) -->
+            <a class="navbar-brand fs-5 me-auto" href="/">
+                <i class='bx bx-user-circle me-2'></i>User Management
+            </a>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <!-- Center-aligned Home link -->
+            <div class="d-flex mx-auto">
+                <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/user/">Home</a>
+                        <a class="nav-link active" href="/user/">
+                            <i class='bx bx-home-alt-2 me-1'></i>Home
+                        </a>
                     </li>
                 </ul>
-                <th:block th:if="${user==NULL}">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="register">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="signin">Login</a></li>
+            </div>
 
+            <!-- Right-aligned Auth links -->
+            <div class="d-flex ms-auto">
+                <th:block th:if="${user==null}">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="register">
+                                <i class='bx bx-user-plus me-1'></i>Register
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="signin">
+                                <i class='bx bx-log-in me-1'></i>Login
+                            </a>
+                        </li>
                     </ul>
                 </th:block>
 
-                <th:block th:if="${user!=NULL}">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-
-                        <li class="nav-item dropdown me-4">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
+                <th:block th:if="${user!=null}">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                                <i class='bx bx-user me-2'></i>
                                 [[${user.fullName}]]
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                                <li><a class="dropdown-item" href="/user/settings/changePass">Change Password</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class='bx bx-edit me-2'></i>Edit Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/user/settings/changePass">
+                                        <i class='bx bx-lock-alt me-2'></i>Change Password
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="/logout">
+                                        <i class='bx bx-log-out me-2'></i>Logout
+                                    </a>
+                                </li>
                             </ul>
                         </li>
-
                     </ul>
                 </th:block>
-
             </div>
         </div>
     </nav>
 
-    <div th:replace = "${content}"></div>
+<!-- Main Content -->
+<main class="container mt-5 pt-4">
+    <div th:replace="${content}"></div>
+</main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-            crossorigin="anonymous"></script>
+    <!-- Footer -->
+    <footer class="bg-light text-center py-3 mt-auto">
+        <div class="container">
+            <p class="text-muted mb-0">© 2023 User Management System</p>
+        </div>
+    </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/user-portal-script.js"></script>
 </body>
 </html>

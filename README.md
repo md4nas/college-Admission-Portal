@@ -23,18 +23,61 @@ A complete User Management System built using Spring Boot, Thymeleaf, and MySQL.
 ```bash
 src/
 ├── main/
-│   ├── java/in/md4nas/usermanagement/
-│   │   ├── controller/
-│   │   ├── dto/
-│   │   ├── entity/
-│   │   ├── repository/
-│   │   ├── service/
-│   │   └── config/
+│   ├── java/
+│   │   └── in/md4nas/usermanagement/
+│   │       ├── config/
+│   │       │   ├── CustomOAuth2User.java
+│   │       │   ├── CustomOAuth2UserService.java
+│   │       │   ├── CustomSuccessHandler.java
+│   │       │   ├── CustomUserDetails.java
+│   │       │   ├── OAuth2LoginSuccessHandler.java
+│   │       │   ├── SecurityConfig.java
+│   │       │   └── UserDetailsServiceImpl.java
+│   │       ├── controller/
+│   │       │   ├── AdminController.java
+│   │       │   ├── HomeController.java
+│   │       │   ├── TecherController.java  ← (typo? Should be `TeacherController`)
+│   │       │   └── UserController.java
+│   │       ├── model/
+│   │       │   └── UserDtls.java
+│   │       ├── repository/
+│   │       │   └── UserRepository.java
+│   │       ├── service/
+│   │       │   ├── UserService.java
+│   │       │   └── UserServiceImpl.java
+│   │       └── util/
+│   │           └── RandomString.java
+│   │
+│   │   └── UserManagementApplication.java
+│
 │   └── resources/
-│       ├── templates/
 │       ├── static/
+│       │   ├── css/
+│       │   │   └── user-portal-style.css
+│       │   └── js/
+│       │       └── user-portal-script.js
+│       ├── templates/
+│       │   ├── admin/
+│       │   │   └── home.html
+│       │   ├── teacher/
+│       │   │   └── home.html
+│       │   └── user/
+│       │       ├── settings/
+│       │       │   └── home.html
+│       │       ├── base.html
+│       │       ├── forget_password.html
+│       │       ├── index.html
+│       │       ├── register.html
+│       │       ├── reset_password.html
+│       │       ├── signin.html
+│       │       ├── verification-mail-template.html
+│       │       ├── verify_failed.html
+│       │       └── verify_success.html
 │       └── application.properties
-```
+│
+└── test/
+    └── java/
+
 
 ---
 

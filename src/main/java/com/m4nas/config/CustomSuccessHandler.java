@@ -27,7 +27,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         if(roles.contains("ROLE_ADMIN")){
             response.sendRedirect("/admin/");
         }
-        // IF WANT 3 ROLE FOR TEACHER PANEL, other wise comment or remove this
+        // If WANT 3rd ROLE FOR TEACHER PANEL, otherwise comment or remove this
         else if(roles.contains("ROLE_TEACHER")){
             response.sendRedirect("/teacher/");
         }

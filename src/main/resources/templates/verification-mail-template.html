@@ -2,74 +2,196 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Your Account</title>
     <style>
         body {
-            background-color: #f9f9f9;
+            background-color: #f4f6f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            color: #333333;
+            line-height: 1.6;
         }
         .email-container {
             max-width: 600px;
-            margin: auto;
+            margin: 0 auto;
             background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
         .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
             text-align: center;
-            margin-bottom: 30px;
+            color: white;
         }
-        .email-header h2 {
-            color: #333333;
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .email-content {
+            padding: 40px 30px;
+        }
+        .welcome-text {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
         .email-content p {
             font-size: 16px;
             color: #555555;
-            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .verify-btn-container {
+            text-align: center;
+            margin: 35px 0;
         }
         .verify-btn {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #1d72b8;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #ffffff !important;
             text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 20px;
+            font-weight: 600;
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .info-box p {
+            margin: 0;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e9ecef, transparent);
+            margin: 30px 0;
+        }
+        .support-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 25px 0;
+        }
+        .support-section p {
+            margin: 0;
+            font-size: 14px;
         }
         .email-footer {
+            background: #2c3e50;
+            color: #ecf0f1;
             text-align: center;
+            padding: 30px;
             font-size: 13px;
-            color: #999999;
-            margin-top: 40px;
         }
-        .email-footer hr {
-            border: none;
-            border-top: 1px solid #eeeeee;
-            margin: 30px 0;
+        .email-footer p {
+            margin: 5px 0;
+            color: #bdc3c7;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin: 0 5px;
+            text-decoration: none;
+            color: #ecf0f1;
+            line-height: 35px;
+        }
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            .email-content {
+                padding: 30px 20px;
+            }
+            .verify-btn {
+                padding: 14px 30px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="email-container">
     <div class="email-header">
-        <h2>Verify Your Account</h2>
+        <div class="logo">✓</div>
+        <h1>Verify Your Account</h1>
     </div>
+
     <div class="email-content">
-        <p>Hi [[name]],</p>
-        <p>Thanks for registering with us! Please confirm your email address by clicking the button below:</p>
-        <p style="text-align: center;">
-            <a href="[[URL]]" class="verify-btn">Verify My Account</a>
-        </p>
-        <p>If you didn't sign up for this account, you can safely ignore this email.</p>
+        <p class="welcome-text">Hi [[name]]! 👋</p>
+        
+        <p>Welcome to <strong>User Management Portal</strong>! We're thrilled to have you join our community.</p>
+        
+        <p>To complete your registration and secure your account, please verify your email address by clicking the button below:</p>
+
+        <div class="verify-btn-container">
+            <a href="[[URL]]" class="verify-btn">✨ Verify My Account</a>
+        </div>
+
+        <div class="info-box">
+            <p><strong>⏰ Important:</strong> This verification link will expire in 24 hours for security reasons.</p>
+        </div>
+
+        <p>If the button doesn't work, copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; font-size: 13px; color: #667eea; background: #f8f9fa; padding: 10px; border-radius: 4px;">[[URL]]</p>
+
+        <div class="divider"></div>
+
+        <div class="support-section">
+            <p><strong>📧 Can't find this email?</strong></p>
+            <p>Please check your <strong>spam/junk folder</strong> and add us to your contacts.</p>
+            <p>If you didn't create this account or have any questions, please contact our support team.</p>
+        </div>
+
+        <p style="font-style: italic; color: #6c757d; text-align: center;">— The User Management Team</p>
     </div>
+
     <div class="email-footer">
-        <hr>
-        <p>&copy; 2025 User Management Team</p>
-        <p>This is an automated message. Please do not reply.</p>
+        <div class="social-links">
+            <a href="#">f</a>
+            <a href="#">t</a>
+            <a href="#">in</a>
+        </div>
+        <p><strong>User Management Portal</strong></p>
+        <p>&copy; 2025 All rights reserved.</p>
+        <p>This is an automated message, please do not reply to this email.</p>
     </div>
 </div>
 </body>

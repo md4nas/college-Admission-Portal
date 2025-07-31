@@ -21,7 +21,7 @@ public class VerificationController {
         UserDtls user = userRepository.findByVerificationCode(code);
 
         // Check for OAuth-verified users
-        if (user != null && "OAUTH_VERIFIED".equals(user.getVerificationCode())) {
+        if (user != null && user.getVerificationCode() != null && user.getVerificationCode().endsWith("_OAUTH_VERIFIED")) {
             return "redirect:/login?verified";
         }
 
@@ -30,7 +30,7 @@ public class VerificationController {
             return "verify_failed";
         } else {
             user.setEnable(true);
-            user.setVerificationCode(null);
+            user.setVerificationCode("LOCAL_OAUTH_VERIFIED"); // Set proper verification status
             userRepository.save(user);
             return "verify_success";
         }

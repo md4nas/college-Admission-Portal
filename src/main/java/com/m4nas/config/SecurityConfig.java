@@ -73,6 +73,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/oauth2/**", "/login/oauth2/**")
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
@@ -93,15 +94,23 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/signin")
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService())
-                        )
-                        .successHandler(oauth2LoginSuccessHandler)
+                        .defaultSuccessUrl("/user/", true)
+                        .userInfoEndpoint(userInfo -> {
+                            CustomOAuth2UserService service = customOAuth2UserService();
+                            userInfo.userService(service);
+                            userInfo.oidcUserService(request -> service.loadOidcUser(request));
+                        })
+                        .failureUrl("/signin?error")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/signin?logout")
                         .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED)
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
                 );
 
         return http.build();

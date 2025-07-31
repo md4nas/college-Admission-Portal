@@ -20,7 +20,8 @@
                     <!-- Alerts Section (maintained all existing logic) -->
                     <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show m-3 rounded" role="alert">
                         <i class='bx bx-error-circle me-2'></i>
-                        <strong>Login Failed!</strong> [[${session.SPRING_SECURITY_LAST_EXCEPTION.message}]]
+                        <strong>Login Failed!</strong> 
+                        <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Invalid credentials'}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
@@ -92,7 +93,7 @@
                                 <a th:href="@{/oauth2/authorization/google}" class="social-icon google rounded-circle d-flex align-items-center justify-content-center">
                                     <i class='bx bxl-google fs-5'></i>
                                 </a>
-                                <a href="#" class="social-icon github rounded-circle d-flex align-items-center justify-content-center p-2">
+                                <a th:href="@{/oauth2/authorization/github}" class="social-icon github rounded-circle d-flex align-items-center justify-content-center p-2">
                                     <i class='bx bxl-github fs-5'></i>
                                 </a>
                                 <a href="#" class="social-icon linkedin rounded-circle d-flex align-items-center justify-content-center p-2">

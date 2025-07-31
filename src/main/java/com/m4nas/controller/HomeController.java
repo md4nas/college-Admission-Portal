@@ -61,22 +61,29 @@ public class HomeController {
                              HttpServletRequest request) {
 
 
-        String url=request.getRequestURL().toString();
-
-        url=url.replace(request.getServletPath(), "");
-
-
+        String url = request.getRequestURL().toString();
+        url = url.replace(request.getServletPath(), "");
+        
+        System.out.println("Registration URL: " + url);
+        System.out.println("User email: " + user.getEmail());
 
         boolean f = userService.checkEmail(user.getEmail());
 
         if(f) {
             redirectAttributes.addFlashAttribute("msg","Email id already exist");
-        }else {
-            UserDtls userDtls = userService.createUser(user, url);
-            if(userDtls!=null) {
-                redirectAttributes.addFlashAttribute("msg","Resgister Sucessfully");
-            } else {
-                redirectAttributes.addFlashAttribute("msg","Something Error in Server");
+        } else {
+            try {
+                UserDtls userDtls = userService.createUser(user, url);
+                if(userDtls != null) {
+                    System.out.println("User created successfully: " + userDtls.getEmail());
+                    redirectAttributes.addFlashAttribute("msg","Registration Successful! Check your email for verification.");
+                } else {
+                    redirectAttributes.addFlashAttribute("msg","Something Error in Server");
+                }
+            } catch (Exception e) {
+                System.out.println("Error during user creation: " + e.getMessage());
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("msg","Error sending verification email: " + e.getMessage());
             }
         }
         return "redirect:/register";
@@ -85,7 +92,7 @@ public class HomeController {
 
 
     @GetMapping("/loadResetPassword/{id}")
-    public String loadResetPassword(@PathVariable int id, Model m){
+    public String loadResetPassword(@PathVariable String id, Model m){
         m.addAttribute("id",id);
         return "reset_password";
     }
@@ -121,7 +128,7 @@ public class HomeController {
                                  RedirectAttributes redirectAttributes) {
 
 
-        Integer id = (Integer) session.getAttribute("resetUserId");
+        String id = (String) session.getAttribute("resetUserId");
 
         if (id == null) {
             redirectAttributes.addFlashAttribute("error", "Session expired. Try again.");

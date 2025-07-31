@@ -33,7 +33,8 @@ public class UserDtls implements Serializable {
 
     private boolean enable;
 
-    private String provider; // For storing "google", "facebook" etc.
+    @Column(nullable = true)
+    private String provider;  // For storing "google", "facebook" etc.
 
     @Column(nullable = true)  // Made nullable for OAuth users
     private String verificationCode;

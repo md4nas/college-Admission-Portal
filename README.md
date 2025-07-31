@@ -5,95 +5,63 @@ A complete User Management System built using Spring Boot, Thymeleaf, and MySQL.
 
 ---
 
-## ✨ Features
+# 🚀 Project Features
 
-🔐 Authentication & Authorization
-User Registration with email verification (using Brevo SMTP)
+## 🔐 **Authentication & Authorization**
+- **User Registration** with email verification (using Brevo SMTP)
+- **Google OAuth2 Integration** for seamless social login
+- **Login/Logout Functionality** with session management
+- **Role-based Access Control** (USER / ADMIN / TEACHER)
+- **Spring Security Integration** with custom configurations
 
-Google OAuth2 Integration for seamless social login
+## 🔑 **Password Management**
+- **Password Encryption** with BCrypt hashing
+- **Forgot Password** functionality with email OTP
+- **Password Reset** with secure token validation
+- **Change Password** with old password verification
+- **User-friendly Messages** for all password operations
 
-Login/Logout Functionality with session management
+## 📧 **Email System**
+- **Email Verification** for new user accounts
+- **Verification Email Templates** with HTML formatting
+- **Email API Integration** using Brevo (formerly Sendinblue)
+- **Secure API Key Storage** in application properties
+- **Automated Email Sending** for account verification
 
-Role-based Access Control (USER / ADMIN / TEACHER)
+## 🛡️ **Security Features**
+- **Custom Authentication Handlers** for success/failure scenarios
+- **Custom Error Handling** with descriptive messages
+- **Account Verification** required before login
+- **Provider Tracking** (local registration vs OAuth2)
+- **Session Security** with proper timeout handling
 
-Spring Security Integration with custom configurations
+## 🗄️ **Database Integration**
+- **PostgreSQL Database** support with JPA/Hibernate
+- **User Entity Management** with proper relationships
+- **Repository Pattern** for data access
+- **Transaction Management** for data consistency
+- **Database Schema** auto-generation and updates
 
-🔑 Password Management
-Password Encryption with BCrypt hashing
+## 🎨 **User Experience**
+- **Responsive Web Design** with Bootstrap integration
+- **User Dashboard** with personalized content
+- **Admin Panel** for user management
+- **Teacher Portal** for educator-specific features
+- **Smooth Redirects** with loading states and feedback
+- **Form Validation** with client and server-side checks
 
-Forgot Password functionality with email OTP
+## 🔧 **Technical Features**
+- **Spring Boot 3.x** framework
+- **Thymeleaf Template Engine** for server-side rendering
+- **RESTful API endpoints** for various operations
+- **Custom Exception Handling** for better error management
+- **Logging Integration** for debugging and monitoring
+- **Environment Configuration** for different deployment stages
 
-Password Reset with secure token validation
-
-Change Password with old password verification
-
-User-friendly Messages for all password operations
-
-📧 Email System
-Email Verification for new user accounts
-
-Verification Email Templates with HTML formatting
-
-Email API Integration using Brevo (formerly Sendinblue)
-
-Secure API Key Storage in application properties
-
-Automated Email Sending for account verification
-
-🛡️ Security Features
-Custom Authentication Handlers for success/failure scenarios
-
-Custom Error Handling with descriptive messages
-
-Account Verification required before login
-
-Provider Tracking (local registration vs OAuth2)
-
-Session Security with proper timeout handling
-
-🗄️ Database Integration
-PostgreSQL Database support with JPA/Hibernate
-
-User Entity Management with proper relationships
-
-Repository Pattern for data access
-
-Transaction Management for data consistency
-
-Database Schema auto-generation and updates
-
-🎨 User Experience
-Responsive Web Design with Bootstrap integration
-
-User Dashboard with personalized content
-
-Admin Panel for user management
-
-Teacher Portal for educator-specific features
-
-Smooth Redirects with loading states and feedback
-
-Form Validation with client and server-side checks
-
-🔧 Technical Features
-Spring Boot 3.x framework
-
-Thymeleaf Template Engine for server-side rendering
-
-RESTful API endpoints for various operations
-
-Custom Exception Handling for better error management
-
-Logging Integration for debugging and monitoring
-
-Environment Configuration for different deployment stages
-
-📱 Multi-Platform Support
-Cross-browser Compatibility (Chrome, Firefox, Safari, Edge)
-
-Mobile-responsive Design for all screen sizes
-
-Progressive Web App features for better mobile experience
+## 📱 **Multi-Platform Support**
+- **Cross-browser Compatibility** (Chrome, Firefox, Safari, Edge)
+- **Mobile-responsive Design** for all screen sizes
+- **Progressive Web App** features for better mobile experience
 
 ---
 

@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDtls createUser(UserDtls user, String url) {
+        user.setId(RandomString.generateUserId());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
         user.setEnable(false);
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void sendVerificationMail(UserDtls user, String url) throws MessagingException, UnsupportedEncodingException {
         String fromAddress = "kabiranas7890@gmail.com";
-        String toAddress = user.getEmail();
+        String toAddress = user.getEmail().trim().toLowerCase();
         String senderName = "User Management Team";
         String subject = "Account Verification";
 
@@ -123,12 +124,13 @@ public class UserServiceImpl implements UserService {
 
         // Create new user
         UserDtls user = new UserDtls();
+        user.setId(RandomString.generateUserId());
         user.setEmail(email);
         user.setFullName(name);
         user.setRole("ROLE_USER");
         user.setEnable(true);
         user.setProvider(provider);
-        user.setVerificationCode("OAUTH_VERIFIED");
+        user.setVerificationCode(provider.toUpperCase() + "_OAUTH_VERIFIED");
 
         // Generate more secure random password
         String randomPassword = UUID.randomUUID().toString() + new RandomString().make(8);
@@ -140,14 +142,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean verifyAccount(String code) {
-        if ("OAUTH_VERIFIED".equals(code)) {
+        if (code != null && code.endsWith("_OAUTH_VERIFIED")) {
             return true;
         }
 
         UserDtls user = userRepo.findByVerificationCode(code);
         if (user != null) {
             user.setEnable(true);
-            user.setVerificationCode(null);
+            user.setVerificationCode("LOCAL_OAUTH_VERIFIED");
             userRepo.save(user);
             return true;
         }

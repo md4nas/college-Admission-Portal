@@ -143,8 +143,11 @@ src/
 ### Prerequisites
 
 - Java 17+
+- Spring Boot
+- Themeleaf
+- Bootstrap
 - Maven
-- MySQL
+- PostgreSQL
 - IntelliJ IDEA
 
 ### Clone & Run

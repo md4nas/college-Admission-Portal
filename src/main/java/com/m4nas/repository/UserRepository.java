@@ -2,6 +2,7 @@ package com.m4nas.repository;
 
 import com.m4nas.model.UserDtls;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserDtls, Integer> {
 
@@ -12,4 +13,6 @@ public interface UserRepository extends JpaRepository<UserDtls, Integer> {
     public UserDtls findByEmailAndMobileNumber(String email,String mobileNumber);
 
     public UserDtls findByVerificationCode(String code);
+
+
 }

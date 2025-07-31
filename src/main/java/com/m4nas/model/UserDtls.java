@@ -18,10 +18,13 @@ public class UserDtls implements Serializable {
 
     private String fullName;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = true)  // Made nullable for OAuth users
     private String mobileNumber;
 
+    @Column(nullable = true)  // Made nullable for OAuth users
     private String password;
 
     private String address;
@@ -30,5 +33,8 @@ public class UserDtls implements Serializable {
 
     private boolean enable;
 
+    private String provider; // For storing "google", "facebook" etc.
+
+    @Column(nullable = true)  // Made nullable for OAuth users
     private String verificationCode;
 }

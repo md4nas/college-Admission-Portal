@@ -7,14 +7,93 @@ A complete User Management System built using Spring Boot, Thymeleaf, and MySQL.
 
 ## ✨ Features
 
-- User registration with email verification (using Brevo)
-- Login/logout functionality
-- Password encryption with BCrypt
-- Role-based access (USER / ADMIN)
-- Spring Security Integration
-- Forgot Password and Password Reset with Email OTP
-- Database Integration (MySQL)
-- Email verification using API key securely stored
+🔐 Authentication & Authorization
+User Registration with email verification (using Brevo SMTP)
+
+Google OAuth2 Integration for seamless social login
+
+Login/Logout Functionality with session management
+
+Role-based Access Control (USER / ADMIN / TEACHER)
+
+Spring Security Integration with custom configurations
+
+🔑 Password Management
+Password Encryption with BCrypt hashing
+
+Forgot Password functionality with email OTP
+
+Password Reset with secure token validation
+
+Change Password with old password verification
+
+User-friendly Messages for all password operations
+
+📧 Email System
+Email Verification for new user accounts
+
+Verification Email Templates with HTML formatting
+
+Email API Integration using Brevo (formerly Sendinblue)
+
+Secure API Key Storage in application properties
+
+Automated Email Sending for account verification
+
+🛡️ Security Features
+Custom Authentication Handlers for success/failure scenarios
+
+Custom Error Handling with descriptive messages
+
+Account Verification required before login
+
+Provider Tracking (local registration vs OAuth2)
+
+Session Security with proper timeout handling
+
+🗄️ Database Integration
+PostgreSQL Database support with JPA/Hibernate
+
+User Entity Management with proper relationships
+
+Repository Pattern for data access
+
+Transaction Management for data consistency
+
+Database Schema auto-generation and updates
+
+🎨 User Experience
+Responsive Web Design with Bootstrap integration
+
+User Dashboard with personalized content
+
+Admin Panel for user management
+
+Teacher Portal for educator-specific features
+
+Smooth Redirects with loading states and feedback
+
+Form Validation with client and server-side checks
+
+🔧 Technical Features
+Spring Boot 3.x framework
+
+Thymeleaf Template Engine for server-side rendering
+
+RESTful API endpoints for various operations
+
+Custom Exception Handling for better error management
+
+Logging Integration for debugging and monitoring
+
+Environment Configuration for different deployment stages
+
+📱 Multi-Platform Support
+Cross-browser Compatibility (Chrome, Firefox, Safari, Edge)
+
+Mobile-responsive Design for all screen sizes
+
+Progressive Web App features for better mobile experience
 
 ---
 
@@ -24,64 +103,70 @@ A complete User Management System built using Spring Boot, Thymeleaf, and MySQL.
 src/
 ├── main/
 │   ├── java/
-│   │   └── in/md4nas/usermanagement/
+│   │   └── com/m4nas/
 │   │       ├── config/
-│   │       │   ├── CustomOAuth2User.java
-│   │       │   ├── CustomOAuth2UserService.java
-│   │       │   ├── CustomSuccessHandler.java
-│   │       │   ├── CustomUserDetails.java
-│   │       │   ├── OAuth2LoginSuccessHandler.java
-│   │       │   ├── SecurityConfig.java
-│   │       │   └── UserDetailsServiceImpl.java
+│   │       │   ├── CustomAuthenticationFailureHandler.java    # Custom login failure handler
+│   │       │   ├── CustomDisabledException.java               # Custom exception for disabled users
+│   │       │   ├── CustomOAuth2User.java                      # OAuth2 user wrapper
+│   │       │   ├── CustomOAuth2UserService.java               # OAuth2 user service
+│   │       │   ├── CustomSuccessHandler.java                  # Form login success handler
+│   │       │   ├── CustomUserDetails.java                     # UserDetails implementation
+│   │       │   ├── OAuth2LoginSuccessHandler.java             # OAuth2 login success handler
+│   │       │   ├── PasswordConfig.java                        # Password encoder configuration
+│   │       │   ├── SecurityConfig.java                        # Spring Security configuration
+│   │       │   └── UserDetailsServiceImpl.java                # UserDetailsService implementation
 │   │       │
 │   │       ├── controller/
-│   │       │   ├── AdminController.java
-│   │       │   ├── HomeController.java
-│   │       │   ├── TeacherController.java
-│   │       │   └── UserController.java
+│   │       │   ├── AdminController.java                       # Admin dashboard controller
+│   │       │   ├── GoogleAuthController.java                  # Google OAuth controller
+│   │       │   ├── HomeController.java                        # Public pages controller
+│   │       │   ├── TeacherController.java                     # Teacher dashboard controller
+│   │       │   ├── UserController.java                        # User dashboard controller
+│   │       │   └── VerificationController.java                # Email verification controller
 │   │       │
 │   │       ├── model/
-│   │       │   └── UserDtls.java
+│   │       │   └── UserDtls.java                              # User entity model
 │   │       │
 │   │       ├── repository/
-│   │       │   └── UserRepository.java
+│   │       │   └── UserRepository.java                        # User data repository
 │   │       │
 │   │       ├── service/
-│   │       │   ├── UserService.java
-│   │       │   └── UserServiceImpl.java
+│   │       │   ├── UserService.java                           # User service interface
+│   │       │   └── UserServiceImpl.java                       # User service implementation
 │   │       │
-│   │       └── util/
-│   │           └── RandomString.java
+│   │       ├── util/
+│   │       │   └── RandomString.java                          # Random string generator
+│   │       │
+│   │       └── UserManagemetApplication.java                  # Main Spring Boot application
 │   │
-│   └── UserManagementApplication.java
-│
-├── resources/
-│   ├── static/
-│   │   ├── css/
-│   │   │   └── user-portal-style.css
-│   │   └── js/
-│   │       └── user-portal-script.js
-│   │
-│   ├── templates/
-│   │   ├── base.html                         # Common layout
-│   │   ├── forget_password.html              # Forget password page
-│   │   ├── index.html                        # Public landing page
-│   │   ├── register.html                     # Registration form
-│   │   ├── reset_password.html               # Reset password form
-│   │   ├── signin.html                       # Login page
-│   │   ├── verification-mail-template.html   # Email content template
-│   │   ├── verify_failed.html                # Email verification failure
-│   │   ├── verify_success.html               # Email verification success
-│   │   └── user/
-│   │       ├── home.html                     # User home page
-│   │       └── settings/
-│   │           └── change_password.html      # Change password form
-│   │
-│   └── application.properties
+│   └── resources/
+│       ├── static/
+│       │   ├── css/
+│       │   │   └── user-portal-style.css                      # Application styles
+│       │   └── js/
+│       │       └── user-portal-script.js                      # Application scripts
+│       │
+│       ├── templates/
+│       │   ├── base.html                                      # Common layout template
+│       │   ├── forget_password.html                           # Forgot password page
+│       │   ├── index.html                                     # Public landing page
+│       │   ├── register.html                                  # User registration form
+│       │   ├── reset_password.html                            # Password reset form
+│       │   ├── signin.html                                    # User login page
+│       │   ├── verification-mail-template.html                # Email verification template
+│       │   ├── verify_failed.html                             # Verification failure page
+│       │   ├── verify_success.html                            # Verification success page
+│       │   └── user/
+│       │       ├── home.html                                  # User dashboard
+│       │       └── settings/
+│       │           └── change_password.html                   # Change password form
+│       │
+│       └── application.properties                             # Application configuration
 │
 └── test/
     └── java/
-
+        └── com/m4nas/
+            └── UserManagemetApplicationTests.java              # Application tests
 
 ---
 

@@ -12,9 +12,8 @@ public class UserDtls implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false, nullable = false)
-    private int id;
+    @Column(updatable = false, nullable = false, length = 16)
+    private String id;
 
     private String fullName;
 

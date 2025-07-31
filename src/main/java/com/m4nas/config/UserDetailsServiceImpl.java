@@ -19,6 +19,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserDtls user = userRepo.findByEmail(email);
 
         if(user!=null){
+            if(!user.isEnable()){
+                throw new CustomDisabledException("Please activate your account. Verification email has been sent to your email address.");
+            }
             return new CustomUserDetails(user);
         }
         throw new UsernameNotFoundException("User Not Available") ;

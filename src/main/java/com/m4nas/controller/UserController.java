@@ -2,7 +2,8 @@ package com.m4nas.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import com.m4nas.model.UserDtls;
 import com.m4nas.repository.UserRepository;
@@ -16,10 +17,10 @@ import java.security.Principal;
 public class UserController {
 
     private UserRepository userRepo;
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserController(UserRepository userRepo,BCryptPasswordEncoder passwordEncoder) {
+    public UserController(UserRepository userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.passwordEncoder=passwordEncoder;
     }
@@ -68,15 +69,22 @@ public class UserController {
            loginUser.setPassword((passwordEncoder.encode(newPass)));
            UserDtls updatePasswordUser=userRepo.save(loginUser);
            if(updatePasswordUser != null){
-               session.setAttribute("msg","Password Change Successfully");
+               session.setAttribute("msg","Password changed successfully!");
                session.setAttribute("msgType", "success");
-               return "redirect:/user/home/" + loginUser.getId();
+               // Clear message after 5 seconds to prevent auto-redirect on next visit
+               new Thread(() -> {
+                   try {
+                       Thread.sleep(5000);
+                       session.removeAttribute("msg");
+                       session.removeAttribute("msgType");
+                   } catch (InterruptedException e) {}
+               }).start();
            }else{
-               session.setAttribute("msg","Something Went Wrong");
+               session.setAttribute("msg","Something went wrong. Please try again.");
                session.setAttribute("msgType", "danger");
            }
        }else{
-           session.setAttribute("msg","Incorrect Old Password");
+           session.setAttribute("msg","Incorrect old password. Please try again.");
            session.setAttribute("msgType", "danger");
        }
         return "redirect:/user/settings/changePass";

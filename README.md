@@ -1,7 +1,7 @@
 
 # User Management System - Spring Boot Application
 
-A complete User Management System built using Spring Boot, Thymeleaf, and MySQL. This application supports user registration, login, logout, email verification, password encryption, and role-based access control.
+A complete User Management System built using Spring Boot, Thymeleaf, and PostgreSQL. This application supports user registration, login, logout, email verification, password encryption, and role-based access control.
 
 ---
 

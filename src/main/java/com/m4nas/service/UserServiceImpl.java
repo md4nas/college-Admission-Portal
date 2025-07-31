@@ -10,35 +10,43 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
+    private final ResourceLoader resourceLoader;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncode;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private ResourceLoader resourceLoader;
+    public UserServiceImpl(UserRepository userRepo,
+                           PasswordEncoder passwordEncoder,
+                           JavaMailSender mailSender,
+                           ResourceLoader resourceLoader) {
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
+        this.resourceLoader = resourceLoader;
+    }
 
     @Override
+    @Transactional
     public UserDtls createUser(UserDtls user, String url) {
-        user.setPassword(passwordEncode.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
         user.setEnable(false);
+        user.setProvider("local");
 
         RandomString rn = new RandomString();
         user.setVerificationCode(rn.make(64));
@@ -48,7 +56,7 @@ public class UserServiceImpl implements UserService {
         try {
             sendVerificationMail(savedUser, url);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to send verification email", e);
         }
 
         return savedUser;
@@ -59,6 +67,8 @@ public class UserServiceImpl implements UserService {
         return userRepo.existsByEmail(email);
     }
 
+    @Override
+    @Transactional
     public void sendVerificationMail(UserDtls user, String url) throws MessagingException, UnsupportedEncodingException {
         String fromAddress = "kabiranas7890@gmail.com";
         String toAddress = user.getEmail();
@@ -66,7 +76,6 @@ public class UserServiceImpl implements UserService {
         String subject = "Account Verification";
 
         try {
-            // Load HTML template from resources
             Resource resource = resourceLoader.getResource("classpath:templates/verification-mail-template.html");
             InputStream inputStream = resource.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
@@ -82,24 +91,59 @@ public class UserServiceImpl implements UserService {
             String siteUrl = url + "/verify?code=" + user.getVerificationCode();
             content = content.replace("[[URL]]", siteUrl);
 
-            // Prepare mail
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setFrom(fromAddress, senderName);
             helper.setTo(toAddress);
             helper.setSubject(subject);
-            helper.setText(content, true); // true enables HTML
+            helper.setText(content, true);
 
             mailSender.send(message);
-
         } catch (Exception e) {
-            e.printStackTrace();
             throw new MessagingException("Failed to send verification email", e);
         }
     }
 
     @Override
+    @Transactional
+    public UserDtls createOAuthUser(String email, String name, String provider) {
+        if (email == null || name == null || provider == null) {
+            throw new IllegalArgumentException("Email, name and provider cannot be null");
+        }
+
+        // Check if user already exists
+        UserDtls existingUser = userRepo.findByEmail(email);
+        if (existingUser != null) {
+            // Update existing user with provider info
+            existingUser.setProvider(provider);
+            existingUser.setVerificationCode("OAUTH_VERIFIED");
+            existingUser.setEnable(true);
+            return userRepo.save(existingUser);
+        }
+
+        // Create new user
+        UserDtls user = new UserDtls();
+        user.setEmail(email);
+        user.setFullName(name);
+        user.setRole("ROLE_USER");
+        user.setEnable(true);
+        user.setProvider(provider);
+        user.setVerificationCode("OAUTH_VERIFIED");
+
+        // Generate more secure random password
+        String randomPassword = UUID.randomUUID().toString() + new RandomString().make(8);
+        user.setPassword(passwordEncoder.encode(randomPassword));
+
+        return userRepo.save(user);
+    }
+
+    @Override
+    @Transactional
     public boolean verifyAccount(String code) {
+        if ("OAUTH_VERIFIED".equals(code)) {
+            return true;
+        }
+
         UserDtls user = userRepo.findByVerificationCode(code);
         if (user != null) {
             user.setEnable(true);

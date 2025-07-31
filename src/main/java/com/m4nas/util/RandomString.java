@@ -15,4 +15,8 @@ public class RandomString {
         }
         return sb.toString();
     }
+    
+    public static String generateUserId() {
+        return new RandomString().make(16);
+    }
 }

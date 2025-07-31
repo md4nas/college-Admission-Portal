@@ -33,47 +33,51 @@ src/
 │   │       │   ├── OAuth2LoginSuccessHandler.java
 │   │       │   ├── SecurityConfig.java
 │   │       │   └── UserDetailsServiceImpl.java
+│   │       │
 │   │       ├── controller/
 │   │       │   ├── AdminController.java
 │   │       │   ├── HomeController.java
-│   │       │   ├── TecherController.java  ← (typo? Should be `TeacherController`)
+│   │       │   ├── TeacherController.java
 │   │       │   └── UserController.java
+│   │       │
 │   │       ├── model/
 │   │       │   └── UserDtls.java
+│   │       │
 │   │       ├── repository/
 │   │       │   └── UserRepository.java
+│   │       │
 │   │       ├── service/
 │   │       │   ├── UserService.java
 │   │       │   └── UserServiceImpl.java
+│   │       │
 │   │       └── util/
 │   │           └── RandomString.java
 │   │
-│   │   └── UserManagementApplication.java
+│   └── UserManagementApplication.java
 │
-│   └── resources/
-│       ├── static/
-│       │   ├── css/
-│       │   │   └── user-portal-style.css
-│       │   └── js/
-│       │       └── user-portal-script.js
-│       ├── templates/
-│       │   ├── admin/
-│       │   │   └── home.html
-│       │   ├── teacher/
-│       │   │   └── home.html
-│       │   └── user/
-│       │       ├── settings/
-│       │       │   └── home.html
-│       │       ├── base.html
-│       │       ├── forget_password.html
-│       │       ├── index.html
-│       │       ├── register.html
-│       │       ├── reset_password.html
-│       │       ├── signin.html
-│       │       ├── verification-mail-template.html
-│       │       ├── verify_failed.html
-│       │       └── verify_success.html
-│       └── application.properties
+├── resources/
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── user-portal-style.css
+│   │   └── js/
+│   │       └── user-portal-script.js
+│   │
+│   ├── templates/
+│   │   ├── base.html                         # Common layout
+│   │   ├── forget_password.html              # Forget password page
+│   │   ├── index.html                        # Public landing page
+│   │   ├── register.html                     # Registration form
+│   │   ├── reset_password.html               # Reset password form
+│   │   ├── signin.html                       # Login page
+│   │   ├── verification-mail-template.html   # Email content template
+│   │   ├── verify_failed.html                # Email verification failure
+│   │   ├── verify_success.html               # Email verification success
+│   │   └── user/
+│   │       ├── home.html                     # User home page
+│   │       └── settings/
+│   │           └── change_password.html      # Change password form
+│   │
+│   └── application.properties
 │
 └── test/
     └── java/

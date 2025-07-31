@@ -82,15 +82,7 @@ public class HomeController {
         return "redirect:/register";
     }
 
-    @GetMapping("/verify")
-    public String verifyAccount(@Param("code") String code){
 
-        if(userService.verifyAccount(code)){
-            return "verify_success";
-        }else {
-            return "verify_failed";
-        }
-    }
 
     @GetMapping("/loadResetPassword/{id}")
     public String loadResetPassword(@PathVariable int id, Model m){

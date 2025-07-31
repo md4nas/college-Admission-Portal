@@ -1,5 +1,9 @@
 package com.m4nas.config;
 
+import com.m4nas.repository.UserRepository;
+import com.m4nas.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,50 +12,46 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomSuccessHandler customSuccessHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
+    private final AuthenticationSuccessHandler customSuccessHandler;
     private final OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(CustomSuccessHandler customSuccessHandler,
-                          CustomOAuth2UserService customOAuth2UserService,
-                          OAuth2LoginSuccessHandler oauth2LoginSuccessHandler) {
+    @Autowired
+    public SecurityConfig(
+            @Qualifier("customSuccessHandler") AuthenticationSuccessHandler customSuccessHandler,
+            OAuth2LoginSuccessHandler oauth2LoginSuccessHandler,
+            UserRepository userRepository,
+            UserService userService,
+            PasswordEncoder passwordEncoder) {
         this.customSuccessHandler = customSuccessHandler;
-        this.customOAuth2UserService = customOAuth2UserService;
         this.oauth2LoginSuccessHandler = oauth2LoginSuccessHandler;
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
-    public UserDetailsService getUserDetailsService(){
+    public UserDetailsService getUserDetailsService() {
         return new UserDetailsServiceImpl();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(getUserDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(getPasswordEncoder());
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
         return daoAuthenticationProvider;
     }
 
@@ -63,28 +63,35 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CustomOAuth2UserService customOAuth2UserService() {
+        return new CustomOAuth2UserService(userRepository, userService);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-        .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/teacher/**").access(hasRole("TEACHER"))
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN", "ROLE_TEACHER")
+                        .requestMatchers("/teacher/**").hasAuthority("ROLE_TEACHER")
                         .requestMatchers("/verify").permitAll()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
-                        .loginPage("/signin")                     // GET: Show custom login form
-                        .loginProcessingUrl("/login")             // POST: Login form submits here
-                        .usernameParameter("email")               // tells Spring Security to use "email" field
-                        .passwordParameter("password")            // (optional) matches HTML form
+                        .loginPage("/signin")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
                         .successHandler(customSuccessHandler)
+                        .failureHandler(new CustomAuthenticationFailureHandler())
                         .permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/signin")
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
+                                .userService(customOAuth2UserService())
                         )
                         .successHandler(oauth2LoginSuccessHandler)
                 )
@@ -93,6 +100,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/signin?logout")
                         .permitAll()
                 );
+
         return http.build();
     }
 }

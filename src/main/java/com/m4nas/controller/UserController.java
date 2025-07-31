@@ -34,16 +34,20 @@ public class UserController {
 
     @GetMapping("/")
     public String redirectToHome(Principal p){
-        if(p!=null){
+        if(p != null){
             String email = p.getName();
-            UserDtls user= userRepo.findByEmail(email);
-            return "redirect:/user/home/" + user.getId();
+            UserDtls user = userRepo.findByEmail(email);
+            if(user != null) {
+                return "redirect:/user/home/" + user.getId();
+            } else {
+                return "redirect:/signin?error";
+            }
         }
-        return "redirect:/login";
+        return "redirect:/signin";
     }
 
     @GetMapping("/home/{id}")
-    public String userHome(@PathVariable Integer id,Model model){
+    public String userHome(@PathVariable String id,Model model){
         UserDtls user = userRepo.findById(id).orElse(null);
         model.addAttribute("user", user);
         return "user/home";

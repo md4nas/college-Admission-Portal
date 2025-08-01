@@ -97,60 +97,11 @@ public class HomeController {
         return "reset_password";
     }
 
-    @PostMapping("/forgetPassword")
-    public String forgetPassword(@RequestParam String email,
-                                 @RequestParam String mobileNum,
-                                 HttpSession session){
-
-        UserDtls user = userRepo.findByEmailAndMobileNumber(email,mobileNum);
-
-        if(user!=null){
-            session.removeAttribute("msg");
-            session.setAttribute("resetUserId", user.getId());
-            return "redirect:/loadResetPassword/" + user.getId();
-
-        }else{
-            session.setAttribute("msg","Invalid Email & Mobile Number");
-            return "forget_password";
-        }
-    }
-
     @GetMapping("/loadForgetPassword")
-    public String loadForgetPassword(HttpSession session){
-        session.removeAttribute("msg");
-        return "forget_password";
+    public String loadForgetPassword(){
+        return "redirect:/forgot-password";
     }
 
-    @PostMapping("/changePassword")
-    public String changePassword(@RequestParam("psw") String psw,
-                                 @RequestParam("cpsw") String cpsw,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
 
-
-        String id = (String) session.getAttribute("resetUserId");
-
-        if (id == null) {
-            redirectAttributes.addFlashAttribute("error", "Session expired. Try again.");
-            return "redirect:/loadForgetPassword"; // fallback
-        }
-
-        if (!psw.equals(cpsw)) {
-            redirectAttributes.addFlashAttribute("error", "Passwords do not match.");
-            return "redirect:/loadResetPassword/" + id;
-        }
-
-        UserDtls user = userRepo.findById(id).orElse(null);
-        if (user == null) {
-            redirectAttributes.addFlashAttribute("error", "User not found.");
-            return "redirect:/loadForgetPassword";
-        }
-
-        user.setPassword(passwordEncoder.encode(psw));
-        userRepo.save(user);
-
-        redirectAttributes.addFlashAttribute("success", "Password changed successfully.");
-        return "redirect:/signin";
-    }
 
 }

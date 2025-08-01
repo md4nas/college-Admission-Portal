@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Login Page</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
 </head>
 <body>
 
@@ -21,7 +22,8 @@
                     <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show m-3 rounded" role="alert">
                         <i class='bx bx-error-circle me-2'></i>
                         <strong>Login Failed!</strong> 
-                        <span th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Invalid credentials'}"></span>
+                        <span th:if="${param.error == 'recaptcha'}" th:text="'Please complete the reCAPTCHA verification.'"></span>
+                        <span th:unless="${param.error == 'recaptcha'}" th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Invalid credentials'}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
@@ -74,6 +76,8 @@
                                     <i class='bx bx-shield-quarter'></i> Forgot Password ?
                                 </a>
                             </div>
+
+
 
                             <!-- Login Button -->
                             <div class="d-grid mb-4">

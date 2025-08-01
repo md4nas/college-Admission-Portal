@@ -18,7 +18,7 @@
         }
         main {
             flex: 1 0 auto;
-            padding-bottom: 20px; /* Add some space above footer */
+            padding-bottom: 20px;
         }
         footer {
             flex-shrink: 0;
@@ -27,16 +27,16 @@
 </head>
 <body class="bg-light">
 
-    <!-- Index Page Navbar (always shows on index page) -->
-    <nav th:if="${currentPath == '/'}" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
+    <!-- Public Pages Navbar (Index, Login, Register) -->
+    <nav th:if="${currentPath == '/' or currentPath == '/signin' or currentPath == '/register' or currentPath == '/forgot-password'}" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class='bx bx-shield-check me-2'></i>UserAuth
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#indexNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="indexNavbar">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" th:href="${user == null ? '/' : (user.role == 'ROLE_ADMIN' ? '/admin/' : (user.role == 'ROLE_TEACHER' ? '/teacher/' : '/user/'))}">Home</a>
@@ -61,7 +61,7 @@
                 </ul>
                 <ul class="navbar-nav" th:if="${user != null}">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="indexDropdown" data-bs-toggle="dropdown">
                             <i class='bx bx-user me-1'></i>[[${user.fullName}]]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -88,10 +88,10 @@
             <a class="navbar-brand" href="/">
                 <i class='bx bx-shield me-2'></i>UserAuth
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="adminNavbar">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/">
@@ -116,7 +116,7 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" data-bs-toggle="dropdown">
                             <i class='bx bx-user me-1'></i>[[${user.fullName}]]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -141,10 +141,10 @@
             <a class="navbar-brand" href="/">
                 <i class='bx bx-chalkboard me-2'></i>UserAuth
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#teacherNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="teacherNavbar">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/teacher/">
@@ -169,7 +169,7 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="teacherDropdown" data-bs-toggle="dropdown">
                             <i class='bx bx-user me-1'></i>[[${user.fullName}]]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -196,10 +196,10 @@
             <a class="navbar-brand" href="/">
                 <i class='bx bx-user-circle me-2'></i>UserAuth
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="userNavbar">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/user/">
@@ -224,7 +224,7 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">
                             <i class='bx bx-user me-1'></i>[[${user.fullName}]]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

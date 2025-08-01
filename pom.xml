@@ -11,7 +11,7 @@
 	<groupId>com.m4nas</groupId>
 	<artifactId>UserManagemetPortal</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>UserManagmet</name>
+	<name>UserManagement</name>
 	<description>user management system</description>
 	<url/>
 	<licenses>

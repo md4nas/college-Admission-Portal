@@ -20,13 +20,9 @@ public class UserDtls implements Serializable {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = true)  // Made nullable for OAuth users
-    private String mobileNumber;
 
     @Column(nullable = true)  // Made nullable for OAuth users
     private String password;
-
-    private String address;
 
     private String role;
 

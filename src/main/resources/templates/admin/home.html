@@ -1,14 +1,157 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Admin Dashboard</title>
 </head>
 <body>
-<h1>Admin Home Page</h1>
-<li class="nav-item">
-    <a class="nav-link btn btn-danger text-white ms-2" href="/logout">Logout</a>
-</li>
-
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header text-center bg-danger text-white">
+                        <h3><i class='bx bx-shield-alt-2 me-2'></i>Admin Dashboard</h3>
+                    </div>
+                </div>
+                
+                <!-- All Users Table -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class='bx bx-group me-2'></i>All Users Management</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Provider</th>
+                                        <th>Role</th>
+                                        <th>Verification Code</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user : ${users}">
+                                        <td th:text="${user.id}"></td>
+                                        <td>
+                                            <i class='bx bx-user me-1'></i>
+                                            <span th:text="${user.fullName}"></span>
+                                        </td>
+                                        <td>
+                                            <i class='bx bx-envelope me-1'></i>
+                                            <span th:text="${user.email}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${user.provider == 'local'}" class="badge bg-primary">
+                                                <i class='bx bx-user-circle me-1'></i>Local
+                                            </span>
+                                            <span th:if="${user.provider == 'google'}" class="badge bg-danger">
+                                                <i class='bx bxl-google me-1'></i>Google
+                                            </span>
+                                            <span th:if="${user.provider == 'github'}" class="badge bg-dark">
+                                                <i class='bx bxl-github me-1'></i>GitHub
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${user.role == 'ROLE_ADMIN'}" class="badge bg-danger">
+                                                <i class='bx bx-shield-alt-2 me-1'></i>Admin
+                                            </span>
+                                            <span th:if="${user.role == 'ROLE_TEACHER'}" class="badge bg-success">
+                                                <i class='bx bx-chalkboard me-1'></i>Teacher
+                                            </span>
+                                            <span th:if="${user.role == 'ROLE_USER'}" class="badge bg-info">
+                                                <i class='bx bx-user me-1'></i>User
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted" th:text="${#strings.abbreviate(user.verificationCode, 20)}"></small>
+                                        </td>
+                                        <td>
+                                            <span th:if="${user.enable}" class="badge bg-success">
+                                                <i class='bx bx-check-circle me-1'></i>Active
+                                            </span>
+                                            <span th:unless="${user.enable}" class="badge bg-warning">
+                                                <i class='bx bx-time me-1'></i>Pending
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4 text-center" th:if="${#lists.isEmpty(users)}">
+                            <i class='bx bx-info-circle text-muted' style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">No users found in the system.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Teachers Only Table -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4><i class='bx bx-chalkboard me-2'></i>Teachers Management</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Provider</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="teacher : ${teachers}">
+                                        <td th:text="${teacher.id}"></td>
+                                        <td>
+                                            <i class='bx bx-user me-1'></i>
+                                            <span th:text="${teacher.fullName}"></span>
+                                        </td>
+                                        <td>
+                                            <i class='bx bx-envelope me-1'></i>
+                                            <span th:text="${teacher.email}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${teacher.provider == 'local'}" class="badge bg-primary">
+                                                <i class='bx bx-user-circle me-1'></i>Local
+                                            </span>
+                                            <span th:if="${teacher.provider == 'google'}" class="badge bg-danger">
+                                                <i class='bx bxl-google me-1'></i>Google
+                                            </span>
+                                            <span th:if="${teacher.provider == 'github'}" class="badge bg-dark">
+                                                <i class='bx bxl-github me-1'></i>GitHub
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${teacher.enable}" class="badge bg-success">
+                                                <i class='bx bx-check-circle me-1'></i>Active
+                                            </span>
+                                            <span th:unless="${teacher.enable}" class="badge bg-warning">
+                                                <i class='bx bx-time me-1'></i>Pending
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4 text-center" th:if="${#lists.isEmpty(teachers)}">
+                            <i class='bx bx-info-circle text-muted' style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">No teachers found in the system.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>

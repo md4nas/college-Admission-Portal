@@ -60,13 +60,28 @@ public interface UserService {
     UserDtls createOAuthUser(String email, String name, String provider);
 
     /**
-     * Optional: Add if you need password update functionality
-     * Updates a user's password after verifying current password.
+     * Retrieves user by email address.
+     *
+     * @param email the email address to search for
+     * @return the user entity if found, null otherwise
+     */
+    UserDtls getUserByEmail(String email);
+
+    /**
+     * Sends OTP for forgot password functionality.
+     *
+     * @param email the user's email address
+     * @param otp the generated OTP
+     * @return true if email sent successfully, false otherwise
+     */
+    boolean sendForgotPasswordOTP(String email, int otp);
+
+    /**
+     * Updates user password without current password verification.
      *
      * @param email the user's email
-     * @param currentPassword the current password for verification
      * @param newPassword the new password to set
-     * @return true if update succeeded, false if verification failed
+     * @return true if update succeeded, false otherwise
      */
-    // boolean updatePassword(String email, String currentPassword, String newPassword);
+    boolean updatePassword(String email, String newPassword);
 }

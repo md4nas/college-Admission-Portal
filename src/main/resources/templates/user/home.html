@@ -3,16 +3,151 @@
       th:replace="~{base::Layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>User Home</title>
+    <title>User Dashboard</title>
 </head>
 <body>
 
 <section>
-    <h1>User Home Page</h1>
-    <h1>Name : [[${user.fullName}]]</h1>
-    <h1>Email : [[${user.email}]]</h1>
-    <h1>Address : [[${user.address}]]</h1>
-
+    <div class="container-fluid">
+        <!-- Welcome Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-5">
+                        <i class='bx bx-user-circle' style="font-size: 4rem;"></i>
+                        <h2 class="mt-3 mb-2">Welcome, [[${user.fullName}]]!</h2>
+                        <p class="mb-0">Manage your account and explore your dashboard</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Information -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h4><i class='bx bx-user me-2'></i>Profile Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class='bx bx-user text-primary me-3' style="font-size: 2rem;"></i>
+                                    <div>
+                                        <small class="text-muted">Full Name</small>
+                                        <h6 class="mb-0" th:text="${user.fullName}"></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class='bx bx-envelope text-success me-3' style="font-size: 2rem;"></i>
+                                    <div>
+                                        <small class="text-muted">Email Address</small>
+                                        <h6 class="mb-0" th:text="${user.email}"></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class='bx bx-shield-alt-2 text-warning me-3' style="font-size: 2rem;"></i>
+                                    <div>
+                                        <small class="text-muted">Account Role</small>
+                                        <h6 class="mb-0">
+                                            <span th:if="${user.role == 'ROLE_ADMIN'}" class="badge bg-danger">Admin</span>
+                                            <span th:if="${user.role == 'ROLE_TEACHER'}" class="badge bg-success">Teacher</span>
+                                            <span th:if="${user.role == 'ROLE_USER'}" class="badge bg-info">User</span>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class='bx bx-check-shield text-info me-3' style="font-size: 2rem;"></i>
+                                    <div>
+                                        <small class="text-muted">Login Provider</small>
+                                        <h6 class="mb-0">
+                                            <span th:if="${user.provider == 'local'}" class="badge bg-primary">Local Account</span>
+                                            <span th:if="${user.provider == 'google'}" class="badge bg-danger">Google OAuth</span>
+                                            <span th:if="${user.provider == 'github'}" class="badge bg-dark">GitHub OAuth</span>
+                                        </h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header bg-secondary text-white">
+                        <h4><i class='bx bx-cog me-2'></i>Quick Actions</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-3">
+                            <a href="/user/settings/changePass" class="btn btn-outline-primary">
+                                <i class='bx bx-lock-alt me-2'></i>Change Password
+                            </a>
+                            <button class="btn btn-outline-info" disabled>
+                                <i class='bx bx-edit me-2'></i>Edit Profile
+                                <small class="d-block text-muted">Coming Soon</small>
+                            </button>
+                            <button class="btn btn-outline-success" disabled>
+                                <i class='bx bx-bell me-2'></i>Notifications
+                                <small class="d-block text-muted">Coming Soon</small>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Status -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4><i class='bx bx-check-circle me-2'></i>Account Status</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class='bx bx-check-circle text-success' style="font-size: 3rem;"></i>
+                                    <h5 class="mt-2">Account Verified</h5>
+                                    <p class="text-muted mb-0">Your account is active and verified</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class='bx bx-shield-check text-primary' style="font-size: 3rem;"></i>
+                                    <h5 class="mt-2">Secure Login</h5>
+                                    <p class="text-muted mb-0">Protected with encryption</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class='bx bx-time text-info' style="font-size: 3rem;"></i>
+                                    <h5 class="mt-2">Last Login</h5>
+                                    <p class="text-muted mb-0">Just now</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <i class='bx bx-support text-warning' style="font-size: 3rem;"></i>
+                                    <h5 class="mt-2">Support</h5>
+                                    <p class="text-muted mb-0">24/7 assistance available</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 </body>

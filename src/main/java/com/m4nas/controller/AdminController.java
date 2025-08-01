@@ -1,15 +1,50 @@
 package com.m4nas.controller;
 
+import com.m4nas.model.UserDtls;
+import com.m4nas.repository.UserRepository;
+import com.m4nas.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.servlet.http.HttpServletRequest;
 
+import java.security.Principal;
+import java.util.List;
+
+/**
+ * Controller for admin dashboard and administrative operations.
+ * Provides comprehensive user management features for administrators.
+ */
 @Controller
 @RequestMapping("/admin/")
 public class AdminController {
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @ModelAttribute
+    private void userDetails(Model m, Principal p, HttpServletRequest request) {
+        if(p!=null) {
+            String email = p.getName();
+            UserDtls user = userRepo.findByEmail(email);
+            m.addAttribute("user", user);
+        }
+        m.addAttribute("currentPath", request.getRequestURI());
+    }
+
     @GetMapping("/")
-    public String home(){
+    public String home(Model model){
+        List<UserDtls> allUsers = userService.getAllUsers();
+        List<UserDtls> teachers = userService.getTeachers();
+        
+        model.addAttribute("users", allUsers);
+        model.addAttribute("teachers", teachers);
         return "admin/home";
     }
 }

@@ -18,22 +18,25 @@
 ## ✨ **Key Highlights**
 
 🎯 **Production Ready** - Built with enterprise-grade security and scalability in mind  
-🔒 **Multi-Factor Authentication** - OAuth2 integration with Google & GitHub  
-📧 **Advanced Email System** - Automated verification and password recovery  
-🎨 **Modern UI/UX** - Responsive design with role-based dashboards  
-⚡ **High Performance** - Optimized database queries and caching  
-🛡️ **Security First** - BCrypt encryption, CSRF protection, and secure sessions  
+🔗 **OAuth2 Integration** - Seamless login with Google & GitHub authentication  
+🔒 **Multi-Layer Security** - Local authentication + OAuth2 + role-based access control  
+📧 **Advanced Email System** - Automated verification and password recovery with OTP  
+🎨 **Modern UI/UX** - Responsive design with 22 polished interface screens  
+⚡ **High Performance** - Optimized database queries and secure session management  
+🛡️ **Security First** - BCrypt encryption, CSRF protection, and OAuth2 security  
 
 ---
 
 ## 🏗️ **Architecture & Features**
 
 ### 🔐 **Authentication & Authorization**
-- ✅ **Multi-Provider Authentication** (Local, Google OAuth2, GitHub OAuth2)
-- ✅ **Role-Based Access Control** (ADMIN, TEACHER, USER)
-- ✅ **Email Verification** with secure token validation
-- ✅ **Session Management** with automatic timeout
-- ✅ **Custom Security Handlers** for different authentication flows
+- ✅ **Triple Authentication Methods** (Local Email/Password, Google OAuth2, GitHub OAuth2)
+- ✅ **OAuth2 Integration** with custom success handlers and user profile mapping
+- ✅ **Role-Based Access Control** (ADMIN, TEACHER, USER) with dynamic permissions
+- ✅ **Email Verification** with secure token validation and expiry
+- ✅ **Session Management** with automatic timeout and security headers
+- ✅ **Custom Security Handlers** for OAuth2 success/failure and local authentication
+- ✅ **User Profile Synchronization** between OAuth2 providers and local database
 
 ### 🔑 **Advanced Password Management**
 - ✅ **BCrypt Encryption** with salt rounds
@@ -76,20 +79,41 @@
 ```mermaid
 graph TB
     A[Client Browser] --> B[Spring Security Layer]
-    B --> C[Authentication Providers]
-    C --> D[OAuth2 Services]
-    C --> E[Local Authentication]
-    B --> F[Role-Based Controllers]
-    F --> G[Admin Controller]
-    F --> H[Teacher Controller]
-    F --> I[User Controller]
-    G --> J[User Service Layer]
-    H --> J
-    I --> J
-    J --> K[Repository Layer]
-    K --> L[PostgreSQL Database]
-    J --> M[Email Service]
-    M --> N[Brevo SMTP]
+    B --> C[Authentication Manager]
+    C --> D[OAuth2 Authentication Provider]
+    C --> E[Local Authentication Provider]
+    
+    D --> F[OAuth2 Services]
+    F --> G[Google OAuth2]
+    F --> H[GitHub OAuth2]
+    D --> I[OAuth2 Success Handler]
+    
+    E --> J[UserDetailsService]
+    E --> K[Password Encoder]
+    
+    I --> L[Role-Based Access Control]
+    J --> L
+    L --> M[Authorization Layer]
+    
+    M --> N[Role-Based Controllers]
+    N --> O[Admin Controller]
+    N --> P[Teacher Controller]
+    N --> Q[User Controller]
+    
+    O --> R[User Service Layer]
+    P --> R
+    Q --> R
+    
+    R --> S[Repository Layer]
+    S --> T[PostgreSQL Database]
+    
+    R --> U[Email Service]
+    U --> V[Brevo SMTP]
+    U --> W[Email Templates]
+    
+    R --> X[Security Utils]
+    X --> Y[Token Generation]
+    X --> Z[Password Validation]
 ```
 
 ## 📁 **Project Structure**
@@ -328,25 +352,69 @@ BREVO_SMTP_PASSWORD=your_app_password  # Not your Gmail password!
 
 </details>
 
-### 🔧 **OAuth2 Setup (Optional)**
+### 🔗 **OAuth2 Integration Setup**
 
 <details>
-<summary>🔽 <strong>Google & GitHub OAuth Configuration</strong></summary>
+<summary>🔽 <strong>Google & GitHub OAuth Configuration - Enhanced Security</strong></summary>
+
+#### **Why OAuth2 Integration?**
+- ✨ **Enhanced User Experience**: One-click login with existing accounts
+- 🔒 **Improved Security**: Leverage Google/GitHub's robust authentication
+- 🚀 **Faster Onboarding**: Reduce registration friction
+- 👥 **Trust & Credibility**: Users trust established OAuth providers
 
 #### **Google OAuth2 Setup**
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing
-3. Enable Google+ API
-4. Create OAuth2 credentials
-5. Add redirect URI: `http://localhost:8080/login/oauth2/code/google`
+1. **Google Cloud Console Setup:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing
+   - Enable Google+ API and Google OAuth2 API
+
+2. **Create OAuth2 Credentials:**
+   - Go to Credentials → Create Credentials → OAuth 2.0 Client IDs
+   - Application type: Web application
+   - Authorized redirect URIs: `http://localhost:8080/login/oauth2/code/google`
+   - For production: `https://yourdomain.com/login/oauth2/code/google`
+
+3. **Configure in Application:**
+   ```env
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   ```
 
 #### **GitHub OAuth2 Setup**
-1. Go to GitHub Settings → Developer settings → OAuth Apps
-2. Create a new OAuth App
-3. Set Authorization callback URL: `http://localhost:8080/login/oauth2/code/github`
-4. Copy Client ID and Client Secret
+1. **GitHub OAuth App Creation:**
+   - Go to GitHub Settings → Developer settings → OAuth Apps
+   - Click "New OAuth App"
+   - Application name: Your app name
+   - Homepage URL: `http://localhost:8080`
+   - Authorization callback URL: `http://localhost:8080/login/oauth2/code/github`
 
-**Note:** OAuth2 is optional. Users can still register/login with email/password even without OAuth2 setup.
+2. **Configure in Application:**
+   ```env
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
+   ```
+
+#### **OAuth2 Flow Architecture**
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Application
+    participant G as Google/GitHub
+    participant D as Database
+    
+    U->>A: Click OAuth2 Login
+    A->>G: Redirect to OAuth Provider
+    G->>U: Show Authorization Page
+    U->>G: Grant Permission
+    G->>A: Return Authorization Code
+    A->>G: Exchange Code for Access Token
+    G->>A: Return User Profile
+    A->>D: Create/Update User Profile
+    A->>U: Login Success + Role Assignment
+```
+
+**Note:** OAuth2 enhances the user experience but is not mandatory. Users can still register/login with email/password.
 
 </details>
 
@@ -358,56 +426,165 @@ BREVO_SMTP_PASSWORD=your_app_password  # Not your Gmail password!
 
 ```mermaid
 flowchart TD
-    A[Landing Page] --> B{Authentication}
-    B -->|New User| C[Registration]
-    B -->|Existing User| D[Login]
-    C --> E[Email Verification]
-    E --> F[Account Activated]
-    D --> G{Role Check}
-    F --> G
-    G -->|ADMIN| H[Admin Dashboard]
-    G -->|TEACHER| I[Teacher Dashboard]
-    G -->|USER| J[User Dashboard]
-    D -->|Forgot Password| K[Password Recovery]
-    K --> L[OTP Verification]
-    L --> M[Password Reset]
+    A[🏠 Landing Page] --> B{🔐 Authentication Choice}
+    
+    B -->|📝 New User| C[Registration Form]
+    B -->|🔑 Existing User| D[Login Options]
+    B -->|🔗 OAuth2| E[OAuth2 Providers]
+    
+    C --> F[📧 Email Verification]
+    F --> G[✅ Account Activated]
+    
+    D --> H[📧 Email/Password Login]
+    D --> I[🔗 OAuth2 Login]
+    
+    E --> J[🔵 Google OAuth2]
+    E --> K[⚫ GitHub OAuth2]
+    
+    J --> L[🔐 OAuth2 Success Handler]
+    K --> L
+    I --> L
+    
+    H --> M{👤 Role Authorization}
+    G --> M
+    L --> N[🆔 User Profile Creation/Update]
+    N --> M
+    
+    M -->|👑 ADMIN| O[Admin Dashboard]
+    M -->|🎓 TEACHER| P[Teacher Dashboard]
+    M -->|👤 USER| Q[User Dashboard]
+    
+    H -->|🔑 Forgot Password| R[Password Recovery]
+    R --> S[📧 OTP Email]
+    S --> T[🔢 OTP Verification]
+    T --> U[🔄 Password Reset]
+    U --> H
+    
+    O --> V[👥 User Management]
+    O --> W[📊 System Reports]
+    P --> X[👨‍🎓 Student Management]
+    P --> Y[📚 Course Oversight]
+    Q --> Z[⚙️ Profile Settings]
+    Q --> AA[🔒 Change Password]
 ```
 
 ### 🛣️ **API Endpoints**
 
-| Endpoint | Method | Access | Description |
-|----------|--------|--------|-------------|
-| `/` | GET | Public | 🏠 Landing page |
-| `/register` | GET/POST | Public | 📝 User registration |
-| `/signin` | GET/POST | Public | 🔐 User login |
-| `/verify` | GET | Public | ✅ Email verification |
-| `/forgot-password` | GET/POST | Public | 🔑 Password recovery |
-| `/admin/**` | ALL | ADMIN | 👑 Admin operations |
-| `/teacher/**` | ALL | TEACHER | 🎓 Teacher operations |
-| `/user/**` | ALL | USER+ | 👤 User operations |
-| `/oauth2/**` | ALL | Public | 🔗 OAuth2 endpoints |
+#### **Public Endpoints**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | 🏠 Landing page with hero section |
+| `/register` | GET/POST | 📝 User registration form |
+| `/signin` | GET/POST | 🔐 Local authentication login |
+| `/verify` | GET | ✅ Email verification handler |
+| `/forgot-password` | GET/POST | 🔑 Password recovery initiation |
+| `/reset-password` | GET/POST | 🔄 Password reset with token |
+| `/verify-otp` | GET/POST | 🔢 OTP verification for password reset |
+
+#### **OAuth2 Authentication Endpoints**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/oauth2/authorization/google` | GET | 🔵 Google OAuth2 login initiation |
+| `/oauth2/authorization/github` | GET | ⚫ GitHub OAuth2 login initiation |
+| `/login/oauth2/code/google` | GET | 🔵 Google OAuth2 callback handler |
+| `/login/oauth2/code/github` | GET | ⚫ GitHub OAuth2 callback handler |
+| `/oauth2/success` | GET | ✅ OAuth2 success redirect |
+
+#### **Role-Based Protected Endpoints**
+| Endpoint | Access Level | Description |
+|----------|-------------|-------------|
+| `/admin/**` | ADMIN | 👑 Admin dashboard and user management |
+| `/admin/users` | ADMIN | 👥 View all users |
+| `/admin/teachers` | ADMIN | 🎓 Teacher management |
+| `/admin/students` | ADMIN | 👨‍🎓 Student oversight |
+| `/teacher/**` | TEACHER+ | 🎓 Teacher dashboard and operations |
+| `/teacher/students` | TEACHER+ | 👨‍🎓 Student data management |
+| `/user/**` | USER+ | 👤 User dashboard and profile |
+| `/user/settings/**` | USER+ | ⚙️ Profile settings and password change |
 
 ---
 
-## 🎨 **User Interface Showcase**
+## 🎨 **Application Screenshots Showcase**
 
 <div align="center">
 
-### 🌟 **Modern Landing Page**
-*Professional design with smooth animations and responsive layout*
+### 🏠 **Landing Page & Public Interface**
 
-### 🔐 **Secure Authentication**
-*Multi-provider login with OAuth2 integration*
+| Hero Section | Features | About & Details | Contact & Footer |
+|--------------|----------|-----------------|------------------|
+| ![Hero](screenshots/T01%20_hero_section.png) | ![Features](screenshots/T02_feature_section.png) | ![About](screenshots/T03_about&details.png) | ![Contact](screenshots/T04_contact&footer.png) |
+| *Modern hero section with call-to-action* | *Feature highlights and benefits* | *Detailed information section* | *Contact form and footer* |
 
-### 👑 **Role-Based Dashboards**
-*Customized interfaces for Admin, Teacher, and User roles*
+### 🔐 **Authentication & Registration**
 
-### 📧 **Email Templates**
-*Professional HTML email templates for verification and recovery*
+| Registration | Login Page | Navigation |
+|--------------|------------|------------|
+| ![Register](screenshots/T05_register_page.png) | ![Login](screenshots/T06_login_page.png) | ![Navbar](screenshots/T09_navbar.png) |
+| *User registration form* | *Secure login interface* | *Responsive navigation bar* |
+
+### 🔗 **OAuth2 Integration**
+
+| GitHub OAuth2 | Google OAuth2 |
+|---------------|---------------|
+| ![GitHub OAuth](screenshots/T07_github_OAuth.png) | ![Google OAuth](screenshots/T08_google_OAuth2.png) |
+| *GitHub authentication flow* | *Google OAuth2 integration* |
+
+### 📋 **Role-Based Dashboards**
+
+#### 👤 **User Dashboard**
+| Dashboard Overview | Dashboard Details |
+|--------------------|-------------------|
+| ![User Dashboard 1](screenshots/T10_user_dashboard1.png) | ![User Dashboard 2](screenshots/T11_user_dashboard2.png) |
+| *User profile and overview* | *Detailed user information* |
+
+#### 🎓 **Teacher Dashboard**
+| Teacher Dashboard | Student Details |
+|-------------------|----------------|
+| ![Teacher Dashboard](screenshots/T12_teacher_dashboard.png) | ![Teacher Student Details](screenshots/T13_teacher_std_details.png) |
+| *Teacher control panel* | *Student management interface* |
+
+#### 👑 **Admin Dashboard**
+| Student Management | Teacher Management |
+|--------------------|--------------------|
+| ![Admin Student Details](screenshots/T14_admin_std_details.png) | ![Admin Teacher Details](screenshots/T15_admin_ter_details.png) |
+| *Admin student oversight* | *Admin teacher management* |
+
+### ⚙️ **Account Management**
+
+| Change Password |
+|-----------------|
+| ![Change Password](screenshots/T16_change_password.png) |
+| *Secure password change interface* |
+
+### 📧 **Email Verification System**
+
+| Email Verification | Verification Email | Verification Success | Verification Failed |
+|--------------------|--------------------|--------------------|--------------------|
+| ![Email Verification](screenshots/T16_Email_verification.png) | ![Mail Verify](screenshots/T17_mail_verify.png) | ![Verify Success](screenshots/T19_verify_success.png) | ![Verify Failed](screenshots/T18_verify_failed.png) |
+| *Email verification prompt* | *Professional email template* | *Successful verification* | *Failed verification handling* |
+
+### 🔑 **Password Recovery System**
+
+| Forgot Password | Recovery Email | OTP Verification |
+|-----------------|----------------|------------------|
+| ![Forgot Password](screenshots/T20_forget_password.png) | ![Forgot Pass Mail](screenshots/T21_forgetPass_mail.png) | ![OTP Verify](screenshots/T22_otp_verify.png) |
+| *Password recovery form* | *Recovery email template* | *OTP verification interface* |
 
 </div>
 
-> 📷 **Screenshots**: Available in `/screenshots` directory after running the application
+### 🎆 **Key UI Features**
+
+- ✨ **Responsive Design**: Works seamlessly across desktop, tablet, and mobile devices
+- 🎨 **Modern Aesthetics**: Clean, professional interface with smooth animations
+- 🔐 **Security-First**: Visual indicators for secure operations and data protection
+- 👤 **Role-Based UI**: Customized interfaces based on user roles and permissions
+- 📧 **Professional Emails**: HTML email templates with consistent branding
+- ♾️ **Accessibility**: WCAG compliant design with proper contrast and navigation
+- 📱 **Mobile-First**: Optimized for mobile devices with touch-friendly interfaces
+
+---
+
+> 📷 **All Screenshots**: Complete collection available in `/screenshots` directory
 
 ---
 

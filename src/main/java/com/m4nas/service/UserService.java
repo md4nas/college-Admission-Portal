@@ -3,6 +3,7 @@ package com.m4nas.service;
 import com.m4nas.model.UserDtls;
 import jakarta.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * Service interface for user management operations including registration,
@@ -84,4 +85,19 @@ public interface UserService {
      * @return true if update succeeded, false otherwise
      */
     boolean updatePassword(String email, String newPassword);
+    
+    /**
+     * Retrieves all users in the system.
+     *
+     * @return list of all users
+     */
+    List<UserDtls> getAllUsers();
+    
+    /**
+     * Retrieves all users with TEACHER role.
+     *
+     * @return list of teachers
+     */
+    List<UserDtls> getTeachers();
+    List<UserDtls> getUsersByRole(String role);
 }

@@ -1,37 +1,64 @@
-HELP.md
+# ==============================
+# =     SECURITY CRITICAL      =
+# ==============================
+# NEVER commit these files containing sensitive data
+.env
+*.env
+.env.local
+.env.production
+
+# ==============================
+# =     Maven & Build          =
+# ==============================
 target/
-.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+# ==============================
+# =     IDE Files              =
+# ==============================
+.idea/
 *.iws
 *.iml
 *.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
 .vscode/
+.settings/
+.project
+.classpath
+.factorypath
 
-### Environment Variables ###
-.env
-application.env
+# ==============================
+# =     OS Generated           =
+# ==============================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==============================
+# =     Logs & Temp            =
+# ==============================
+*.log
+*.tmp
+*.temp
+temp/
+logs/
+
+# ==============================
+# =     Application Specific   =
+# ==============================
+# Database files (if using H2)
+*.db
+*.mv.db
+*.trace.db
+
+# Upload directories
+uploads/
+files/
+
+# Generated documentation
+docs/generated/

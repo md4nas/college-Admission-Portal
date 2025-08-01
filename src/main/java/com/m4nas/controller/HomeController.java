@@ -2,6 +2,7 @@ package com.m4nas.controller;
 
 import com.m4nas.model.UserDtls;
 import com.m4nas.repository.UserRepository;
+
 import com.m4nas.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -27,17 +28,20 @@ public class HomeController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+
+
     public HomeController(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
 
     @ModelAttribute
-    private void userDetails(Model m, Principal p) {
+    private void userDetails(Model m, Principal p, HttpServletRequest request) {
         if(p!=null) {
             String email = p.getName();
             UserDtls user = userRepo.findByEmail(email);
             m.addAttribute("user", user);
         }
+        m.addAttribute("currentPath", request.getRequestURI());
     }
 
     @GetMapping("/")
@@ -57,9 +61,21 @@ public class HomeController {
 
     @PostMapping("/createUser")
     public String createuser(@ModelAttribute UserDtls user,
+                             @RequestParam("confirmPassword") String confirmPassword,
                              RedirectAttributes redirectAttributes,
                              HttpServletRequest request) {
 
+        // Validate password confirmation
+        if (user.getPassword() == null || !user.getPassword().equals(confirmPassword)) {
+            redirectAttributes.addFlashAttribute("msg", "Passwords do not match!");
+            return "redirect:/register";
+        }
+
+        // Validate password strength
+        if (user.getPassword().length() < 6) {
+            redirectAttributes.addFlashAttribute("msg", "Password must be at least 6 characters long!");
+            return "redirect:/register";
+        }
 
         String url = request.getRequestURL().toString();
         url = url.replace(request.getServletPath(), "");
@@ -101,7 +117,5 @@ public class HomeController {
     public String loadForgetPassword(){
         return "redirect:/forgot-password";
     }
-
-
 
 }

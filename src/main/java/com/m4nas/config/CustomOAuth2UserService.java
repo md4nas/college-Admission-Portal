@@ -59,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // Use the injected userService to handle user creation/update
         UserDtls user = userService.createOAuthUser(email, name, provider);
-        return new CustomOAuth2User(oAuth2User, user.getEmail());
+        return new CustomOAuth2User(oAuth2User, user);
     }
     
     private String getGitHubEmail(String accessToken) {

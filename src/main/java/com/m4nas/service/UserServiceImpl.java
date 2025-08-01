@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -115,10 +116,11 @@ public class UserServiceImpl implements UserService {
         // Check if user already exists
         UserDtls existingUser = userRepo.findByEmail(email);
         if (existingUser != null) {
-            // Update existing user with provider info
+            // Update existing user with provider info but preserve role
             existingUser.setProvider(provider);
             existingUser.setVerificationCode("OAUTH_VERIFIED");
             existingUser.setEnable(true);
+            // Don't change the role - preserve existing role
             return userRepo.save(existingUser);
         }
 
@@ -250,5 +252,20 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    @Override
+    public List<UserDtls> getAllUsers() {
+        return userRepo.findAll();
+    }
+    
+    @Override
+    public List<UserDtls> getTeachers() {
+        return userRepo.findByRole("ROLE_TEACHER");
+    }
+    
+    @Override
+    public List<UserDtls> getUsersByRole(String role) {
+        return userRepo.findByRole(role);
     }
 }

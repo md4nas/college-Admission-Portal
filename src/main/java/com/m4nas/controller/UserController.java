@@ -1,6 +1,7 @@
 package com.m4nas.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,19 +27,21 @@ public class UserController {
     }
 
     @ModelAttribute
-    private void userDetails(Model m, Principal p) {
+    private void userDetails(Model m, Principal p, HttpServletRequest request) {
         String email = p.getName();
         UserDtls user = userRepo.findByEmail(email);
         m.addAttribute("user", user);
+        m.addAttribute("currentPath", request.getRequestURI());
     }
 
     @GetMapping("/")
-    public String redirectToHome(Principal p){
+    public String redirectToHome(Principal p, Model model){
         if(p != null){
             String email = p.getName();
             UserDtls user = userRepo.findByEmail(email);
             if(user != null) {
-                return "redirect:/user/home/" + user.getId();
+                model.addAttribute("user", user);
+                return "user/home";
             } else {
                 return "redirect:/signin?error";
             }
@@ -46,12 +49,7 @@ public class UserController {
         return "redirect:/signin";
     }
 
-    @GetMapping("/home/{id}")
-    public String userHome(@PathVariable String id,Model model){
-        UserDtls user = userRepo.findById(id).orElse(null);
-        model.addAttribute("user", user);
-        return "user/home";
-    }
+
 
     @GetMapping("/settings/changePass")
     public String loadChangePassword() {

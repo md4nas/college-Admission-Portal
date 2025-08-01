@@ -155,4 +155,100 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    @Override
+    public UserDtls getUserByEmail(String email) {
+        return userRepo.findByEmail(email);
+    }
+
+    @Override
+    public boolean sendForgotPasswordOTP(String email, int otp) {
+        try {
+            String fromAddress = "kabiranas7890@gmail.com";
+            String senderName = "User Management Team";
+            String subject = "Password Reset OTP";
+            
+            String content = "<!DOCTYPE html>\n" +
+                    "<html lang=\"en\">\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    "    <title>Password Reset OTP</title>\n" +
+                    "    <style>\n" +
+                    "        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; color: #333333; line-height: 1.6; }\n" +
+                    "        .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); overflow: hidden; }\n" +
+                    "        .email-header { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 40px 30px; text-align: center; color: white; }\n" +
+                    "        .logo { width: 60px; height: 60px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; line-height: 1; text-align: center; }\n" +
+                    "        .email-header h1 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }\n" +
+                    "        .email-content { padding: 40px 30px; }\n" +
+                    "        .welcome-text { font-size: 18px; color: #2c3e50; margin-bottom: 10px; font-weight: 600; }\n" +
+                    "        .email-content p { font-size: 16px; color: #555555; margin-bottom: 20px; }\n" +
+                    "        .otp-container { text-align: center; margin: 35px 0; }\n" +
+                    "        .otp-code { display: inline-block; padding: 20px 40px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: #ffffff; font-weight: 700; border-radius: 12px; font-size: 32px; letter-spacing: 8px; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4); }\n" +
+                    "        .info-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0; }\n" +
+                    "        .info-box p { margin: 0; font-size: 14px; color: #856404; }\n" +
+                    "        .warning-box { background: #f8d7da; border-left: 4px solid #dc3545; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0; }\n" +
+                    "        .warning-box p { margin: 0; font-size: 14px; color: #721c24; }\n" +
+                    "        .email-footer { background: #2c3e50; color: #ecf0f1; text-align: center; padding: 30px; font-size: 13px; }\n" +
+                    "        .email-footer p { margin: 5px 0; color: #bdc3c7; }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "<div class=\"email-container\">\n" +
+                    "    <div class=\"email-header\">\n" +
+                    "        <div class=\"logo\">🔐</div>\n" +
+                    "        <h1>Password Reset Request</h1>\n" +
+                    "    </div>\n" +
+                    "    <div class=\"email-content\">\n" +
+                    "        <p class=\"welcome-text\">Security Alert! 🔒</p>\n" +
+                    "        <p>We received a request to reset your password. Use the OTP below to proceed:</p>\n" +
+                    "        <div class=\"otp-container\">\n" +
+                    "            <div class=\"otp-code\">" + otp + "</div>\n" +
+                    "        </div>\n" +
+                    "        <div class=\"info-box\">\n" +
+                    "            <p><strong>⏰ Important:</strong> This OTP is valid for 10 minutes only.</p>\n" +
+                    "        </div>\n" +
+                    "        <div class=\"warning-box\">\n" +
+                    "            <p><strong>🚨 Security Notice:</strong> Never share this OTP with anyone. If you didn't request this, please ignore this email and consider changing your password.</p>\n" +
+                    "        </div>\n" +
+                    "        <p style=\"font-style: italic; color: #6c757d; text-align: center;\">— The User Management Team</p>\n" +
+                    "    </div>\n" +
+                    "    <div class=\"email-footer\">\n" +
+                    "        <p><strong>User Management Portal</strong></p>\n" +
+                    "        <p>&copy; 2025 All rights reserved.</p>\n" +
+                    "        <p>This is an automated message, please do not reply to this email.</p>\n" +
+                    "    </div>\n" +
+                    "</div>\n" +
+                    "</body>\n" +
+                    "</html>";
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(fromAddress, senderName);
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(content, true);
+
+            mailSender.send(message);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean updatePassword(String email, String newPassword) {
+        try {
+            UserDtls user = userRepo.findByEmail(email);
+            if (user != null) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepo.save(user);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

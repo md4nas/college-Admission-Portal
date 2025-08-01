@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Register Page</title>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
 </head>
 <body>
 
@@ -30,7 +31,7 @@
                 <span class="input-group-text bg-light border-end-0">
                     <i class='bx bxs-user-pin text-primary'></i>
                 </span>
-                                    <input type="text" name="fullName" class="form-control border-start-0" placeholder="Mohd Anas">
+                                    <input type="text" name="fullName" class="form-control border-start-0" placeholder="Mohd Anas" required minlength="2" maxlength="50">
                                 </div>
                             </div>
 
@@ -41,29 +42,7 @@
                 <span class="input-group-text bg-light border-end-0">
                     <i class='bx bxs-envelope text-primary'></i>
                 </span>
-                                    <input type="email" name="email" class="form-control border-start-0" placeholder="abc1234@email.com">
-                                </div>
-                            </div>
-
-                            <!-- Address Field -->
-                            <div class="form-group mb-4">
-                                <label class="form-label fw-semibold">Enter Address</label>
-                                <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
-                    <i class='bx bxs-home text-primary'></i>
-                </span>
-                                    <input type="text" name="address" class="form-control border-start-0" placeholder="123 Main Hall">
-                                </div>
-                            </div>
-
-                            <!-- Mobile Number Field -->
-                            <div class="form-group mb-4">
-                                <label class="form-label fw-semibold">Enter Mobile Number</label>
-                                <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
-                    <i class='bx bxs-phone text-primary'></i>
-                </span>
-                                    <input type="tel" name="mobileNumber" class="form-control border-start-0" placeholder="+91 930-567-XXXX">
+                                    <input type="email" name="email" class="form-control border-start-0" placeholder="abc1234@email.com" required>
                                 </div>
                             </div>
 
@@ -74,9 +53,22 @@
                 <span class="input-group-text bg-light border-end-0">
                     <i class='bx bxs-lock-alt text-primary'></i>
                 </span>
-                                    <input type="password" name="password" class="form-control" placeholder="••••••••">
+                                    <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="6" maxlength="100">
                                 </div>
                             </div>
+
+                            <!-- Confirm Password Field -->
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-semibold">Confirm Password</label>
+                                <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                    <i class='bx bxs-lock-alt text-primary'></i>
+                </span>
+                                    <input type="password" name="confirmPassword" class="form-control" placeholder="••••••••" required minlength="6" maxlength="100">
+                                </div>
+                            </div>
+
+
 
                             <!-- Register Button -->
                             <div class="d-grid gap-2 mt-4">

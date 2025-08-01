@@ -1,378 +1,192 @@
-# API Documentation - User Management System
+# 📚 UserAuth API Documentation
 
-## 📋 Base Information
-- **Base URL**: `http://localhost:8080`
-- **Content-Type**: `application/x-www-form-urlencoded` (for forms)
-- **Authentication**: Session-based with CSRF tokens
-
----
+## 🔗 Base URL
+```
+http://localhost:8080
+```
 
 ## 🔐 Authentication Endpoints
 
-### 1. User Registration
-**POST** `/createUser`
+### Public Endpoints (No Authentication Required)
 
-**Description**: Register a new user account with email verification
-
-**Parameters**:
+#### 🏠 Landing Page
+```http
+GET /
 ```
-fullName: string (required) - User's full name
-email: string (required) - Valid email address
-password: string (required) - Minimum 6 characters
-confirmPassword: string (required) - Must match password
-g-recaptcha-response: string (required) - reCAPTCHA token
+**Description:** Main landing page with features and registration options  
+**Response:** HTML page with hero section, features, and call-to-action
+
+#### 📝 User Registration
+```http
+GET /register
+POST /register
 ```
+**Description:** User registration form and processing  
+**POST Parameters:**
+- `fullName` (String): User's full name
+- `email` (String): Valid email address
+- `password` (String): Password (min 6 characters)
+- `confirmPassword` (String): Password confirmation
 
-**Response**: Redirect to `/register` with success/error message
+**Response:** Redirect to registration page with success/error message
 
-**Example**:
-```bash
-curl -X POST http://localhost:8080/createUser \
-  -d "fullName=John Doe" \
-  -d "email=john@example.com" \
-  -d "password=password123" \
-  -d "confirmPassword=password123" \
-  -d "g-recaptcha-response=03AGdBq25..."
+#### 🔐 User Login
+```http
+GET /signin
+POST /signin
 ```
+**Description:** User login form and authentication  
+**POST Parameters:**
+- `email` (String): User's email
+- `password` (String): User's password
 
----
+**Response:** Redirect based on user role (admin/teacher/user)
 
-### 2. User Login
-**POST** `/login`
-
-**Description**: Authenticate user with email and password
-
-**Parameters**:
+#### ✅ Email Verification
+```http
+GET /verify?code={verificationCode}
 ```
-email: string (required) - User's email
-password: string (required) - User's password
-g-recaptcha-response: string (required) - reCAPTCHA token
+**Description:** Verify user email with token  
+**Parameters:**
+- `code` (String): Email verification token
+
+**Response:** Success or failure verification page
+
+#### 🔑 Password Recovery
+```http
+GET /forgot-password
+POST /forgot-password
 ```
+**Description:** Forgot password form and OTP generation  
+**POST Parameters:**
+- `email` (String): User's registered email
 
-**Response**: Redirect based on user role:
-- Admin: `/admin/`
-- Teacher: `/teacher/`
-- User: `/user/`
+**Response:** OTP sent to email with verification form
 
-**Example**:
-```bash
-curl -X POST http://localhost:8080/login \
-  -d "email=john@example.com" \
-  -d "password=password123" \
-  -d "g-recaptcha-response=03AGdBq25..."
+#### 🔄 Password Reset
+```http
+GET /reset-password
+POST /reset-password
 ```
+**Description:** Reset password with OTP verification  
+**POST Parameters:**
+- `email` (String): User's email
+- `otp` (String): 6-digit OTP from email
+- `newPassword` (String): New password
 
----
+## 🔒 Protected Endpoints (Authentication Required)
 
-### 3. User Logout
-**POST** `/logout`
+### 👑 Admin Endpoints (ROLE_ADMIN)
 
-**Description**: Logout current user and invalidate session
-
-**Response**: Redirect to `/signin?logout`
-
-**Example**:
-```bash
-curl -X POST http://localhost:8080/logout
+#### 📊 Admin Dashboard
+```http
+GET /admin/
 ```
+**Description:** Admin dashboard with user management overview  
+**Response:** Admin home page with user statistics and management tools
 
----
-
-## 📧 Email Verification Endpoints
-
-### 4. Verify Account
-**GET** `/verify?code={verificationCode}`
-
-**Description**: Verify user account via email link
-
-**Parameters**:
+#### 👥 User Management
+```http
+GET /admin/users
+POST /admin/users/{action}
 ```
-code: string (required) - Verification code from email
+**Description:** Complete user management functionality  
+**Features:**
+- View all users
+- Edit user roles
+- Enable/disable accounts
+- Delete users
+
+### 🎓 Teacher Endpoints (ROLE_TEACHER)
+
+#### 📚 Teacher Dashboard
+```http
+GET /teacher/
 ```
+**Description:** Teacher dashboard with student management  
+**Response:** Teacher home page showing only ROLE_USER data
 
-**Response**: 
-- Success: Redirect to verification success page
-- Failure: Redirect to verification failed page
-
-**Example**:
-```bash
-curl -X GET "http://localhost:8080/verify?code=abc123def456..."
+#### 👨‍🎓 Student Management
+```http
+GET /teacher/students
+GET /teacher/courses
+GET /teacher/grades
 ```
+**Description:** Teacher-specific student and course management
 
----
+### 👤 User Endpoints (ROLE_USER, ROLE_TEACHER, ROLE_ADMIN)
 
-## 🔑 Password Reset Endpoints
-
-### 5. Forgot Password Form
-**GET** `/forgot-password`
-
-**Description**: Display forgot password email input form
-
-**Response**: Returns forgot password HTML page
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/forgot-password
+#### 🏡 User Dashboard
+```http
+GET /user/
 ```
+**Description:** User dashboard with personal information  
+**Response:** User home page with profile and settings
 
----
-
-### 6. Send OTP
-**POST** `/send-otp`
-
-**Description**: Send OTP to user's email for password reset
-
-**Parameters**:
+#### ⚙️ Settings
+```http
+GET /user/settings/changePass
+POST /user/settings/updatePassword
 ```
-email: string (required) - User's registered email
-```
+**Description:** Change password functionality  
+**POST Parameters:**
+- `oldPass` (String): Current password
+- `newPass` (String): New password
 
-**Response**: Redirect to OTP verification page
+## 🔗 OAuth2 Endpoints
 
-**Example**:
-```bash
-curl -X POST http://localhost:8080/send-otp \
-  -d "email=john@example.com"
-```
-
----
-
-### 7. Verify OTP
-**POST** `/verify-otp`
-
-**Description**: Verify OTP entered by user (10-minute expiration)
-
-**Parameters**:
-```
-otp: integer (required) - 6-digit OTP from email
+### Google OAuth2
+```http
+GET /oauth2/authorization/google
+GET /login/oauth2/code/google
 ```
 
-**Response**: Redirect to password reset form
-
-**Example**:
-```bash
-curl -X POST http://localhost:8080/verify-otp \
-  -d "otp=123456"
+### GitHub OAuth2
+```http
+GET /oauth2/authorization/github
+GET /login/oauth2/code/github
 ```
 
----
-
-### 8. Reset Password
-**POST** `/reset-password`
-
-**Description**: Update user password after OTP verification
-
-**Parameters**:
+## 🚪 Logout
+```http
+POST /logout
 ```
-password: string (required) - New password (min 6 chars)
-confirmPassword: string (required) - Password confirmation
-```
-
-**Response**: Redirect to login page with success message
-
-**Example**:
-```bash
-curl -X POST http://localhost:8080/reset-password \
-  -d "password=newpassword123" \
-  -d "confirmPassword=newpassword123"
-```
-
----
-
-## 🌐 OAuth2 Endpoints
-
-### 9. Google OAuth2 Login
-**GET** `/oauth2/authorization/google`
-
-**Description**: Initiate Google OAuth2 login flow
-
-**Response**: Redirect to Google authentication
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/oauth2/authorization/google
-```
-
----
-
-### 10. GitHub OAuth2 Login
-**GET** `/oauth2/authorization/github`
-
-**Description**: Initiate GitHub OAuth2 login flow
-
-**Response**: Redirect to GitHub authentication
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/oauth2/authorization/github
-```
-
----
-
-## 📄 Page Endpoints
-
-### 11. Home Page
-**GET** `/`
-
-**Description**: Public landing page
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/
-```
-
----
-
-### 12. Registration Page
-**GET** `/register`
-
-**Description**: User registration form
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/register
-```
-
----
-
-### 13. Login Page
-**GET** `/signin`
-
-**Description**: User login form
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/signin
-```
-
----
-
-### 14. User Dashboard
-**GET** `/user/`
-
-**Description**: User dashboard (requires authentication)
-
-**Authentication**: Required (USER, ADMIN, or TEACHER role)
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/user/ \
-  --cookie "JSESSIONID=your-session-id"
-```
-
----
-
-### 15. Admin Dashboard
-**GET** `/admin/`
-
-**Description**: Admin dashboard (requires admin role)
-
-**Authentication**: Required (ADMIN role only)
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/admin/ \
-  --cookie "JSESSIONID=your-session-id"
-```
-
----
-
-### 16. Teacher Dashboard
-**GET** `/teacher/`
-
-**Description**: Teacher dashboard (requires teacher role)
-
-**Authentication**: Required (TEACHER role only)
-
-**Example**:
-```bash
-curl -X GET http://localhost:8080/teacher/ \
-  --cookie "JSESSIONID=your-session-id"
-```
-
----
-
-## 🔒 Security Notes
-
-### CSRF Protection
-All POST requests require CSRF tokens. Include in forms:
-```html
-<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-```
-
-### reCAPTCHA
-Login and registration require valid reCAPTCHA response:
-- Get token from Google reCAPTCHA widget
-- Include as `g-recaptcha-response` parameter
-
-### Session Management
-- Sessions expire after inactivity
-- Maximum 1 session per user
-- Secure session cookies in production
-
----
+**Description:** Logout user and invalidate session  
+**Response:** Redirect to signin page with logout confirmation
 
 ## 📊 Response Codes
 
 | Code | Description |
 |------|-------------|
 | 200 | Success |
-| 302 | Redirect (normal flow) |
-| 400 | Bad Request (validation error) |
-| 401 | Unauthorized (login required) |
-| 403 | Forbidden (insufficient permissions) |
+| 302 | Redirect |
+| 400 | Bad Request |
+| 401 | Unauthorized |
+| 403 | Forbidden |
 | 404 | Not Found |
 | 500 | Internal Server Error |
 
----
+## 🔒 Security Features
 
-## 🧪 Testing with Postman
+- **CSRF Protection:** All forms include CSRF tokens
+- **Session Management:** Secure session handling with timeout
+- **Password Encryption:** BCrypt with salt rounds
+- **Email Verification:** Required for account activation
+- **Role-Based Access:** Granular permission system
+- **OAuth2 Integration:** Secure third-party authentication
 
-### Collection Setup
-1. Create new Postman collection
-2. Set base URL variable: `{{baseUrl}} = http://localhost:8080`
-3. Enable cookie jar for session management
-4. Add CSRF token extraction scripts
+## 📧 Email Integration
 
-### Pre-request Script (for CSRF)
-```javascript
-pm.sendRequest({
-    url: pm.variables.get("baseUrl") + "/signin",
-    method: 'GET'
-}, function (err, response) {
-    if (response) {
-        const $ = cheerio.load(response.text());
-        const csrfToken = $('input[name="_csrf"]').val();
-        pm.environment.set("csrf_token", csrfToken);
-    }
-});
-```
+The system uses **Brevo SMTP** for email delivery:
+- Account verification emails
+- Password reset OTP emails
+- Professional HTML templates
+- Secure token-based validation
 
-### Environment Variables
-```
-baseUrl: http://localhost:8080
-csrf_token: (auto-extracted)
-session_id: (auto-extracted)
-```
+## 🛡️ Error Handling
 
----
-
-## 🚀 Quick Start Guide
-
-1. **Start Application**: Run Spring Boot app on port 8080
-2. **Register User**: POST to `/createUser` with required fields
-3. **Verify Email**: Click link in verification email
-4. **Login**: POST to `/login` with credentials
-5. **Access Dashboard**: GET user-specific dashboard
-6. **Test Password Reset**: Use forgot password flow
-7. **Test OAuth2**: Try Google/GitHub login
-
----
-
-## 📞 Support
-
-For API issues or questions:
-- Check application logs
-- Verify environment variables
-- Ensure database connectivity
-- Validate reCAPTCHA configuration
+All endpoints include proper error handling with:
+- User-friendly error messages
+- Secure error responses (no sensitive data exposure)
+- Proper HTTP status codes
+- Redirect-based error flow

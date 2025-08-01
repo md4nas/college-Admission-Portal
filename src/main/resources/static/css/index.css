@@ -1,0 +1,75 @@
+/**
+ * UserAuth Index Page Styles
+ * 
+ * This CSS file contains all styling for the index/landing page including:
+ * - Hero section with gradient backgrounds and animations
+ * - Text gradient effects for branding
+ * - Floating animations for interactive elements
+ * - Responsive design utilities
+ * - Modern UI components with shadows and transitions
+ * 
+ * @author UserAuth Team
+ * @version 1.0.0
+ */
+
+/* Background pattern for hero section */
+.bg-pattern {
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.03) 10px,
+        rgba(255, 255, 255, 0.03) 20px
+    );
+    opacity: 0.5;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.animate-fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideIn 1s ease-out 0.3s both;
+}
+
+.floating-card {
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-icon {
+    animation: float 4s ease-in-out infinite;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+.shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}

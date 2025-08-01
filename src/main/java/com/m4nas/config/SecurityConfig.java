@@ -15,11 +15,28 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
-
+/**
+ * Spring Security Configuration for UserAuth System
+ * 
+ * This configuration class sets up comprehensive security for the application including:
+ * - Role-based access control (RBAC) for Admin, Teacher, and User roles
+ * - Form-based authentication with custom success/failure handlers
+ * - OAuth2 integration with Google and GitHub providers
+ * - CSRF protection with cookie-based token repository
+ * - Session management with security controls
+ * - Password encoding with BCrypt
+ * 
+ * Security Features:
+ * - /admin/** endpoints require ROLE_ADMIN authority
+ * - /teacher/** endpoints require ROLE_TEACHER authority  
+ * - /user/** endpoints accessible by all authenticated users
+ * - Public endpoints for registration, login, and verification
+ * 
+ * @author UserAuth Team
+ * @version 1.0.0
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -68,6 +85,21 @@ public class SecurityConfig {
         return new CustomOAuth2UserService(userRepository, userService);
     }
 
+    /**
+     * Main security filter chain configuration.
+     * 
+     * Configures:
+     * - CSRF protection with cookie repository
+     * - Role-based URL authorization
+     * - Form login with custom handlers
+     * - OAuth2 login integration
+     * - Logout configuration
+     * - Session management
+     * 
+     * @param http HttpSecurity configuration object
+     * @return SecurityFilterChain configured security filter chain
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

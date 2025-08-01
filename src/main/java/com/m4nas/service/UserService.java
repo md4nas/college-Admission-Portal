@@ -6,8 +6,32 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- * Service interface for user management operations including registration,
- * verification, and OAuth2 integration.
+ * UserService Interface - Core Business Logic for User Management
+ * 
+ * This service interface defines all user-related operations for the UserAuth system.
+ * It provides comprehensive user management functionality including:
+ * 
+ * Core Features:
+ * - User registration and account creation
+ * - Email verification and account activation
+ * - OAuth2 user provisioning (Google, GitHub)
+ * - Password management and recovery
+ * - User retrieval and role-based queries
+ * 
+ * Security Features:
+ * - Secure password handling with BCrypt encryption
+ * - Email-based verification with time-limited tokens
+ * - OTP-based password recovery with expiration
+ * - Role-based user filtering and access control
+ * 
+ * Integration Features:
+ * - SMTP email integration for notifications
+ * - OAuth2 provider integration for social login
+ * - Database persistence with transaction support
+ * 
+ * @author UserAuth Team
+ * @version 1.0.0
+ * @since 2025-01-01
  */
 public interface UserService {
 
@@ -99,5 +123,11 @@ public interface UserService {
      * @return list of teachers
      */
     List<UserDtls> getTeachers();
+    /**
+     * Retrieves users by specific role.
+     *
+     * @param role the role to filter by (e.g., "ROLE_USER", "ROLE_TEACHER", "ROLE_ADMIN")
+     * @return list of users with the specified role
+     */
     List<UserDtls> getUsersByRole(String role);
 }

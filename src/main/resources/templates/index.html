@@ -1,19 +1,353 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org"
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::Layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UserAuth - Enterprise User Management</title>
+    <link href="/css/index.css" rel="stylesheet">
 </head>
 <body>
-
 <section>
-    <h1>Index Page</h1>
+    <!-- Hero Section -->
+    <div class="position-relative overflow-hidden" style="min-height: 100vh; background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);">
+        <!-- Background Pattern -->
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern"></div>
+        
+        <div class="container position-relative" style="min-height: 100vh; display: flex; align-items: center;">
+            <div class="row w-100 align-items-center">
+                <div class="col-lg-6">
+                    <div class="text-white animate-fade-in">
+                        <div class="d-inline-flex align-items-center bg-success bg-opacity-20 text-success px-3 py-2 rounded-pill mb-4">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <small class="fw-semibold">Trusted by 10,000+ developers</small>
+                        </div>
+                        
+                        <h1 class="display-2 fw-bold mb-4 lh-1">
+                            The Future of
+                            <span class="text-gradient">User Authentication</span>
+                        </h1>
+                        
+                        <p class="fs-4 mb-5 text-white-50 lh-base">
+                            Build secure, scalable applications with enterprise-grade authentication, 
+                            role-based access control, and seamless OAuth2 integration.
+                        </p>
+                        
+                        <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
+                            <a href="/register" class="btn btn-light btn-lg px-5 py-3 fw-semibold shadow-lg hover-lift">
+                                <i class="bi bi-rocket-takeoff me-2"></i>Start Building
+                            </a>
+                            <a href="/signin" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold">
+                                <i class="bi bi-play-circle me-2"></i>View Demo
+                            </a>
+                        </div>
+                        
+                        <div class="d-flex align-items-center gap-4 text-white-50">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-shield-check text-success me-2"></i>
+                                <span>Enterprise Security</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-lightning-charge text-warning me-2"></i>
+                                <span>5min Setup</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-code-slash text-info me-2"></i>
+                                <span>Open Source</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="position-relative animate-slide-in">
+                        <!-- Main Dashboard Image -->
+                        <div class="card border-0 shadow-2xl bg-white rounded-4 overflow-hidden floating-card">
+                            <div class="card-header bg-light border-0 p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex gap-2">
+                                        <div class="bg-danger rounded-circle" style="width: 12px; height: 12px;"></div>
+                                        <div class="bg-warning rounded-circle" style="width: 12px; height: 12px;"></div>
+                                        <div class="bg-success rounded-circle" style="width: 12px; height: 12px;"></div>
+                                    </div>
+                                    <div class="mx-auto">
+                                        <small class="text-muted fw-semibold">UserAuth Dashboard</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <!-- User Profile Section -->
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="bg-primary bg-gradient rounded-circle p-3 me-3">
+                                        <i class="bi bi-person-fill text-white fs-5"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-semibold">John Smith</h6>
+                                        <small class="text-muted">System Administrator</small>
+                                    </div>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                                
+                                <!-- Stats Grid -->
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="bg-light rounded-3 p-3 text-center">
+                                            <div class="h4 text-primary mb-1 fw-bold">2,847</div>
+                                            <small class="text-muted">Total Users</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light rounded-3 p-3 text-center">
+                                            <div class="h4 text-success mb-1 fw-bold">99.9%</div>
+                                            <small class="text-muted">Uptime</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light rounded-3 p-3 text-center">
+                                            <div class="h4 text-warning mb-1 fw-bold">156</div>
+                                            <small class="text-muted">Active Sessions</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light rounded-3 p-3 text-center">
+                                            <div class="h4 text-info mb-1 fw-bold">A+</div>
+                                            <small class="text-muted">Security Score</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Elements -->
+                        <div class="position-absolute top-0 end-0 translate-middle">
+                            <div class="bg-success bg-gradient rounded-circle p-3 shadow-lg floating-icon">
+                                <i class="bi bi-shield-check text-white fs-4"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="position-absolute bottom-0 start-0 translate-middle">
+                            <div class="bg-warning bg-gradient rounded-circle p-3 shadow-lg floating-icon" style="animation-delay: -2s;">
+                                <i class="bi bi-lightning-charge text-white fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold text-dark">Powerful Features</h2>
+                    <p class="lead text-muted">Everything you need for modern user management</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-gradient rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-shield-lock text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Enterprise Security</h5>
+                            <p class="card-text text-muted">BCrypt encryption, CSRF protection, and secure session management with industry-standard practices.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-gradient rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-people-fill text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Role-Based Access</h5>
+                            <p class="card-text text-muted">Admin, Teacher, and User roles with customized dashboards and granular permissions.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-info bg-gradient rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-google text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title">OAuth2 Integration</h5>
+                            <p class="card-text text-muted">Seamless authentication with Google and GitHub OAuth2 providers.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-gradient rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-envelope-check text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Email Verification</h5>
+                            <p class="card-text text-muted">Professional HTML email templates with secure token-based validation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-danger bg-gradient rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-key-fill text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Password Management</h5>
+                            <p class="card-text text-muted">Secure password reset with email OTP and strength validation.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-secondary bg-gradient rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-phone text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Responsive Design</h5>
+                            <p class="card-text text-muted">Mobile-first design that works perfectly across all devices.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="display-5 fw-bold mb-4">Built for Enterprise</h2>
+                    <p class="lead mb-4">
+                        UserAuth is architected with enterprise-grade security, scalability, and maintainability. 
+                        Built using Spring Boot 3, PostgreSQL, and modern web technologies.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span>Production Ready</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span>Scalable Architecture</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span>OWASP Compliant</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span>Open Source</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <div class="bg-primary bg-gradient rounded-circle p-3 d-inline-flex mb-2">
+                                        <i class="bi bi-speedometer2 text-white"></i>
+                                    </div>
+                                    <h6>High Performance</h6>
+                                    <small class="text-muted">< 200ms response</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <div class="bg-success bg-gradient rounded-circle p-3 d-inline-flex mb-2">
+                                        <i class="bi bi-lock-fill text-white"></i>
+                                    </div>
+                                    <h6>Secure by Default</h6>
+                                    <small class="text-muted">A+ Security Score</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <div class="bg-info bg-gradient rounded-circle p-3 d-inline-flex mb-2">
+                                        <i class="bi bi-arrows-fullscreen text-white"></i>
+                                    </div>
+                                    <h6>Scalable</h6>
+                                    <small class="text-muted">Cloud-ready</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card border-0 shadow-sm text-center">
+                                <div class="card-body">
+                                    <div class="bg-warning bg-gradient rounded-circle p-3 d-inline-flex mb-2">
+                                        <i class="bi bi-code-slash text-white"></i>
+                                    </div>
+                                    <h6>Developer Friendly</h6>
+                                    <small class="text-muted">Complete docs</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+                    <p class="lead mb-4">
+                        Join thousands of developers who trust UserAuth for their authentication needs. 
+                        Get up and running in minutes.
+                    </p>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <i class="bi bi-github fs-1 text-warning mb-3 d-block"></i>
+                            <h6>Open Source</h6>
+                            <p class="small text-light opacity-75">MIT License on GitHub</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="bi bi-book fs-1 text-warning mb-3 d-block"></i>
+                            <h6>Documentation</h6>
+                            <p class="small text-light opacity-75">Complete setup guides</p>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="bi bi-headset fs-1 text-warning mb-3 d-block"></i>
+                            <h6>Support</h6>
+                            <p class="small text-light opacity-75">Community support</p>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                        <a href="/register" class="btn btn-warning btn-lg px-4">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Start Free Trial
+                        </a>
+                        <a href="https://github.com/md4nas/UserAuth-System" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-github me-2"></i>View on GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </section>
 
+<script src="/js/index.js"></script>
 </body>
 </html>

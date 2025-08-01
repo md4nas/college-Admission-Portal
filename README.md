@@ -101,52 +101,89 @@ graph TB
 📦 UserAuth System
 ├── 📂 src/main/java/com/m4nas/
 │   ├── 🔧 config/                          # Security & Configuration
-│   │   ├── AdminInitializer.java           # Auto admin setup
-│   │   ├── SecurityConfig.java             # Spring Security config
-│   │   ├── CustomOAuth2UserService.java    # OAuth2 integration
-│   │   └── Custom*Handler.java             # Authentication handlers
+│   │   ├── AdminInitializer.java           # Auto admin user setup
+│   │   ├── SecurityConfig.java             # Spring Security configuration
+│   │   ├── PasswordConfig.java             # Password encoder config
+│   │   ├── CustomOAuth2UserService.java    # OAuth2 user service
+│   │   ├── CustomOAuth2User.java           # OAuth2 user wrapper
+│   │   ├── CustomOidcUser.java             # OIDC user wrapper
+│   │   ├── CustomSuccessHandler.java       # Login success handler
+│   │   ├── OAuth2LoginSuccessHandler.java  # OAuth2 success handler
+│   │   ├── CustomAuthenticationFailureHandler.java # Login failure handler
+│   │   ├── CustomUserDetails.java          # User details implementation
+│   │   ├── UserDetailsServiceImpl.java     # User details service
+│   │   └── CustomDisabledException.java    # Custom exception
 │   │
 │   ├── 🎮 controller/                      # REST Controllers
 │   │   ├── AdminController.java            # Admin management
 │   │   ├── TeacherController.java          # Teacher operations
 │   │   ├── UserController.java             # User dashboard
 │   │   ├── HomeController.java             # Public pages
-│   │   └── ForgotPassController.java       # Password recovery
+│   │   ├── ForgotPassController.java       # Password recovery
+│   │   └── VerificationController.java     # Email verification
 │   │
 │   ├── 📊 model/                           # Data Models
-│   │   └── UserDtls.java                   # User entity
+│   │   └── UserDtls.java                   # User entity with JPA annotations
 │   │
-│   ├── 🗄️ repository/                      # Data Access
-│   │   └── UserRepository.java             # User queries
+│   ├── 🗄️ repository/                      # Data Access Layer
+│   │   └── UserRepository.java             # JPA repository with custom queries
 │   │
-│   ├── ⚙️ service/                         # Business Logic
+│   ├── ⚙️ service/                         # Business Logic Layer
 │   │   ├── UserService.java                # Service interface
 │   │   └── UserServiceImpl.java            # Service implementation
 │   │
-│   └── 🛠️ util/                            # Utilities
-│       └── RandomString.java               # ID generation
+│   ├── 🛠️ util/                            # Utility Classes
+│   │   └── RandomString.java               # Random ID generation
+│   │
+│   └── UserManagemetApplication.java       # Main Spring Boot application
 │
 ├── 📂 src/main/resources/
 │   ├── 🎨 static/                          # Static Assets
-│   │   ├── css/home.css                    # Modern styling
-│   │   └── js/user-portal-script.js        # Interactive features
+│   │   ├── css/
+│   │   │   ├── index.css                   # Landing page styles
+│   │   │   └── user-portal-style.css       # Dashboard styles
+│   │   └── js/
+│   │       ├── index.js                    # Landing page scripts
+│   │       └── user-portal-script.js       # Dashboard scripts
 │   │
 │   ├── 📄 templates/                       # Thymeleaf Templates
 │   │   ├── index.html                      # Landing page
 │   │   ├── base.html                       # Layout template
 │   │   ├── signin.html                     # Login page
 │   │   ├── register.html                   # Registration
+│   │   ├── forget_password.html            # Password recovery
+│   │   ├── reset_password.html             # Password reset
+│   │   ├── verify_success.html             # Email verification success
+│   │   ├── verify_failed.html              # Email verification failed
+│   │   ├── verify_otp.html                 # OTP verification
+│   │   ├── verification-mail-template.html # Email template
 │   │   ├── admin/home.html                 # Admin dashboard
 │   │   ├── teacher/home.html               # Teacher dashboard
-│   │   └── user/home.html                  # User dashboard
+│   │   ├── user/
+│   │   │   ├── home.html                   # User dashboard
+│   │   │   └── settings/
+│   │   │       └── change_password.html    # Change password
+│   │   └── ...
 │   │
-│   └── ⚙️ application.properties           # Configuration
+│   ├── ⚙️ application.properties           # Main configuration
+│   └── 📋 application-prod.properties.template # Production template
 │
-└── 📚 Documentation/
-    ├── API_DOCUMENTATION.md               # API Reference
-    ├── DEPLOYMENT.md                      # Deployment Guide
-    ├── SECURITY.md                        # Security Guidelines
-    └── HELP.md                           # User Manual
+├── 📚 Documentation/
+│   ├── API_DOCUMENTATION.md               # Complete API Reference
+│   ├── DEPLOYMENT.md                      # Deployment & DevOps Guide
+│   ├── SECURITY.md                        # Security Architecture
+│   └── HELP.md                           # User Manual & Troubleshooting
+│
+├── 📸 screenshots/                        # Application Screenshots
+├── 🔧 Configuration Files
+│   ├── .env                               # Environment variables
+│   ├── pom.xml                           # Maven dependencies
+│   ├── .gitignore                        # Git ignore rules
+│   └── README.md                         # This file
+│
+└── 🧪 src/test/                          # Test Files
+    └── java/com/m4nas/
+        └── UserManagemetApplicationTests.java
 ```
 </details>
 
@@ -171,7 +208,7 @@ graph TB
 
 #### 1️⃣ **Clone Repository**
 ```bash
-git clone https://github.com/md4nas/UserAuth-System.git
+git clone <your-repository-url>
 cd UserAuth-System
 ```
 
@@ -226,10 +263,72 @@ java -jar target/userauth-system-1.0.0.jar
 - 🌐 **Application URL**: http://localhost:8080
 - 👤 **Admin Login**: Use credentials from `.env` file
 - 📧 **Email Verification**: Check your email for verification links
+- 🎨 **Modern UI**: Responsive design with role-based dashboards
+- 🔒 **Security**: Enterprise-grade authentication and authorization
 
 </details>
 
-### 🔧 **OAuth2 Setup**
+### 📧 **SMTP Email Setup (Critical)**
+
+<details>
+<summary>🔽 <strong>Brevo SMTP Configuration - Required for Email Features</strong></summary>
+
+#### **Why SMTP is Essential**
+- **Account Verification:** New users must verify email before login
+- **Password Recovery:** Forgot password sends OTP via email
+- **Security Notifications:** Important security alerts
+- **User Communication:** System notifications and updates
+
+#### **Brevo SMTP Setup (Recommended)**
+1. **Create Brevo Account:**
+   - Go to [Brevo.com](https://www.brevo.com/) (formerly Sendinblue)
+   - Sign up for free account (300 emails/day free tier)
+   - Verify your account
+
+2. **Get SMTP Credentials:**
+   - Login to Brevo dashboard
+   - Go to **SMTP & API** → **SMTP**
+   - Note down:
+     - **SMTP Server:** `smtp-relay.brevo.com`
+     - **Port:** `587`
+     - **Login:** Your Brevo email
+     - **Password:** Generate SMTP key (not your login password)
+
+3. **Configure in Application:**
+   ```env
+   # Email Configuration (Brevo SMTP)
+   MAIL_USERNAME=your_brevo_email@domain.com
+   BREVO_SMTP_PASSWORD=your_generated_smtp_key
+   ```
+
+#### **Alternative SMTP Providers**
+| Provider | Free Tier | SMTP Server | Port |
+|----------|-----------|-------------|------|
+| **Brevo** | 300/day | smtp-relay.brevo.com | 587 |
+| **Gmail** | Limited | smtp.gmail.com | 587 |
+| **Outlook** | Limited | smtp-mail.outlook.com | 587 |
+| **SendGrid** | 100/day | smtp.sendgrid.net | 587 |
+
+#### **Gmail SMTP Setup (Alternative)**
+```env
+# Gmail SMTP Configuration
+MAIL_USERNAME=your_gmail@gmail.com
+BREVO_SMTP_PASSWORD=your_app_password  # Not your Gmail password!
+```
+**Note:** Enable 2FA and generate App Password for Gmail
+
+#### **Testing Email Configuration**
+1. Start the application
+2. Register a new account
+3. Check email for verification link
+4. If no email received, check:
+   - SMTP credentials are correct
+   - Firewall allows port 587
+   - Email not in spam folder
+
+</details>
+
+### 🔧 **OAuth2 Setup (Optional)**
 
 <details>
 <summary>🔽 <strong>Google & GitHub OAuth Configuration</strong></summary>
@@ -246,6 +345,8 @@ java -jar target/userauth-system-1.0.0.jar
 2. Create a new OAuth App
 3. Set Authorization callback URL: `http://localhost:8080/login/oauth2/code/github`
 4. Copy Client ID and Client Secret
+
+**Note:** OAuth2 is optional. Users can still register/login with email/password even without OAuth2 setup.
 
 </details>
 
@@ -335,6 +436,70 @@ flowchart TD
 
 ---
 
+## 🚑 **Common Issues & Troubleshooting**
+
+### 📧 **Email Not Working**
+**Problem:** Users not receiving verification/recovery emails
+
+**Solutions:**
+1. **Check SMTP Configuration:**
+   ```bash
+   # Verify environment variables
+   echo $MAIL_USERNAME
+   echo $BREVO_SMTP_PASSWORD
+   ```
+
+2. **Test SMTP Connection:**
+   - Login to Brevo dashboard
+   - Check SMTP key is active
+   - Verify email sending limits not exceeded
+
+3. **Check Application Logs:**
+   ```bash
+   # Look for email errors in logs
+   tail -f logs/application.log | grep -i mail
+   ```
+
+4. **Common Fixes:**
+   - Regenerate SMTP key in Brevo
+   - Check firewall allows port 587
+   - Verify sender email is verified in Brevo
+   - Check spam/junk folders
+
+### 🔐 **Login Issues**
+**Problem:** Cannot login after registration
+
+**Solutions:**
+1. **Email Verification Required:**
+   - Check email for verification link
+   - Click verification link before attempting login
+   - Request new verification if expired
+
+2. **OAuth2 Issues:**
+   - Verify OAuth2 credentials in `.env`
+   - Check redirect URIs match exactly
+   - Clear browser cache and cookies
+
+### 📊 **Database Connection**
+**Problem:** Application fails to start
+
+**Solutions:**
+1. **Check PostgreSQL:**
+   ```bash
+   # Verify PostgreSQL is running
+   sudo systemctl status postgresql
+   
+   # Test database connection
+   psql -h localhost -U userauth_user -d userauth_db
+   ```
+
+2. **Verify Database Configuration:**
+   - Check database URL, username, password in `.env`
+   - Ensure database and user exist
+   - Verify user has proper permissions
+
+---
+
 ## 🤝 **Contributing**
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
@@ -371,5 +536,29 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 **© 2025 UserAuth System. All rights reserved.**
+
+---
+
+## ⚠️ **Important Notes**
+
+### 📧 **Email Configuration is Mandatory**
+The application **requires** SMTP configuration to function properly. Without email setup:
+- Users cannot verify their accounts
+- Password recovery will not work
+- New registrations will remain unverified
+
+### 🔒 **Security Considerations**
+- Change default admin credentials immediately
+- Use strong passwords for all accounts
+- Enable HTTPS in production
+- Regularly update dependencies
+- Monitor application logs for security events
+
+### 📞 **Support**
+For technical support or questions:
+- Check [HELP.md](HELP.md) for detailed user guide
+- Review [SECURITY.md](SECURITY.md) for security best practices
+- See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment
+- Consult [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for API details
 
 </div>

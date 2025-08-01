@@ -233,8 +233,7 @@ graph TB
 
 ```bash
 # 1. Clone repository
-git clone <your-repository-url>
-cd UserAuth-System
+git clone [[<your-repository-url>]()](https://github.com/md4nas/AdvanceAuthPortal.git)
 
 # 2. Copy environment template
 cp .env.template .env

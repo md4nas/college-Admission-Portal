@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP</title>
+</head>
+<body>
+    <section>
+        <div class="container p-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-header text-center fs-4">
+                            <i class="bi bi-shield-lock-fill text-warning me-2"></i>
+                            Verify OTP
+                        </div>
+
+                        <!-- Show error message if present -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mx-auto text-center fs-5 fw-semibold rounded-3 shadow-sm w-75" role="alert" style="letter-spacing: 0.5px;">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-envelope-check-fill text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <p class="text-muted">Enter the 6-digit OTP sent to your email address</p>
+                            </div>
+                            
+                            <form th:action="@{/verify-otp}" method="post" id="otpForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold text-center d-block">One-Time Password (OTP)</label>
+                                    <div class="otp-container d-flex justify-content-center gap-2 mb-3">
+                                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="0">
+                                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1">
+                                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2">
+                                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3">
+                                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4">
+                                        <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5">
+                                    </div>
+                                    <input type="hidden" name="otp" id="hiddenOtp" required>
+                                    <div class="form-text text-center mt-2">
+                                        <i class="bi bi-clock-fill text-warning me-1"></i>
+                                        OTP expires in 10 minutes
+                                    </div>
+                                </div>
+                                
+                                <style>
+                                    .otp-input {
+                                        width: 50px;
+                                        height: 60px;
+                                        text-align: center;
+                                        font-size: 1.8rem;
+                                        font-weight: bold;
+                                        border: 2px solid #dee2e6;
+                                        border-radius: 8px;
+                                        background: #f8f9fa;
+                                        transition: all 0.3s ease;
+                                    }
+                                    .otp-input:focus {
+                                        outline: none;
+                                        border-color: #0d6efd;
+                                        background: #ffffff;
+                                        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+                                        transform: scale(1.05);
+                                    }
+                                    .otp-input.filled {
+                                        background: #e7f3ff;
+                                        border-color: #0d6efd;
+                                    }
+                                </style>
+                                
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const inputs = document.querySelectorAll('.otp-input');
+                                        const hiddenInput = document.getElementById('hiddenOtp');
+                                        
+                                        inputs.forEach((input, index) => {
+                                            input.addEventListener('input', function(e) {
+                                                const value = e.target.value;
+                                                if (!/^[0-9]$/.test(value)) {
+                                                    e.target.value = '';
+                                                    return;
+                                                }
+                                                
+                                                e.target.classList.add('filled');
+                                                
+                                                if (index < inputs.length - 1) {
+                                                    inputs[index + 1].focus();
+                                                }
+                                                
+                                                updateHiddenInput();
+                                            });
+                                            
+                                            input.addEventListener('keydown', function(e) {
+                                                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                                    inputs[index - 1].focus();
+                                                    inputs[index - 1].value = '';
+                                                    inputs[index - 1].classList.remove('filled');
+                                                    updateHiddenInput();
+                                                } else if (e.key === 'Backspace' && e.target.value) {
+                                                    e.target.classList.remove('filled');
+                                                }
+                                            });
+                                            
+                                            input.addEventListener('paste', function(e) {
+                                                e.preventDefault();
+                                                const paste = e.clipboardData.getData('text');
+                                                if (/^[0-9]{6}$/.test(paste)) {
+                                                    for (let i = 0; i < 6; i++) {
+                                                        inputs[i].value = paste[i];
+                                                        inputs[i].classList.add('filled');
+                                                    }
+                                                    updateHiddenInput();
+                                                }
+                                            });
+                                        });
+                                        
+                                        function updateHiddenInput() {
+                                            const otp = Array.from(inputs).map(input => input.value).join('');
+                                            hiddenInput.value = otp;
+                                        }
+                                    });
+                                </script>
+                                
+                                <div class="d-grid mb-3">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        Verify OTP
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <div class="text-center">
+                                <p class="text-muted mb-2">Didn't receive the code?</p>
+                                <a th:href="@{/forgot-password}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-arrow-left me-1"></i>
+                                    Back to Email Form
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

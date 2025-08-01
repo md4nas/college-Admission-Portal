@@ -16,7 +16,7 @@ Before starting, ensure you have:
 ### 1️⃣ Clone and Setup Project
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/md4nas/AdvanceAuthPortal.git
 cd UserAuth-System
 ```
 

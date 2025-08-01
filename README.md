@@ -196,13 +196,17 @@ graph TB
 │   ├── API_DOCUMENTATION.md               # Complete API Reference
 │   ├── DEPLOYMENT.md                      # Deployment & DevOps Guide
 │   ├── SECURITY.md                        # Security Architecture
-│   └── HELP.md                           # User Manual & Troubleshooting
+│   ├── HELP.md                           # User Manual & Troubleshooting
+│   ├── SETUP_GUIDE.md                    # Complete Setup Instructions
+│   └── PRODUCTION_CHECKLIST.md           # Production Deployment Guide
 │
 ├── 📸 screenshots/                        # Application Screenshots
 ├── 🔧 Configuration Files
-│   ├── .env                               # Environment variables
+│   ├── .env.template                     # Environment variables template
 │   ├── pom.xml                           # Maven dependencies
 │   ├── .gitignore                        # Git ignore rules
+│   ├── SETUP_GUIDE.md                    # Complete setup instructions
+│   ├── PRODUCTION_CHECKLIST.md           # Production deployment guide
 │   └── README.md                         # This file
 │
 └── 🧪 src/test/                          # Test Files
@@ -225,72 +229,30 @@ graph TB
 | 📦 **Maven** | 3.8+ | Build Tool |
 | 🔧 **IntelliJ IDEA** | 2023+ | IDE (Recommended) |
 
-### ⚡ **Installation Steps**
+### ⚡ **Quick Start**
 
-<details>
-<summary>🔽 <strong>Step-by-step installation guide</strong></summary>
-
-#### 1️⃣ **Clone Repository**
 ```bash
+# 1. Clone repository
 git clone <your-repository-url>
 cd UserAuth-System
-```
 
-#### 2️⃣ **Database Setup**
-```sql
--- Create PostgreSQL database
-CREATE DATABASE userauth_db;
-CREATE USER userauth_user WITH PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE userauth_db TO userauth_user;
-```
+# 2. Copy environment template
+cp .env.template .env
 
-#### 3️⃣ **Environment Configuration**
-Create `.env` file in project root:
-```env
-# Database Configuration
-DATABASE_URL=jdbc:postgresql://localhost:5432/userauth_db
-DATABASE_USERNAME=userauth_user
-DATABASE_PASSWORD=your_secure_password
+# 3. Edit .env with your credentials
+# (See SETUP_GUIDE.md for detailed instructions)
 
-# Email Configuration (Brevo SMTP)
-MAIL_USERNAME=your_brevo_email
-BREVO_SMTP_PASSWORD=your_brevo_api_key
-
-# OAuth2 Configuration
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-
-# Admin Setup
-ADMIN_EMAIL=admin@yourcompany.com
-ADMIN_PASSWORD=SecureAdminPass123!
-ADMIN_NAME=System Administrator
-
-# Server Configuration
-SERVER_PORT=8080
-```
-
-#### 4️⃣ **Build & Run**
-```bash
-# Build the application
+# 4. Build and run
 mvn clean install
-
-# Run the application
 mvn spring-boot:run
 
-# Or run the JAR file
-java -jar target/userauth-system-1.0.0.jar
+# 5. Access application
+# http://localhost:8080
 ```
 
-#### 5️⃣ **Access Application**
-- 🌐 **Application URL**: http://localhost:8080
-- 👤 **Admin Login**: Use credentials from `.env` file
-- 📧 **Email Verification**: Check your email for verification links
-- 🎨 **Modern UI**: Responsive design with role-based dashboards
-- 🔒 **Security**: Enterprise-grade authentication and authorization
+📖 **For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md)**
 
-</details>
+🚀 **For production deployment, see [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)**
 
 ### 📧 **SMTP Email Setup (Critical)**
 
@@ -549,12 +511,12 @@ flowchart TD
 | ![Admin Student Details](screenshots/T14_admin_std_details.png) | ![Admin Teacher Details](screenshots/T15_admin_ter_details.png) |
 | *Admin student oversight* | *Admin teacher management* |
 
-### ⚙️ **Account Management**
+### ⚙️ **Account Management & Settings**
 
-| Change Password |
-|-----------------|
-| ![Change Password](screenshots/T16_change_password.png) |
-| *Secure password change interface* |
+| Change Password | User Settings |
+|-----------------|---------------|
+| ![Change Password](screenshots/T16_change_password.png) | ![User Dashboard 2](screenshots/T11_user_dashboard2.png) |
+| *Secure password change interface* | *User profile and settings* |
 
 ### 📧 **Email Verification System**
 
@@ -718,6 +680,13 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## ⚠️ **Important Notes**
 
+### 🚀 **For New Users**
+1. **Start Here**: Read [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete setup instructions
+2. **Environment Setup**: Copy `.env.template` to `.env` and configure your credentials
+3. **Email Required**: SMTP configuration is mandatory for user verification
+4. **Database Setup**: PostgreSQL must be installed and configured
+5. **Admin Access**: Default admin account is created automatically
+
 ### 📧 **Email Configuration is Mandatory**
 The application **requires** SMTP configuration to function properly. Without email setup:
 - Users cannot verify their accounts
@@ -727,15 +696,24 @@ The application **requires** SMTP configuration to function properly. Without em
 ### 🔒 **Security Considerations**
 - Change default admin credentials immediately
 - Use strong passwords for all accounts
+- Never commit `.env` file to version control
 - Enable HTTPS in production
 - Regularly update dependencies
 - Monitor application logs for security events
 
-### 📞 **Support**
+### 🚀 **Production Deployment**
+- Follow [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md) before going live
+- Use environment variables instead of `.env` file
+- Enable SSL/HTTPS certificates
+- Configure proper database security
+- Set up monitoring and logging
+
+### 📞 **Support & Documentation**
 For technical support or questions:
-- Check [HELP.md](HELP.md) for detailed user guide
-- Review [SECURITY.md](SECURITY.md) for security best practices
-- See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment
-- Consult [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for API details
+- **Setup Issues**: Check [SETUP_GUIDE.md](SETUP_GUIDE.md)
+- **Production Deployment**: See [PRODUCTION_CHECKLIST.md](PRODUCTION_CHECKLIST.md)
+- **Security Best Practices**: Review [SECURITY.md](SECURITY.md)
+- **API Reference**: Consult [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
+- **User Manual**: Check [HELP.md](HELP.md) for troubleshooting
 
 </div>

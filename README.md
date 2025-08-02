@@ -643,40 +643,11 @@ flowchart TD
 
 ---
 
-## 🤝 **Contributing**
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-<div align="center">
-
-### 🌟 **Star this repository if you find it helpful!**
-
-[![GitHub stars](https://img.shields.io/github/stars/md4nas/UserAuth-System?style=social)](https://github.com/md4nas/UserAuth-System/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/md4nas/UserAuth-System?style=social)](https://github.com/md4nas/UserAuth-System/network/members)
-
-</div>
-
----
-
-## 📞 **Support & Contact**
-
-<div align="center">
-
-**Developed with ❤️ by [Anas](https://github.com/md4nas)**
-
-[![GitHub](https://img.shields.io/badge/GitHub-md4nas-black?style=for-the-badge&logo=github)](https://github.com/md4nas)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/md4nas)
-[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:md.anas1028@gmail.com)
-
-</div>
-
----
-
 <div align="center">
 
 ### 📄 **License**
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**
 
 **© 2025 UserAuth System. All rights reserved.**
 

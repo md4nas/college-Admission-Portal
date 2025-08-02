@@ -471,10 +471,15 @@ flowchart TD
 
 ### 🏠 **Landing Page & Public Interface**
 
-| Hero Section | Features | About & Details | Contact & Footer |
-|--------------|----------|-----------------|------------------|
-| ![Hero](screenshots/T01%20_hero_section.png) | ![Features](screenshots/T02_feature_section.png) | ![About](screenshots/T03_about&details.png) | ![Contact](screenshots/T04_contact&footer.png) |
-| *Modern hero section with call-to-action* | *Feature highlights and benefits* | *Detailed information section* | *Contact form and footer* |
+| Hero Section | Features | Documentation | About & Details |
+|--------------|----------|---------------|------------------|
+| ![Hero](screenshots/T01%20_hero_section.png) | ![Features](screenshots/T02_feature_section.png) | ![Documentation](screenshots/T03_documentation.png) | ![About](screenshots/T03_about&details.png) |
+| *Modern hero section with call-to-action* | *Feature highlights and benefits* | *Complete documentation section* | *Detailed information section* |
+
+| Contact & Footer |
+|------------------|
+| ![Contact](screenshots/T04_contact&footer.png) |
+| *Contact form and footer* |
 
 ### 🔐 **Authentication & Registration**
 

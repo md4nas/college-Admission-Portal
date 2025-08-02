@@ -9,7 +9,7 @@
 </div>
 
 <div align="center">
-  <h3>🔐 Enterprise-Grade User Management with Role-Based Access Control</h3>
+  <h3>🔐 Enterprise-Grade  User Management with Role-Based Access Control</h3>
   <p>A comprehensive, secure, and scalable user management system built with modern technologies and best practices.</p>
 </div>
 

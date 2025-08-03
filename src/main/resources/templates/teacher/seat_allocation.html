@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Seat Allocation</title>
+</head>
+<body>
+
+<section>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center py-4">
+                        <i class='bx bx-trophy' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">Seat Allocation</h2>
+                        <p class="mb-0">Allocate seats to approved students based on merit</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${session.msg}" th:class="'alert alert-' + ${session.msgType}" class="alert alert-dismissible fade show">
+            <span th:text="${session.msg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Approved Applications Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class='bx bx-medal me-2'></i>Approved Applications (Merit Order)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(applications)}" class="text-center py-5">
+                            <i class='bx bx-inbox text-muted' style="font-size: 4rem;"></i>
+                            <h5 class="mt-3 text-muted">No Approved Applications</h5>
+                            <p class="text-muted">No applications are ready for seat allocation.</p>
+                            <a href="/teacher/applications" class="btn btn-primary">
+                                <i class='bx bx-arrow-back'></i> Back to Applications
+                            </a>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(applications)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Merit Rank</th>
+                                        <th>Student Details</th>
+                                        <th>Academic Performance</th>
+                                        <th>Branch Preferences</th>
+                                        <th>Current Status</th>
+                                        <th>Seat Allocation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="app, iterStat : ${applications}">
+                                        <td>
+                                            <div class="text-center">
+                                                <span class="badge bg-warning text-dark fs-5" th:text="${iterStat.count}"></span>
+                                                <br>
+                                                <small class="text-muted">Merit Rank</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong th:text="${app.userEmail}"></strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class='bx bx-phone'></i> <span th:text="${app.phoneNo}"></span>
+                                                </small>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class='bx bx-map'></i> <span th:text="${app.city + ', ' + app.state}"></span>
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-center">
+                                                <h5 class="text-success mb-1" th:text="${app.percentage12} + '%'"></h5>
+                                                <small class="text-muted" th:text="${app.obtain12Marks} + '/' + ${app.total12Marks}"></small>
+                                                <br>
+                                                <div class="mt-2">
+                                                    <span class="badge bg-info me-1">P: <span th:text="${app.class12Physics}"></span></span>
+                                                    <span class="badge bg-info me-1">C: <span th:text="${app.class12Chemistry}"></span></span>
+                                                    <span class="badge bg-info">M: <span th:text="${app.class12Maths}"></span></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span class="badge bg-secondary mb-1" th:text="${app.course}"></span>
+                                                <br>
+                                                <div class="mt-2">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <span class="badge bg-success me-2">1st</span>
+                                                        <strong th:text="${app.branch1}"></strong>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge bg-warning me-2">2nd</span>
+                                                        <strong th:text="${app.branch2}"></strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div th:switch="${app.status}">
+                                                <div th:case="'APPROVED'">
+                                                    <span class="badge bg-success">Approved</span>
+                                                    <br>
+                                                    <small class="text-muted">Ready for allocation</small>
+                                                </div>
+                                                <div th:case="'ALLOCATED'">
+                                                    <span class="badge bg-primary">Allocated</span>
+                                                    <br>
+                                                    <small class="text-success">
+                                                        <strong th:text="${app.allocatedBranch}"></strong>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div th:if="${app.status == 'APPROVED'}">
+                                                <form th:action="@{/teacher/applications/allocate-seat}" method="post">
+                                                    <input type="hidden" name="applicationId" th:value="${app.id}">
+                                                    <div class="mb-2">
+                                                        <select name="allocatedBranch" class="form-select form-select-sm" required>
+                                                            <option value="">Select Branch</option>
+                                                            <option th:value="${app.branch1}" th:text="'1st Choice: ' + ${app.branch1}"></option>
+                                                            <option th:value="${app.branch2}" th:text="'2nd Choice: ' + ${app.branch2}"></option>
+                                                            <option value="Computer Science">Computer Science</option>
+                                                            <option value="Mechanical">Mechanical</option>
+                                                            <option value="Electrical">Electrical</option>
+                                                            <option value="Civil">Civil</option>
+                                                            <option value="Electronics">Electronics</option>
+                                                        </select>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary btn-sm">
+                                                        <i class='bx bx-trophy'></i> Allocate Seat
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <div th:if="${app.status == 'ALLOCATED'}" class="text-center">
+                                                <i class='bx bx-check-circle text-success' style="font-size: 2rem;"></i>
+                                                <br>
+                                                <small class="text-success">Seat Allocated</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Card -->
+        <div class="row mt-4" th:if="${#lists.isEmpty(applications)}">
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-group' style="font-size: 2rem;"></i>
+                        <h4 th:text="${applications.size()}"></h4>
+                        <p class="mb-0">Total Approved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-trophy' style="font-size: 2rem;"></i>
+                        <h4 th:text="${#lists.size(#lists.select(applications, app.status == 'ALLOCATED'))}"></h4>
+                        <p class="mb-0">Seats Allocated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <i class='bx bx-time' style="font-size: 2rem;"></i>
+                        <h4 th:text="${#lists.size(#lists.select(applications, app.status == 'APPROVED'))}"></h4>
+                        <p class="mb-0">Pending Allocation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="/teacher/applications" class="btn btn-secondary me-3">
+                    <i class='bx bx-arrow-back'></i> Back to Applications
+                </a>
+                <a href="/teacher/" class="btn btn-outline-primary">
+                    <i class='bx bx-home'></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            if (alert.classList.contains('show')) {
+                alert.classList.remove('show');
+            }
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

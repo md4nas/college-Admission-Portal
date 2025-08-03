@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>College Admission Application</title>
+    <style>
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .section-title {
+            color: #007bff;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .required {
+            color: red;
+        }
+        /* Hide number input spinners - Enhanced */
+        .no-spinner::-webkit-outer-spin-button,
+        .no-spinner::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            display: none;
+        }
+        .no-spinner[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+        /* Additional spinner hiding for all browsers */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+            display: none;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
+</head>
+<body>
+
+<section>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3><i class='bx bx-edit'></i> College Admission Application</h3>
+                        <p class="mb-0">Fill all details carefully</p>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Success/Error Messages -->
+                        <div th:if="${session.msg}" th:class="'alert alert-' + ${session.msgType}" class="alert alert-dismissible fade show">
+                            <span th:text="${session.msg}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/user/application/submit}" method="post" th:object="${application}">
+                            
+                            <!-- Personal Information Section -->
+                            <div class="form-section">
+                                <h5 class="section-title"><i class='bx bx-user'></i> Personal Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Date of Birth <span class="required">*</span></label>
+                                        <input type="date" class="form-control" th:field="*{dob}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Gender <span class="required">*</span></label>
+                                        <select class="form-select" th:field="*{gender}" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Phone Number <span class="required">*</span></label>
+                                        <input type="tel" class="form-control" th:field="*{phoneNo}" pattern="[0-9]{10}" maxlength="10" placeholder="10 digit mobile number" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Parents Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{parentsName}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Religion</label>
+                                        <input type="text" class="form-control" th:field="*{religion}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Caste</label>
+                                        <input type="text" class="form-control" th:field="*{caste}">
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Address <span class="required">*</span></label>
+                                        <textarea class="form-control" th:field="*{address}" rows="2" required></textarea>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">City <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{city}" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">State <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{state}" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Pincode <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{pincode}" min="100000" max="999999" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Class 10 Information -->
+                            <div class="form-section">
+                                <h5 class="section-title"><i class='bx bx-book'></i> Class 10 Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Passing Year <span class="required">*</span></label>
+                                        <input type="number" class="form-control" th:field="*{passing10Year}" min="2015" max="2025" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">School Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{schoolName10}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Board Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{board10Name}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Roll Number <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{rollNo10}" required>
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-primary">Subject-wise Marks</h6>
+                                <div class="row">
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Math <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class10Math}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Science <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class10Science}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">English <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class10English}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Hindi <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class10Hindi}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Social <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class10Social}" min="0" max="100" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Total Marks <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{total10Marks}" min="0" max="500" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Obtained Marks <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{obtain10Marks}" min="0" max="500" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Class 12 Information -->
+                            <div class="form-section">
+                                <h5 class="section-title"><i class='bx bx-graduation'></i> Class 12 Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Passing Year <span class="required">*</span></label>
+                                        <input type="number" class="form-control" th:field="*{passing12Year}" min="2017" max="2025" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">School Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{schoolName12}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Board Name <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{board12Name}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Roll Number <span class="required">*</span></label>
+                                        <input type="text" class="form-control" th:field="*{rollNo12}" required>
+                                    </div>
+                                </div>
+                                
+                                <h6 class="text-primary">Subject-wise Marks (PCM Stream)</h6>
+                                <div class="row">
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Physics <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class12Physics}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Chemistry <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class12Chemistry}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Math <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class12Maths}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">English <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class12English}" min="0" max="100" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Optional</label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{class12Optional}" min="0" max="100">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Total Marks <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{total12Marks}" min="0" max="500" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Obtained Marks <span class="required">*</span></label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{obtain12Marks}" min="0" max="500" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Entrance Exam Information -->
+                            <div class="form-section">
+                                <h5 class="section-title"><i class='bx bx-trophy'></i> Entrance Exam Details (Optional)</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Entrance Exam Name</label>
+                                        <input type="text" class="form-control" th:field="*{entranceName}" placeholder="e.g., JEE Main, JEE Advanced">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Roll Number</label>
+                                        <input type="text" class="form-control" th:field="*{entranceRollNo}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Exam Year</label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{entranceYear}" min="2020" max="2025">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Rank/Score</label>
+                                        <input type="number" class="form-control no-spinner" th:field="*{entranceRank}" min="1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Branch Preferences -->
+                            <div class="form-section">
+                                <h5 class="section-title"><i class='bx bx-target-lock'></i> Branch Preferences</h5>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Course <span class="required">*</span></label>
+                                        <select class="form-select" th:field="*{course}" required>
+                                            <option value="">Select Course</option>
+                                            <option value="B.Tech">B.Tech</option>
+                                            <option value="B.Sc">B.Sc</option>
+                                            <option value="BCA">BCA</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">First Choice <span class="required">*</span></label>
+                                        <select class="form-select" th:field="*{branch1}" required>
+                                            <option value="">Select Branch</option>
+                                            <option value="Computer Science">Computer Science</option>
+                                            <option value="Mechanical">Mechanical</option>
+                                            <option value="Electrical">Electrical</option>
+                                            <option value="Civil">Civil</option>
+                                            <option value="Electronics">Electronics</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Second Choice <span class="required">*</span></label>
+                                        <select class="form-select" th:field="*{branch2}" required>
+                                            <option value="">Select Branch</option>
+                                            <option value="Computer Science">Computer Science</option>
+                                            <option value="Mechanical">Mechanical</option>
+                                            <option value="Electrical">Electrical</option>
+                                            <option value="Civil">Civil</option>
+                                            <option value="Electronics">Electronics</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class='bx bx-send'></i> Submit Application
+                                </button>
+                                <a href="/user/" class="btn btn-secondary btn-lg px-5 ms-3">
+                                    <i class='bx bx-arrow-back'></i> Back to Home
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            if (alert.classList.contains('show')) {
+                alert.classList.remove('show');
+            }
+        });
+    }, 5000);
+</script>
+
+</section>
+
+</body>
+</html>

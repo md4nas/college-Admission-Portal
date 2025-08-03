@@ -40,10 +40,10 @@ public class AdminInitializer implements CommandLineRunner {
             admin.setProvider("local");
             
             userRepository.save(admin);
-            System.out.println("✅ Default admin created successfully!");
-            System.out.println("📧 Email: " + adminEmail);
-            System.out.println("🔑 Password: " + adminPassword);
-            System.out.println("⚠️  Please change the password after first login!");
+            System.out.println("Default admin created successfully!");
+            System.out.println("Email: " + adminEmail);
+            System.out.println("Password: " + adminPassword);
+            System.out.println("Please change the password after first login!");
         }
         // Silent if admin already exists - no log message
     }

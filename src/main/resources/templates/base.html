@@ -99,18 +99,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/admin/applications">
+                            <i class='bx bx-file-blank me-1'></i>View Applications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/statistics">
+                            <i class='bx bx-bar-chart me-1'></i>Statistics
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class='bx bx-users me-1'></i>Manage Users
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class='bx bx-chart me-1'></i>Reports
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class='bx bx-cog me-1'></i>Settings
                         </a>
                     </li>
                 </ul>
@@ -152,18 +152,18 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/teacher/applications">
+                            <i class='bx bx-file-blank me-1'></i>Review Applications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teacher/applications/approved">
+                            <i class='bx bx-trophy me-1'></i>Seat Allocation
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">
                             <i class='bx bx-group me-1'></i>Students
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class='bx bx-book me-1'></i>Courses
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class='bx bx-medal me-1'></i>Grades
                         </a>
                     </li>
                 </ul>
@@ -191,7 +191,7 @@
     </nav>
 
     <!-- User Navbar -->
-    <nav th:if="${user != null and user.role == 'ROLE_USER' and currentPath != '/'}" class="navbar navbar-expand-lg navbar-dark bg-info fixed-top shadow-sm">
+    <nav th:if="${user != null and user.role == 'ROLE_USER' and (#strings.startsWith(currentPath, '/user') or currentPath == '/verify' or currentPath == '/reset-password')}" class="navbar navbar-expand-lg navbar-dark bg-info fixed-top shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class='bx bx-user-circle me-2'></i>UserAuth
@@ -207,18 +207,23 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/profile">
-                            <i class='bx bx-user me-1'></i>Profile
+                        <a class="nav-link" href="/user/application">
+                            <i class='bx bx-plus me-1'></i>New Application
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/courses">
+                        <a class="nav-link" href="/user/application/status">
+                            <i class='bx bx-file-blank me-1'></i>View Application
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/#">
                             <i class='bx bx-book-open me-1'></i>My Courses
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/progress">
-                            <i class='bx bx-trending-up me-1'></i>Progress
+                        <a class="nav-link" href="/user/#">
+                            <i class='bx bx-wallet-alt' ></i> Payment
                         </a>
                     </li>
                 </ul>

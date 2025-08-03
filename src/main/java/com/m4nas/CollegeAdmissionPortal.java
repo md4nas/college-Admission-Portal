@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * UserAuth - Enterprise User Management System
+ * CollegeAdmissionPortal - Enterprise College Admission System
  * 
  * Main Spring Boot application class that bootstraps the entire user management system.
  * This application provides:
@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
  * @since 2025-01-01
  */
 @SpringBootApplication
-public class UserManagemetApplication {
+public class CollegeAdmissionPortal {
 
 	/**
 	 * Main method to start the Spring Boot application.
@@ -29,7 +29,7 @@ public class UserManagemetApplication {
 	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
-		SpringApplication.run(UserManagemetApplication.class, args);
+		SpringApplication.run(CollegeAdmissionPortal.class, args);
 	}
 
 	/**

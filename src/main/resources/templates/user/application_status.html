@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Status</title>
+</head>
+<body>
+
+<section>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center py-4">
+                        <i class='bx bx-file-blank' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">Application Status</h2>
+                        <p class="mb-0">View your submitted college application details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notice Message -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5 class="alert-heading"><i class='bx bx-info-circle me-2'></i>Important Notice</h5>
+                    <p class="mb-2">Please review all your submitted information carefully. If you find any errors in your application details or need to make corrections, please contact the administration immediately.</p>
+                    <hr>
+                    <p class="mb-0"><strong>Contact:</strong> admin@college.edu | Phone: +91-XXXXXXXXXX | Office Hours: 9:00 AM - 5:00 PM</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${session.msg}" th:class="'alert alert-' + ${session.msgType}" class="alert alert-dismissible fade show">
+            <span th:text="${session.msg}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Application Details -->
+        <div th:if="${application != null}">
+            <!-- Status Overview -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center">
+                            <div th:switch="${application.status}">
+                                <div th:case="'PENDING'">
+                                    <i class='bx bx-time-five text-warning' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-warning">Pending</h4>
+                                </div>
+                                <div th:case="'SUBMITTED'">
+                                    <i class='bx bx-check text-info' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-info">Submitted</h4>
+                                </div>
+                                <div th:case="'APPROVED'">
+                                    <i class='bx bx-check-circle text-success' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-success">Approved</h4>
+                                </div>
+                                <div th:case="'ALLOCATED'">
+                                    <i class='bx bx-trophy text-primary' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-primary">Seat Allocated</h4>
+                                </div>
+                                <div th:case="'ACCEPTED'">
+                                    <i class='bx bx-medal text-success' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-success">Seat Accepted</h4>
+                                </div>
+                                <div th:case="'DECLINED'">
+                                    <i class='bx bx-x-circle text-danger' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-danger">Seat Declined</h4>
+                                </div>
+                                <div th:case="'REJECTED'">
+                                    <i class='bx bx-x text-danger' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-danger">Rejected</h4>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">Current Status</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5><i class='bx bx-info-circle me-2'></i>Application Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Course:</strong> <span th:text="${application.course}"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>First Choice:</strong> <span th:text="${application.branch1}"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Second Choice:</strong> <span th:text="${application.branch2}"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Class 12 Percentage:</strong> <span th:text="${application.percentage12} + '%'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5><i class='bx bx-user me-2'></i>Personal Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <strong>Date of Birth:</strong> <span th:text="${application.dob}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Gender:</strong> <span th:text="${application.gender}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Phone:</strong> <span th:text="${application.phoneNo}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Parents Name:</strong> <span th:text="${application.parentsName}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Religion:</strong> <span th:text="${application.religion ?: 'Not specified'}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Caste:</strong> <span th:text="${application.caste ?: 'Not specified'}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>City:</strong> <span th:text="${application.city}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>State:</strong> <span th:text="${application.state}"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Pincode:</strong> <span th:text="${application.pincode}"></span>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <strong>Address:</strong> <span th:text="${application.address}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Information -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class='bx bx-book me-2'></i>Class 10 Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>School:</strong> <span th:text="${application.schoolName10}"></span></p>
+                            <p><strong>Board:</strong> <span th:text="${application.board10Name}"></span></p>
+                            <p><strong>Year:</strong> <span th:text="${application.passing10Year}"></span></p>
+                            <p><strong>Roll Number:</strong> <span th:text="${application.rollNo10}"></span></p>
+                            <hr>
+                            <h6 class="text-primary">Subject-wise Marks:</h6>
+                            <div class="row">
+                                <div class="col-md-6"><strong>Math:</strong> <span th:text="${application.class10Math}"></span></div>
+                                <div class="col-md-6"><strong>Science:</strong> <span th:text="${application.class10Science}"></span></div>
+                                <div class="col-md-6"><strong>English:</strong> <span th:text="${application.class10English}"></span></div>
+                                <div class="col-md-6"><strong>Hindi:</strong> <span th:text="${application.class10Hindi}"></span></div>
+                                <div class="col-md-6"><strong>Social:</strong> <span th:text="${application.class10Social}"></span></div>
+                            </div>
+                            <hr>
+                            <p><strong>Total Marks:</strong> <span th:text="${application.total10Marks}"></span></p>
+                            <p><strong>Obtained Marks:</strong> <span th:text="${application.obtain10Marks}"></span></p>
+                            <p><strong>Percentage:</strong> <span class="badge bg-success" th:text="${application.percentage10} + '%'"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-dark">
+                            <h5><i class='bx bx-graduation me-2'></i>Class 12 Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>School:</strong> <span th:text="${application.schoolName12}"></span></p>
+                            <p><strong>Board:</strong> <span th:text="${application.board12Name}"></span></p>
+                            <p><strong>Year:</strong> <span th:text="${application.passing12Year}"></span></p>
+                            <p><strong>Roll Number:</strong> <span th:text="${application.rollNo12}"></span></p>
+                            <hr>
+                            <h6 class="text-primary">Subject-wise Marks (PCM):</h6>
+                            <div class="row">
+                                <div class="col-md-6"><strong>Physics:</strong> <span th:text="${application.class12Physics}"></span></div>
+                                <div class="col-md-6"><strong>Chemistry:</strong> <span th:text="${application.class12Chemistry}"></span></div>
+                                <div class="col-md-6"><strong>Math:</strong> <span th:text="${application.class12Maths}"></span></div>
+                                <div class="col-md-6"><strong>English:</strong> <span th:text="${application.class12English}"></span></div>
+                                <div class="col-md-6"><strong>Optional:</strong> <span th:text="${application.class12Optional ?: 'Not taken'}"></span></div>
+                            </div>
+                            <hr>
+                            <p><strong>Total Marks:</strong> <span th:text="${application.total12Marks}"></span></p>
+                            <p><strong>Obtained Marks:</strong> <span th:text="${application.obtain12Marks}"></span></p>
+                            <p><strong>Percentage:</strong> <span class="badge bg-success" th:text="${application.percentage12} + '%'"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entrance Exam Information -->
+            <div th:if="${application.entranceName != null and !#strings.isEmpty(application.entranceName)}" class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5><i class='bx bx-trophy me-2'></i>Entrance Exam Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Exam Name:</strong> <span th:text="${application.entranceName}"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Roll Number:</strong> <span th:text="${application.entranceRollNo ?: 'Not provided'}"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Exam Year:</strong> <span th:text="${application.entranceYear ?: 'Not provided'}"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Rank/Score:</strong> <span th:text="${application.entranceRank ?: 'Not provided'}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat Allocation Section -->
+            <div th:if="${application.allocatedBranch != null}" class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-success">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="alert-heading mb-2">
+                                    <i class='bx bx-trophy me-2'></i>Congratulations! Seat Allocated
+                                </h5>
+                                <p class="mb-0">
+                                    You have been allocated a seat in <strong th:text="${application.allocatedBranch}"></strong> branch.
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end" th:if="${application.status == 'ALLOCATED'}">
+                                <form th:action="@{/user/application/accept-seat}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-success me-2">
+                                        <i class='bx bx-check'></i> Accept Seat
+                                    </button>
+                                </form>
+                                <form th:action="@{/user/application/decline-seat}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class='bx bx-x'></i> Decline Seat
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Application Case -->
+        <div th:if="${application == null}" class="text-center py-5">
+            <i class='bx bx-file-plus text-muted' style="font-size: 5rem;"></i>
+            <h3 class="mt-4 text-muted">No Application Found</h3>
+            <p class="text-muted mb-4">You haven't submitted any college application yet.</p>
+            <a href="/user/application" class="btn btn-primary btn-lg">
+                <i class='bx bx-plus me-2'></i>Submit New Application
+            </a>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="/user/" class="btn btn-secondary me-3">
+                    <i class='bx bx-arrow-back'></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            if (alert.classList.contains('show')) {
+                alert.classList.remove('show');
+            }
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

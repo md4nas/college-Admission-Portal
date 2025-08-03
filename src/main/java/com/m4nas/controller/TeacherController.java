@@ -1,23 +1,24 @@
 package com.m4nas.controller;
 
 import com.m4nas.model.UserDtls;
+import com.m4nas.model.UserApplication;
 import com.m4nas.repository.UserRepository;
 import com.m4nas.service.UserService;
+import com.m4nas.service.UserApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.security.Principal;
 import java.util.List;
 
-/**
- * Controller for teacher dashboard and teacher-specific operations.
- * Provides access to user management features for teachers.
- */
 @Controller
 @RequestMapping("/teacher/")
 public class TeacherController {
@@ -27,6 +28,9 @@ public class TeacherController {
 
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private UserApplicationService userApplicationService;
 
     @ModelAttribute
     private void userDetails(Model m, Principal p, HttpServletRequest request) {
@@ -43,5 +47,77 @@ public class TeacherController {
         List<UserDtls> users = userService.getUsersByRole("ROLE_USER");
         model.addAttribute("users", users);
         return "teacher/home";
+    }
+
+    @GetMapping("/applications")
+    public String viewApplications(Model model) {
+        List<UserApplication> applications = userApplicationService.getApplicationsPendingApproval();
+        model.addAttribute("applications", applications);
+        return "teacher/applications";
+    }
+
+    @GetMapping("/applications/approve")
+    public String viewApprovedApplications(Model model) {
+        List<UserApplication> applications = userApplicationService.getApprovedApplicationsForSeatAllocation();
+        model.addAttribute("applications", applications);
+        return "teacher/seat_allocation";
+    }
+
+    @PostMapping("/applications/approve")
+    public String approveApplication(@RequestParam("applicationId") String applicationId,
+                                     HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.approveApplication(applicationId);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Application approved successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to approve application.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error occurred while approving application.");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/applications";
+    }
+
+    @PostMapping("/applications/reject")
+    public String rejectApplication(@RequestParam("applicationId") String applicationId,
+                                    HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.rejectApplication(applicationId);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Application rejected.");
+                session.setAttribute("msgType", "info");
+            } else {
+                session.setAttribute("msg", "Failed to reject application.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error occurred while rejecting application.");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/applications";
+    }
+
+    @PostMapping("/applications/allocate-seat")
+    public String allocateSeat(@RequestParam("applicationId") String applicationId,
+                               @RequestParam("allocatedBranch") String allocatedBranch,
+                               HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.allocateSeat(applicationId, allocatedBranch);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Seat allocated successfully to " + allocatedBranch + " branch!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to allocate seat.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error occurred while allocating seat.");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/applications/approved";
     }
 }

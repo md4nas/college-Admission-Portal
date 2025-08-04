@@ -40,15 +40,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         
-        <!-- DEBUG: Template Level Check -->
-        <div class="alert alert-info">
-            <strong>TEMPLATE DEBUG:</strong><br>
-            Application exists: <span th:text="${application != null}"></span><br>
-            Course: <span th:text="${appCourse}"></span><br>
-            Branch1: <span th:text="${appBranch1}"></span><br>
-            DOB: <span th:text="${appDob}"></span><br>
-            Status: <span th:text="${appStatus}"></span><br>
-        </div>
+
 
         <!-- Application Details -->
         <div th:if="${application != null}">

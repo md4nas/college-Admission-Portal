@@ -4,6 +4,7 @@ import com.m4nas.model.UserApplication;
 import com.m4nas.service.UserApplicationService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -74,13 +75,15 @@ public class UserController {
             if(updatePasswordUser != null){
                 session.setAttribute("msg","Password changed successfully!");
                 session.setAttribute("msgType", "success");
-                // Clear message after 5 seconds to prevent auto-redirect on next visit
+                // Clear message after displaying
                 new Thread(() -> {
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(3000);
                         session.removeAttribute("msg");
                         session.removeAttribute("msgType");
-                    } catch (InterruptedException e) {}
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }).start();
             }else{
                 session.setAttribute("msg","Something went wrong. Please try again.");
@@ -260,10 +263,11 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
     // ===== NEW USER FEATURES =====
 
     @GetMapping("/settings/editProfile")
-    public String editProfile(Principal p, Model model) {
+    public String editProfile(Principal p, Model model, HttpServletRequest request) {
         String email = p.getName();
         UserDtls user = userRepo.findByEmail(email);
         model.addAttribute("user", user);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "user/settings/edit_profile";
     }
 
@@ -292,35 +296,38 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
     }
 
     @GetMapping("/notifications")
-    public String notifications(Principal p, Model model) {
+    public String notifications(Principal p, Model model, HttpServletRequest request) {
         String email = p.getName();
         UserDtls user = userRepo.findByEmail(email);
         UserApplication application = userApplicationService.getUserApplicationByEmail(email);
         
         model.addAttribute("user", user);
         model.addAttribute("application", application);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "user/notifications";
     }
 
     @GetMapping("/courses")
-    public String myCourses(Principal p, Model model) {
+    public String myCourses(Principal p, Model model, HttpServletRequest request) {
         String email = p.getName();
         UserDtls user = userRepo.findByEmail(email);
         UserApplication application = userApplicationService.getUserApplicationByEmail(email);
         
         model.addAttribute("user", user);
         model.addAttribute("application", application);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "user/my_courses";
     }
 
     @GetMapping("/payment")
-    public String paymentStatus(Principal p, Model model) {
+    public String paymentStatus(Principal p, Model model, HttpServletRequest request) {
         String email = p.getName();
         UserDtls user = userRepo.findByEmail(email);
         UserApplication application = userApplicationService.getUserApplicationByEmail(email);
         
         model.addAttribute("user", user);
         model.addAttribute("application", application);
+        model.addAttribute("currentPath", request.getRequestURI());
         return "user/payment_status";
     }
 }

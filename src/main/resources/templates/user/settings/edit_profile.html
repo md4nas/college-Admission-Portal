@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+</head>
+<body>
+
+<section>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h4><i class='bx bx-edit me-2'></i>Edit Profile</h4>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Success/Error Messages -->
+                        <div th:if="${session.msg}" th:class="'alert alert-' + ${session.msgType}" class="alert alert-dismissible fade show">
+                            <span th:text="${session.msg}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/user/settings/updateProfile}" method="post" th:object="${user}">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" th:field="*{fullName}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" th:field="*{email}" readonly>
+                                    <small class="text-muted">Email cannot be changed</small>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Account Role</label>
+                                    <input type="text" class="form-control" th:value="${user.role == 'ROLE_USER' ? 'Student' : (user.role == 'ROLE_TEACHER' ? 'Teacher' : 'Admin')}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Login Provider</label>
+                                    <input type="text" class="form-control" th:value="${user.provider == 'local' ? 'Local Account' : (user.provider == 'google' ? 'Google OAuth' : 'GitHub OAuth')}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary me-3">
+                                    <i class='bx bx-save'></i> Update Profile
+                                </button>
+                                <a href="/user/" class="btn btn-secondary">
+                                    <i class='bx bx-arrow-back'></i> Back to Dashboard
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

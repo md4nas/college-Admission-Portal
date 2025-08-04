@@ -217,13 +217,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/#">
+                        <a class="nav-link" href="/user/courses">
                             <i class='bx bx-book-open me-1'></i>My Courses
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/#">
-                            <i class='bx bx-wallet-alt' ></i> Payment
+                        <a class="nav-link" href="/user/payment">
+                            <i class='bx bx-wallet-alt me-1'></i>Payment
                         </a>
                     </li>
                 </ul>
@@ -233,7 +233,9 @@
                             <i class='bx bx-user me-1'></i>[[${user.fullName}]]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/user/settings/changePass">Change Password</a></li>
+                            <li><a class="dropdown-item" href="/user/settings/editProfile"><i class='bx bx-edit me-1'></i>Edit Profile</a></li>
+                            <li><a class="dropdown-item" href="/user/settings/changePass"><i class='bx bx-lock-alt me-1'></i>Change Password</a></li>
+                            <li><a class="dropdown-item" href="/user/notifications"><i class='bx bx-bell me-1'></i>Notifications</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="/logout" method="post" style="display: inline;">

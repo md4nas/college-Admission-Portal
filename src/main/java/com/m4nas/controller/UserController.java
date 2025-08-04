@@ -15,49 +15,34 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Controller
 @RequestMapping("/user/")
 public class UserController {
 
+    @Autowired
     private UserRepository userRepo;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
     private UserApplicationService userApplicationService;
 
-    @Autowired
-    public UserController(UserRepository userRepo, PasswordEncoder passwordEncoder, UserApplicationService userApplicationService) {
-        this.userRepo = userRepo;
-        this.passwordEncoder=passwordEncoder;
-        this.userApplicationService = userApplicationService;
-    }
 
-    @ModelAttribute
-    private void userDetails(Model m, Principal p, HttpServletRequest request) {
-        if(p != null) {
-            String email = p.getName();
-            UserDtls user = userRepo.findByEmail(email);
-            m.addAttribute("user", user);
-        }
-        m.addAttribute("currentPath", request.getRequestURI());
-    }
 
     @GetMapping("/")
-    public String redirectToHome(Principal p, Model model){
+    public String redirectToHome(Principal p, Model model, HttpServletRequest request){
         if(p != null){
             String email = p.getName();
             UserDtls user = userRepo.findByEmail(email);
             if(user != null) {
-                //Adding Application status to user home page
                 UserApplication application = userApplicationService.getUserApplicationByEmail(email);
                 
-                // Debug logging for home page
-                System.out.println("=== USER HOME DEBUG ===");
-                System.out.println("User: " + email);
-                System.out.println("Application on home: " + (application != null ? application.getStatus() : "null"));
-
                 model.addAttribute("user", user);
                 model.addAttribute("application", application);
+                model.addAttribute("currentPath", request.getRequestURI());
                 return "user/home";
             } else {
                 return "redirect:/signin?error";
@@ -116,9 +101,18 @@ public class UserController {
         //check if user already had an application
         UserApplication existingApp = userApplicationService.getUserApplicationByEmail(email);
         if(existingApp != null){
+            System.out.println("User " + email + " already has application with ID: " + existingApp.getId());
             // Redirect to home page where status is shown
             return "redirect:/user/";
         }
+        
+        // Also check by hasUserSubmittedApplication method
+        boolean hasSubmitted = userApplicationService.hasUserSubmittedApplication(email);
+        if(hasSubmitted) {
+            System.out.println("User " + email + " has already submitted application (found by alternative check)");
+            return "redirect:/user/";
+        }
+        
         model.addAttribute("application", new UserApplication());
         model.addAttribute("user", user);
         return "user/new_application";
@@ -128,15 +122,25 @@ public class UserController {
     public String submitApplication(@ModelAttribute UserApplication application,
                                     Principal p,HttpSession session){
         String email = p.getName();
+        UserDtls user = userRepo.findByEmail(email);
+        
         application.setUserEmail(email);
+        
+        // Set application ID to user ID for better tracking
+        if(user != null) {
+            application.setId(user.getId());
+        }
 
         try{
             // Debug logging
-            System.out.println("Submitting application for user: " + email);
+            System.out.println("=== APPLICATION SUBMISSION DEBUG ===");
+            System.out.println("User: " + email + ", User ID: " + (user != null ? user.getId() : "null"));
+            System.out.println("Application ID set to: " + application.getId());
             System.out.println("Application data: " + application.getCourse() + ", " + application.getBranch1());
             
             UserApplication savedApp = userApplicationService.saveAcademicInfo(application);
             if(savedApp != null){
+                System.out.println("Application saved successfully with ID: " + savedApp.getId());
                 session.setAttribute("msg","Application submitted successfully!");
                 session.setAttribute("msgType","success");
             } else {
@@ -153,39 +157,63 @@ public class UserController {
         return "redirect:/user/";
     }
 
-    @GetMapping("/application/status")
-    public String applicationStatus(Principal p, Model model){
-        try {
-            if(p == null) {
-                return "redirect:/signin";
-            }
-            
-            String email = p.getName();
-            UserDtls user = userRepo.findByEmail(email);
-            UserApplication application = userApplicationService.getUserApplicationByEmail(email);
-
-            model.addAttribute("user", user);
-            model.addAttribute("application", application);
-            
-            // Debug logging
-            System.out.println("=== APPLICATION STATUS DEBUG ===");
-            System.out.println("User email: " + email);
-            System.out.println("User found: " + (user != null ? user.getEmail() : "null"));
-            System.out.println("Application found: " + (application != null ? "YES" : "NO"));
-            if (application != null) {
-                System.out.println("Application ID: " + application.getId());
-                System.out.println("Application Status: " + application.getStatus());
-                System.out.println("Application Course: " + application.getCourse());
-            }
-            
-            return "user/application_status";
-        } catch (Exception e) {
-            System.err.println("Error in application status: " + e.getMessage());
-            e.printStackTrace();
-            model.addAttribute("error", "Error loading application status: " + e.getMessage());
-            return "user/application_status";
-        }
+@GetMapping("/application/status")
+@Transactional(readOnly = true)
+public String applicationStatus(Principal p, Model model, HttpServletRequest request){
+    String email = p.getName();
+    UserDtls user = userRepo.findByEmail(email);
+    UserApplication application = userApplicationService.getUserApplicationByEmail(email);
+    
+    // Pass individual fields to avoid Hibernate proxy issues
+    if(application != null) {
+        model.addAttribute("appCourse", application.getCourse());
+        model.addAttribute("appBranch1", application.getBranch1());
+        model.addAttribute("appBranch2", application.getBranch2());
+        model.addAttribute("appDob", application.getDob());
+        model.addAttribute("appGender", application.getGender());
+        model.addAttribute("appPhone", application.getPhoneNo());
+        model.addAttribute("appAddress", application.getAddress());
+        model.addAttribute("appParentsName", application.getParentsName());
+        model.addAttribute("appReligion", application.getReligion());
+        model.addAttribute("appCaste", application.getCaste());
+        model.addAttribute("appCity", application.getCity());
+        model.addAttribute("appState", application.getState());
+        model.addAttribute("appPincode", application.getPincode());
+        model.addAttribute("appStatus", application.getStatus());
+        model.addAttribute("appPercentage12", application.getPercentage12());
+        model.addAttribute("appObtain12Marks", application.getObtain12Marks());
+        model.addAttribute("appTotal12Marks", application.getTotal12Marks());
+        model.addAttribute("appPercentage10", application.getPercentage10());
+        model.addAttribute("appObtain10Marks", application.getObtain10Marks());
+        model.addAttribute("appTotal10Marks", application.getTotal10Marks());
+        model.addAttribute("appSchoolName10", application.getSchoolName10());
+        model.addAttribute("appBoard10Name", application.getBoard10Name());
+        model.addAttribute("appPassing10Year", application.getPassing10Year());
+        model.addAttribute("appRollNo10", application.getRollNo10());
+        model.addAttribute("appClass10Math", application.getClass10Math());
+        model.addAttribute("appClass10Science", application.getClass10Science());
+        model.addAttribute("appClass10English", application.getClass10English());
+        model.addAttribute("appClass10Hindi", application.getClass10Hindi());
+        model.addAttribute("appClass10Social", application.getClass10Social());
+        model.addAttribute("appSchoolName12", application.getSchoolName12());
+        model.addAttribute("appBoard12Name", application.getBoard12Name());
+        model.addAttribute("appPassing12Year", application.getPassing12Year());
+        model.addAttribute("appRollNo12", application.getRollNo12());
+        model.addAttribute("appClass12Physics", application.getClass12Physics());
+        model.addAttribute("appClass12Chemistry", application.getClass12Chemistry());
+        model.addAttribute("appClass12Maths", application.getClass12Maths());
+        model.addAttribute("appClass12English", application.getClass12English());
+        model.addAttribute("appClass12Optional", application.getClass12Optional());
+        model.addAttribute("appAllocatedBranch", application.getAllocatedBranch());
+        model.addAttribute("appSeatAccepted", application.getSeatAccepted());
     }
+    
+    model.addAttribute("user", user);
+    model.addAttribute("application", application);
+    model.addAttribute("currentPath", request.getRequestURI());
+    
+    return "user/application_status";
+}
 
     @PostMapping("/application/accept-seat")
     public String acceptSeat(Principal p, HttpSession session){
@@ -227,5 +255,72 @@ public class UserController {
             session.setAttribute("msgType","warning");
         }
         return "redirect:/user/";
+    }
+
+    // ===== NEW USER FEATURES =====
+
+    @GetMapping("/settings/editProfile")
+    public String editProfile(Principal p, Model model) {
+        String email = p.getName();
+        UserDtls user = userRepo.findByEmail(email);
+        model.addAttribute("user", user);
+        return "user/settings/edit_profile";
+    }
+
+    @PostMapping("/settings/updateProfile")
+    public String updateProfile(@ModelAttribute UserDtls updatedUser, Principal p, HttpSession session) {
+        String email = p.getName();
+        UserDtls existingUser = userRepo.findByEmail(email);
+        
+        if(existingUser != null) {
+            // Only allow updating full name (email and other fields remain unchanged)
+            existingUser.setFullName(updatedUser.getFullName());
+            UserDtls savedUser = userRepo.save(existingUser);
+            
+            if(savedUser != null) {
+                session.setAttribute("msg", "Profile updated successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to update profile. Please try again.");
+                session.setAttribute("msgType", "danger");
+            }
+        } else {
+            session.setAttribute("msg", "User not found!");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/user/settings/editProfile";
+    }
+
+    @GetMapping("/notifications")
+    public String notifications(Principal p, Model model) {
+        String email = p.getName();
+        UserDtls user = userRepo.findByEmail(email);
+        UserApplication application = userApplicationService.getUserApplicationByEmail(email);
+        
+        model.addAttribute("user", user);
+        model.addAttribute("application", application);
+        return "user/notifications";
+    }
+
+    @GetMapping("/courses")
+    public String myCourses(Principal p, Model model) {
+        String email = p.getName();
+        UserDtls user = userRepo.findByEmail(email);
+        UserApplication application = userApplicationService.getUserApplicationByEmail(email);
+        
+        model.addAttribute("user", user);
+        model.addAttribute("application", application);
+        return "user/my_courses";
+    }
+
+    @GetMapping("/payment")
+    public String paymentStatus(Principal p, Model model) {
+        String email = p.getName();
+        UserDtls user = userRepo.findByEmail(email);
+        UserApplication application = userApplicationService.getUserApplicationByEmail(email);
+        
+        model.addAttribute("user", user);
+        model.addAttribute("application", application);
+        return "user/payment_status";
     }
 }

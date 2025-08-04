@@ -13,6 +13,10 @@ public interface UserApplicationRepository extends JpaRepository<UserApplication
     // ===== BASIC USER OPERATIONS =====
     UserApplication findByUserEmail(String userEmail); // Find application by user email
     boolean existsByUserEmail(String userEmail); // Check if user already has an application
+    
+    // Debug query to get application with all fields
+    @Query("SELECT ua FROM UserApplication ua WHERE ua.userEmail = :email")
+    UserApplication findByUserEmailWithAllFields(@Param("email") String email);
     List<UserApplication> findByStatus(String status); // Find applications by status
     List<UserApplication> findByAllocatedBranch(String branch); // Find applications by allocated branch
 

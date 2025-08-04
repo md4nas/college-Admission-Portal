@@ -14,6 +14,9 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
 
     @Autowired
     private UserApplicationRepository userApplicationRepo;
+    
+    @Autowired
+    private com.m4nas.repository.UserRepository userRepository;
 
     @Override
     public UserApplication savePersonalInfo(UserApplication application) {
@@ -27,9 +30,18 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
 
     @Override
     public UserApplication saveAcademicInfo(UserApplication application) {
-        // Generate ID if new application
+        // Use user ID as application ID for better tracking
         if(application.getId() == null || application.getId().isEmpty()){
-            application.setId(RandomString.generateUserId());
+            String userEmail = application.getUserEmail();
+            if(userEmail != null) {
+                // Get user by email and use their ID as application ID
+                com.m4nas.model.UserDtls user = userRepository.findByEmail(userEmail);
+                if(user != null) {
+                    application.setId(user.getId());
+                } else {
+                    application.setId(RandomString.generateUserId());
+                }
+            }
         }
         
         //calculate percentage automatically
@@ -37,16 +49,74 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
 
         //change status to SUBMITTED when academic info is completed
         application.setStatus("SUBMITTED");
-
-        return userApplicationRepo.save(application);
+        
+        // Debug: Print application data before saving
+        System.out.println("=== BEFORE SAVING APPLICATION ===");
+        System.out.println("ID: " + application.getId());
+        System.out.println("Email: " + application.getUserEmail());
+        System.out.println("Course: " + application.getCourse());
+        System.out.println("Branch1: " + application.getBranch1());
+        System.out.println("DOB: " + application.getDob());
+        System.out.println("Gender: " + application.getGender());
+        System.out.println("Phone: " + application.getPhoneNo());
+        System.out.println("Class12 Physics: " + application.getClass12Physics());
+        System.out.println("Obtain12Marks: " + application.getObtain12Marks());
+        
+        UserApplication savedApp = userApplicationRepo.save(application);
+        
+        // Debug: Print saved application data
+        System.out.println("=== AFTER SAVING APPLICATION ===");
+        if(savedApp != null) {
+            System.out.println("Saved ID: " + savedApp.getId());
+            System.out.println("Saved Course: " + savedApp.getCourse());
+            System.out.println("Saved Branch1: " + savedApp.getBranch1());
+            System.out.println("Saved DOB: " + savedApp.getDob());
+        }
+        
+        return savedApp;
     }
 
     @Override
     public UserApplication getUserApplicationByEmail(String email) {
         System.out.println("=== SERVICE DEBUG ===");
         System.out.println("Looking for application with email: " + email);
+        
+        // First try to find by email
         UserApplication app = userApplicationRepo.findByUserEmail(email);
-        System.out.println("Found application: " + (app != null ? "YES - ID: " + app.getId() : "NO"));
+        System.out.println("First lookup by email result: " + (app != null ? "FOUND" : "NOT FOUND"));
+        
+        // Try with explicit query
+        if(app == null) {
+            System.out.println("Trying explicit query...");
+            app = userApplicationRepo.findByUserEmailWithAllFields(email);
+            System.out.println("Explicit query result: " + (app != null ? "FOUND" : "NOT FOUND"));
+        }
+        
+        // If not found by email, try to find by user ID
+        if(app == null) {
+            com.m4nas.model.UserDtls user = userRepository.findByEmail(email);
+            if(user != null) {
+                System.out.println("Trying to find application by user ID: " + user.getId());
+                app = userApplicationRepo.findById(user.getId()).orElse(null);
+                System.out.println("User ID lookup result: " + (app != null ? "FOUND" : "NOT FOUND"));
+            }
+        }
+        
+        // If found, print all field values for debugging
+        if(app != null) {
+            System.out.println("=== APPLICATION FIELD DEBUG ===");
+            System.out.println("Course: " + app.getCourse());
+            System.out.println("Branch1: " + app.getBranch1());
+            System.out.println("DOB: " + app.getDob());
+            System.out.println("Gender: " + app.getGender());
+            System.out.println("Phone: " + app.getPhoneNo());
+            System.out.println("Address: " + app.getAddress());
+            System.out.println("Class12 Physics: " + app.getClass12Physics());
+            System.out.println("Obtain12Marks: " + app.getObtain12Marks());
+            System.out.println("Percentage12: " + app.getPercentage12());
+        }
+        
+        System.out.println("Found application: " + (app != null ? "YES - ID: " + app.getId() + ", Email: " + app.getUserEmail() + ", Status: " + app.getStatus() : "NO"));
         return app;
     }
 
@@ -74,7 +144,18 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
 
     @Override
     public boolean hasUserSubmittedApplication(String email) {
-        return userApplicationRepo.existsByUserEmail(email);
+        // Check by email first
+        boolean existsByEmail = userApplicationRepo.existsByUserEmail(email);
+        
+        // If not found by email, check by user ID
+        if(!existsByEmail) {
+            com.m4nas.model.UserDtls user = userRepository.findByEmail(email);
+            if(user != null) {
+                return userApplicationRepo.existsById(user.getId());
+            }
+        }
+        
+        return existsByEmail;
     }
 
     // ==== TEACHER OPERATION ====

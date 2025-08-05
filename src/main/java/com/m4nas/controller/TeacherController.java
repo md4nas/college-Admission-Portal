@@ -2,9 +2,11 @@ package com.m4nas.controller;
 
 import com.m4nas.model.UserDtls;
 import com.m4nas.model.UserApplication;
+import com.m4nas.model.Announcement;
 import com.m4nas.repository.UserRepository;
 import com.m4nas.service.UserService;
 import com.m4nas.service.UserApplicationService;
+import com.m4nas.service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +34,9 @@ public class TeacherController {
     @Autowired
     private UserApplicationService userApplicationService;
 
+    @Autowired
+    private AnnouncementService announcementService;
+
     @ModelAttribute
     private void userDetails(Model m, Principal p, HttpServletRequest request) {
         if(p!=null) {
@@ -44,8 +49,29 @@ public class TeacherController {
 
     @GetMapping("/")
     public String home(Model model){
-        List<UserDtls> users = userService.getUsersByRole("ROLE_USER");
-        model.addAttribute("users", users);
+        // Dashboard Statistics
+        List<UserApplication> pendingApplications = userApplicationService.getApplicationsPendingApproval();
+        List<UserApplication> approvedApplications = userApplicationService.getApprovedApplicationsForSeatAllocation();
+        List<UserApplication> allocatedApplications = userApplicationService.getAllocatedApplicationsPendingResponse();
+        List<Object[]> statusCounts = userApplicationService.getApplicationStatusCounts();
+        List<Object[]> branchStats = userApplicationService.getBranchWiseStatistics();
+        
+        // Recent Users
+        List<UserDtls> recentUsers = userService.getUsersByRole("ROLE_USER");
+        
+        // Recent Announcements
+        List<Announcement> recentAnnouncements = announcementService.getActiveAnnouncements().stream().limit(5).collect(java.util.stream.Collectors.toList());
+        
+        // Add to model
+        model.addAttribute("pendingCount", pendingApplications.size());
+        model.addAttribute("approvedCount", approvedApplications.size());
+        model.addAttribute("allocatedCount", allocatedApplications.size());
+        model.addAttribute("recentApplications", pendingApplications.stream().limit(5).collect(java.util.stream.Collectors.toList()));
+        model.addAttribute("statusCounts", statusCounts);
+        model.addAttribute("branchStats", branchStats);
+        model.addAttribute("recentUsers", recentUsers.stream().limit(10).collect(java.util.stream.Collectors.toList()));
+        model.addAttribute("recentAnnouncements", recentAnnouncements);
+        
         return "teacher/home";
     }
 
@@ -119,5 +145,42 @@ public class TeacherController {
             session.setAttribute("msgType", "danger");
         }
         return "redirect:/teacher/applications/approved";
+    }
+
+    @PostMapping("/announcements/create")
+    public String createAnnouncement(@RequestParam("title") String title,
+                                     @RequestParam("content") String content,
+                                     @RequestParam("targetAudience") String targetAudience,
+                                     @RequestParam("announcementType") String announcementType,
+                                     @RequestParam(value = "eventDate", required = false) String eventDate,
+                                     @RequestParam(value = "eventTime", required = false) String eventTime,
+                                     Principal principal,
+                                     HttpSession session) {
+        try {
+            Announcement announcement = new Announcement(title, content, principal.getName(), targetAudience);
+            announcement.setAnnouncementType(announcementType);
+            
+            if (eventDate != null && !eventDate.isEmpty()) {
+                announcement.setEventDate(java.time.LocalDate.parse(eventDate));
+            }
+            if (eventTime != null && !eventTime.isEmpty()) {
+                announcement.setEventTime(eventTime);
+            }
+            
+            announcementService.saveAnnouncement(announcement);
+            session.setAttribute("msg", "Announcement created successfully!");
+            session.setAttribute("msgType", "success");
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error creating announcement.");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/";
+    }
+
+    @GetMapping("/announcements")
+    public String viewAnnouncements(Model model, Principal principal) {
+        List<Announcement> announcements = announcementService.getAnnouncementsByCreator(principal.getName());
+        model.addAttribute("announcements", announcements);
+        return "teacher/announcements";
     }
 }

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>My Announcements</title>
+</head>
+<body>
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3><i class='bx bx-megaphone me-2'></i>My Announcements</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div th:each="announcement : ${announcements}" class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0" th:text="${announcement.title}">Title</h5>
+                                        <span class="badge bg-info" th:text="${announcement.targetAudience}">ALL</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text" th:text="${announcement.content}">Content</p>
+                                        <small class="text-muted">
+                                            <i class='bx bx-time me-1'></i>
+                                            <span th:text="${#temporals.format(announcement.createdDate, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center py-5" th:if="${#lists.isEmpty(announcements)}">
+                            <i class='bx bx-megaphone text-muted' style="font-size: 4rem;"></i>
+                            <h4 class="text-muted mt-3">No Announcements Yet</h4>
+                            <p class="text-muted">You haven't created any announcements yet.</p>
+                            <a href="/teacher/" class="btn btn-primary">
+                                <i class='bx bx-plus me-1'></i>Create Announcement
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

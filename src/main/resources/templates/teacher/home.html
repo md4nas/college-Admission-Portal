@@ -4,40 +4,359 @@
 <head>
     <meta charset="UTF-8">
     <title>Teacher Dashboard</title>
+    <style>
+        .stats-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+    </style>
 </head>
 <body>
 <section>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
+        <!-- Welcome Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-1"><i class='bx bx-chalkboard me-2 text-success'></i>Teacher Dashboard</h2>
+                        <p class="text-muted mb-0">Welcome back, <span th:text="${user.fullName}"></span>! Here's your overview.</p>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">Last updated: <span id="currentTime"></span></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card stats-card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-1">Pending Review</h6>
+                                <h3 class="mb-0" th:text="${pendingCount}">0</h3>
+                                <small>Applications awaiting approval</small>
+                            </div>
+                            <i class='bx bx-time-five stats-icon'></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card stats-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-1">Approved</h6>
+                                <h3 class="mb-0" th:text="${approvedCount}">0</h3>
+                                <small>Ready for seat allocation</small>
+                            </div>
+                            <i class='bx bx-check-circle stats-icon'></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card stats-card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-1">Seat Allocated</h6>
+                                <h3 class="mb-0" th:text="${allocatedCount}">0</h3>
+                                <small>Awaiting student response</small>
+                            </div>
+                            <i class='bx bx-chair stats-icon'></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card stats-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title mb-1">Quick Actions</h6>
+                                <div class="d-flex gap-2 mt-2">
+                                    <a href="/teacher/applications" class="btn btn-light btn-sm">
+                                        <i class='bx bx-list-ul me-1'></i>Review
+                                    </a>
+                                    <a href="/teacher/applications/approve" class="btn btn-outline-light btn-sm">
+                                        <i class='bx bx-chair me-1'></i>Allocate
+                                    </a>
+                                </div>
+                            </div>
+                            <i class='bx bx-cog stats-icon'></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Announcement Form -->
+        <div class="row mb-4">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-header text-center bg-success text-white">
-                        <h3><i class='bx bx-chalkboard me-2'></i>Teacher Dashboard</h3>
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class='bx bx-megaphone me-2'></i>Quick Announcement</h5>
                     </div>
                     <div class="card-body">
-                        <h4 class="mb-4"><i class='bx bx-group me-2'></i>User Management</h4>
+                        <form th:action="@{/teacher/announcements/create}" method="post">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" class="form-control" name="title" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Target Audience</label>
+                                    <select class="form-select" name="targetAudience" required>
+                                        <option value="STUDENT">Students</option>
+                                        <option value="ADMIN">Admin</option>
+                                        <option value="ALL">Everyone</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-select" name="announcementType" id="announcementType" onchange="toggleDateField()">
+                                        <option value="GENERAL">General Announcement</option>
+                                        <option value="EVENT">Event/Meeting</option>
+                                        <option value="DEADLINE">Important Deadline</option>
+                                        <option value="HOLIDAY">Holiday Notice</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row" id="dateRow" style="display: none;">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Event Date</label>
+                                    <input type="date" class="form-control" name="eventDate" id="eventDate">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Event Time (Optional)</label>
+                                    <input type="time" class="form-control" name="eventTime">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Content</label>
+                                <textarea class="form-control" name="content" rows="3" required placeholder="Enter announcement details..."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-success">
+                                    <i class='bx bx-send me-1'></i>Post Announcement
+                                </button>
+                                <small class="text-muted">
+                                    <i class='bx bx-info-circle me-1'></i>Select 'Event/Meeting' to add calendar dates
+                                </small>
+                            </div>
+                        </form>
                         
+                        <script>
+                            function toggleDateField() {
+                                const type = document.getElementById('announcementType').value;
+                                const dateRow = document.getElementById('dateRow');
+                                const eventDate = document.getElementById('eventDate');
+                                
+                                if (type === 'EVENT' || type === 'DEADLINE') {
+                                    dateRow.style.display = 'block';
+                                    eventDate.required = true;
+                                } else {
+                                    dateRow.style.display = 'none';
+                                    eventDate.required = false;
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics and Announcements Row -->
+        <div class="row mb-4">
+            <!-- Branch Statistics -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class='bx bx-bar-chart me-2'></i>Branch Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="branch : ${branchStats}" class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-semibold" th:text="${branch[0]}">Branch Name</span>
+                                <span class="badge bg-primary" th:text="${branch[1]}">0</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" th:style="|width: ${branch[1] * 10}%|"></div>
+                            </div>
+                        </div>
+                        <div class="text-center py-3" th:if="${#lists.isEmpty(branchStats)}">
+                            <i class='bx bx-bar-chart text-muted' style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-0">No branch data available.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Announcements -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class='bx bx-bell me-2'></i>Recent Announcements</h5>
+                            <a href="/teacher/announcements" class="btn btn-sm btn-outline-primary">
+                                <i class='bx bx-right-arrow-alt me-1'></i>View All
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <div th:each="announcement : ${recentAnnouncements}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <h6 class="mb-0 me-2" th:text="${announcement.title}">Announcement Title</h6>
+                                            <span th:if="${announcement.announcementType == 'EVENT'}" class="badge bg-success badge-sm">
+                                                <i class='bx bx-calendar-event'></i> Event
+                                            </span>
+                                            <span th:if="${announcement.announcementType == 'DEADLINE'}" class="badge bg-warning badge-sm">
+                                                <i class='bx bx-alarm'></i> Deadline
+                                            </span>
+                                            <span th:if="${announcement.announcementType == 'HOLIDAY'}" class="badge bg-info badge-sm">
+                                                <i class='bx bx-sun'></i> Holiday
+                                            </span>
+                                        </div>
+                                        <p class="mb-1 text-muted" th:text="${#strings.abbreviate(announcement.content, 80)}">Announcement content...</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class='bx bx-time me-1'></i>
+                                                <span th:text="${#temporals.format(announcement.createdDate, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                            </small>
+                                            <small th:if="${announcement.eventDate != null}" class="text-primary">
+                                                <i class='bx bx-calendar me-1'></i>
+                                                <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd, yyyy')}">Event Date</span>
+                                                <span th:if="${announcement.eventTime != null}" th:text="' at ' + ${announcement.eventTime}"></span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-primary" th:text="${announcement.targetAudience}">ALL</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center py-4" th:if="${#lists.isEmpty(recentAnnouncements)}">
+                            <i class='bx bx-bell text-muted' style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">No announcements yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Applications Row -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class='bx bx-file-blank me-2'></i>Recent Applications</h5>
+                            <a href="/teacher/applications" class="btn btn-sm btn-outline-primary">
+                                <i class='bx bx-right-arrow-alt me-1'></i>View All
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Full Name</th>
-                                        <th>Email</th>
-                                        <th>Provider</th>
+                                        <th>Student</th>
+                                        <th>Course</th>
+                                        <th>Percentage</th>
                                         <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="user : ${users}">
-                                        <td th:text="${user.id}"></td>
+                                    <tr th:each="app : ${recentApplications}">
                                         <td>
-                                            <i class='bx bx-user me-1'></i>
-                                            <span th:text="${user.fullName}"></span>
+                                            <div>
+                                                <div class="fw-semibold" th:text="${app.parentsName ?: 'Student'}">Student Name</div>
+                                                <small class="text-muted" th:text="${app.userEmail}">email@example.com</small>
+                                            </div>
                                         </td>
                                         <td>
-                                            <i class='bx bx-envelope me-1'></i>
-                                            <span th:text="${user.email}"></span>
+                                            <span class="badge bg-light text-dark" th:text="${app.course ?: 'N/A'}">Course</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress me-2" style="width: 60px; height: 6px;">
+                                                    <div class="progress-bar bg-success" th:style="|width: ${app.percentage12 ?: 0}%|"></div>
+                                                </div>
+                                                <small th:text="|${app.percentage12 ?: 0}%|">85%</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning" th:text="${app.status}">Pending</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/teacher/applications}" class="btn btn-sm btn-outline-primary">
+                                                <i class='bx bx-edit-alt'></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center py-4" th:if="${#lists.isEmpty(recentApplications)}">
+                            <i class='bx bx-file text-muted' style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">No recent applications to review.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Users Row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class='bx bx-group me-2'></i>Recent Users</h5>
+                            <span class="badge bg-secondary" th:text="|${#lists.size(recentUsers)} users|">0 users</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Provider</th>
+                                        <th>Status</th>
+                                        <th>Joined</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user : ${recentUsers}">
+                                        <td>
+                                            <span th:text="${user.fullName}">User Name</span>
+                                        </td>
+                                        <td>
+                                            <i class='bx bx-envelope me-1 text-muted'></i>
+                                            <span th:text="${user.email}">email@example.com</span>
                                         </td>
                                         <td>
                                             <span th:if="${user.provider == 'local'}" class="badge bg-primary">
@@ -58,13 +377,15 @@
                                                 <i class='bx bx-time me-1'></i>Pending
                                             </span>
                                         </td>
+                                        <td>
+                                            <small class="text-muted">Recently</small>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <div class="mt-4 text-center" th:if="${#lists.isEmpty(users)}">
-                            <i class='bx bx-info-circle text-muted' style="font-size: 3rem;"></i>
+                        <div class="text-center py-4" th:if="${#lists.isEmpty(recentUsers)}">
+                            <i class='bx bx-user text-muted' style="font-size: 3rem;"></i>
                             <p class="text-muted mt-2">No users found in the system.</p>
                         </div>
                     </div>
@@ -72,6 +393,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString();
+        }
+        updateTime();
+        setInterval(updateTime, 60000); // Update every minute
+    </script>
 </section>
 </body>
 </html>

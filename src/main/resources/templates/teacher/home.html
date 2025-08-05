@@ -276,6 +276,7 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
+                                        <th>Sr. No.</th>
                                         <th>Student</th>
                                         <th>Course</th>
                                         <th>Percentage</th>
@@ -284,11 +285,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="app : ${recentApplications}">
+                                    <tr th:each="app, iterStat : ${recentApplications}">
+                                        <td>
+                                            <span class="badge bg-secondary" th:text="${iterStat.count}">1</span>
+                                        </td>
                                         <td>
                                             <div>
                                                 <div class="fw-semibold" th:text="${app.parentsName ?: 'Student'}">Student Name</div>
-                                                <small class="text-muted" th:text="${app.userEmail}">email@example.com</small>
+                                                <small class="text-muted">
+                                                    <span th:text="${app.userEmail}">email@example.com</span>
+                                                    <span class="ms-2 text-primary">ID: <span th:text="${app.id}">123</span></span>
+                                                </small>
                                             </div>
                                         </td>
                                         <td>
@@ -338,6 +345,7 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
+                                        <th>Sr. No.</th>
                                         <th>User</th>
                                         <th>Email</th>
                                         <th>Provider</th>
@@ -346,9 +354,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="user : ${recentUsers}">
+                                    <tr th:each="user, iterStat : ${recentUsers}">
                                         <td>
-                                            <span th:text="${user.fullName}">User Name</span>
+                                            <span class="badge bg-secondary" th:text="${iterStat.count}">1</span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div class="fw-semibold" th:text="${user.fullName}">User Name</div>
+                                                <small class="text-primary">ID: <span th:text="${user.id}">123</span></small>
+                                            </div>
                                         </td>
                                         <td>
                                             <i class='bx bx-envelope me-1 text-muted'></i>

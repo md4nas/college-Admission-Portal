@@ -25,11 +25,16 @@
 
                         <form th:action="@{/user/settings/updateProfile}" method="post" th:object="${user}">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">User ID</label>
+                                    <input type="text" class="form-control" th:field="*{id}" readonly>
+                                    <small class="text-muted">User ID cannot be changed</small>
+                                </div>
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" th:field="*{fullName}" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Email Address</label>
                                     <input type="email" class="form-control" th:field="*{email}" readonly>
                                     <small class="text-muted">Email cannot be changed</small>

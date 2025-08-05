@@ -44,6 +44,11 @@ public class UserController {
                 model.addAttribute("user", user);
                 model.addAttribute("application", application);
                 model.addAttribute("currentPath", request.getRequestURI());
+                
+                // Add parents phone number if application exists
+                if(application != null) {
+                    model.addAttribute("appParentsPhoneNo", application.getParentsPhoneNo());
+                }
                 return "user/home";
             } else {
                 return "redirect:/signin?error";
@@ -54,7 +59,10 @@ public class UserController {
 
 
     @GetMapping("/settings/changePass")
-    public String loadChangePassword() {
+    public String loadChangePassword(HttpSession session) {
+        // Clear any existing messages to prevent showing profile update messages
+        session.removeAttribute("msg");
+        session.removeAttribute("msgType");
         return "user/settings/change_password";
     }
 
@@ -128,6 +136,7 @@ public class UserController {
         UserDtls user = userRepo.findByEmail(email);
         
         application.setUserEmail(email);
+        application.setSubmissionDate(LocalDate.now());
         
         // Set application ID to user ID for better tracking
         if(user != null) {
@@ -177,6 +186,7 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         model.addAttribute("appPhone", application.getPhoneNo());
         model.addAttribute("appAddress", application.getAddress());
         model.addAttribute("appParentsName", application.getParentsName());
+        model.addAttribute("appParentsPhoneNo", application.getParentsPhoneNo());
         model.addAttribute("appReligion", application.getReligion());
         model.addAttribute("appCaste", application.getCaste());
         model.addAttribute("appCity", application.getCity());

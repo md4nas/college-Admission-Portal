@@ -91,6 +91,10 @@
                                         <input type="text" class="form-control" th:field="*{parentsName}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
+                                        <label class="form-label">Parents Phone Number <span class="required">*</span></label>
+                                        <input type="tel" class="form-control" th:field="*{parentsPhoneNo}" pattern="[0-9]{10}" maxlength="10" placeholder="10 digit mobile number" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
                                         <label class="form-label">Religion</label>
                                         <input type="text" class="form-control" th:field="*{religion}">
                                     </div>
@@ -307,6 +311,7 @@
             </div>
         </div>
     </div>
+</section>
 
 <script>
     // Auto-dismiss alerts after 5 seconds
@@ -319,8 +324,6 @@
         });
     }, 5000);
 </script>
-
-</section>
 
 </body>
 </html>

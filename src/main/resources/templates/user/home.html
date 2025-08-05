@@ -103,11 +103,11 @@
             </div>
         </div>
 
-        <!-- Application Status Section -->
+        <!-- Enhanced Application Status Section -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header bg-warning text-dark">
+                    <div class="card-header bg-info text-white">
                         <h4><i class='bx bx-file-blank me-2'></i>College Application Status</h4>
                     </div>
                     <div class="card-body">
@@ -123,122 +123,142 @@
 
                         <!-- Application Exists Case -->
                         <div th:if="${application != null}">
-                            <div class="row">
-                                <!-- Status Card -->
+                            <!-- Application Status Grid -->
+                            <div class="row mb-4">
                                 <div class="col-md-4 mb-3">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-body text-center">
-                                            <div th:switch="${application.status}">
-                                                <div th:case="'PENDING'">
-                                                    <i class='bx bx-time-five text-warning' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-warning">Pending</h5>
-                                                </div>
-                                                <div th:case="'SUBMITTED'">
-                                                    <i class='bx bx-check text-info' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-info">Submitted</h5>
-                                                </div>
-                                                <div th:case="'APPROVED'">
-                                                    <i class='bx bx-check-circle text-success' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-success">Approved</h5>
-                                                </div>
-                                                <div th:case="'ALLOCATED'">
-                                                    <i class='bx bx-trophy text-primary' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-primary">Seat Allocated</h5>
-                                                </div>
-                                                <div th:case="'ACCEPTED'">
-                                                    <i class='bx bx-medal text-success' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-success">Seat Accepted</h5>
-                                                </div>
-                                                <div th:case="'DECLINED'">
-                                                    <i class='bx bx-x-circle text-danger' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-danger">Seat Declined</h5>
-                                                </div>
-                                                <div th:case="'REJECTED'">
-                                                    <i class='bx bx-x text-danger' style="font-size: 3rem;"></i>
-                                                    <h5 class="mt-2 text-danger">Rejected</h5>
-                                                </div>
-                                            </div>
-                                            <p class="text-muted mb-0">Current Status</p>
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-id-card text-primary me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Application ID</small>
+                                            <h6 class="mb-0" th:text="${user.id}"></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-calendar text-success me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Submission Date</small>
+                                            <h6 class="mb-0" th:text="${application.submissionDate}"></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-check-circle text-info me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Application Status</small>
+                                            <h6 class="mb-0">
+                                                <span class="badge bg-success">Submitted</span>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-search text-info me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Application Review</small>
+                                            <h6 class="mb-0">
+                                                <span th:switch="${application.status}">
+                                                    <span th:case="'PENDING'" class="badge bg-warning">Pending</span>
+                                                    <span th:case="'SUBMITTED'" class="badge bg-info">Under Review</span>
+                                                    <span th:case="'APPROVED'" class="badge bg-success">Approved</span>
+                                                    <span th:case="'ALLOCATED'" class="badge bg-success">Approved</span>
+                                                    <span th:case="'ACCEPTED'" class="badge bg-success">Approved</span>
+                                                    <span th:case="'DECLINED'" class="badge bg-danger">Declined</span>
+                                                    <span th:case="'REJECTED'" class="badge bg-danger">Rejected</span>
+                                                    <span th:case="*" class="badge bg-warning">Pending</span>
+                                                </span>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-book-bookmark text-warning me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Course Allocated</small>
+                                            <h6 class="mb-0">
+                                                <span th:if="${application.allocatedBranch != null}" class="badge bg-success" th:text="${application.allocatedBranch}"></span>
+                                                <span th:unless="${application.allocatedBranch != null}" class="text-muted">Awaiting Allocation</span>
+                                            </h6>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Application Details -->
-                                <div class="col-md-8">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <div class="d-flex align-items-center p-3 bg-light rounded">
-                                                <i class='bx bx-book text-primary me-3' style="font-size: 2rem;"></i>
-                                                <div>
-                                                    <small class="text-muted">Course</small>
-                                                    <h6 class="mb-0" th:text="${application.course ?: 'Not specified'}"></h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="d-flex align-items-center p-3 bg-light rounded">
-                                                <i class='bx bx-target-lock text-success me-3' style="font-size: 2rem;"></i>
-                                                <div>
-                                                    <small class="text-muted">First Choice</small>
-                                                    <h6 class="mb-0" th:text="${application.branch1 ?: 'Not specified'}"></h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="d-flex align-items-center p-3 bg-light rounded">
-                                                <i class='bx bx-medal text-warning me-3' style="font-size: 2rem;"></i>
-                                                <div>
-                                                    <small class="text-muted">Class 12 Marks</small>
-                                                    <h6 class="mb-0" th:text="${application.obtain12Marks != null ? application.obtain12Marks + '/' + application.total12Marks : 'Not specified'}"></h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="d-flex align-items-center p-3 bg-light rounded">
-                                                <i class='bx bx-percentage text-info me-3' style="font-size: 2rem;"></i>
-                                                <div>
-                                                    <small class="text-muted">Percentage</small>
-                                                    <h6 class="mb-0" th:text="${application.percentage12 != null ? application.percentage12 + '%' : 'Not calculated'}"></h6>
-                                                </div>
-                                            </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-credit-card text-danger me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Payment Status</small>
+                                            <h6 class="mb-0">
+                                                <span th:switch="${application.paymentStatus ?: 'PENDING'}">
+                                                    <span th:case="'PAID'" class="badge bg-success">Paid</span>
+                                                    <span th:case="'PARTIAL'" class="badge bg-warning">Partial</span>
+                                                    <span th:case="*" class="badge bg-danger">Pending</span>
+                                                </span>
+                                            </h6>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Allocated Branch Section -->
-                            <div th:if="${application.allocatedBranch != null}" class="mt-4">
-                                <div class="alert alert-success">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <h5 class="alert-heading mb-2">
-                                                <i class='bx bx-trophy me-2'></i>Congratulations! Seat Allocated
-                                            </h5>
-                                            <p class="mb-0">
-                                                You have been allocated a seat in <strong th:text="${application.allocatedBranch}"></strong> branch.
-                                            </p>
+                            <!-- Admission Process -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-gradient-info text-white">
+                                    <h5><i class='bx bx-clipboard-check me-2'></i>Admission Process</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="process-step text-center p-3 rounded bg-success text-white">
+                                                <i class='bx bx-check-circle' style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Application</h6>
+                                                <small>Submitted</small>
+                                            </div>
                                         </div>
-                                        <div class="col-md-4 text-end" th:if="${application.status == 'ALLOCATED'}">
-                                            <form th:action="@{/user/application/accept-seat}" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-success me-2">
-                                                    <i class='bx bx-check'></i> Accept
-                                                </button>
-                                            </form>
-                                            <form th:action="@{/user/application/decline-seat}" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-outline-danger">
-                                                    <i class='bx bx-x'></i> Decline
-                                                </button>
-                                            </form>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${application.status != 'PENDING' && application.status != 'SUBMITTED'} ? 'bg-success text-white' : 'bg-light'">
+                                                <i class='bx bx-calculator' style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Merit List</h6>
+                                                <small>Rank Calculation</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${application.status == 'ALLOCATED' || application.status == 'ACCEPTED'} ? 'bg-success text-white' : 'bg-light'">
+                                                <i class='bx bx-trophy' style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Seat Allocation</h6>
+                                                <small>Branch Assignment</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${application.status == 'ACCEPTED'} ? 'bg-success text-white' : 'bg-light'">
+                                                <i class='bx bx-credit-card' style="font-size: 2rem;"></i>
+                                                <h6 class="mt-2 mb-1">Confirmation</h6>
+                                                <small>Fee Payment</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="text-center mt-4">
-                                <a href="/user/application/status" class="btn btn-outline-primary">
-                                    <i class='bx bx-file-blank me-2'></i>View Submitted Application
-                                </a>
+                            <div class="row" th:if="${application.status == 'ALLOCATED'}">
+                                <div class="col-md-6 mb-2">
+                                    <form th:action="@{/user/application/accept-seat}" method="post">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class='bx bx-check me-2'></i>Accept Seat
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <form th:action="@{/user/application/decline-seat}" method="post">
+                                        <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Are you sure?')">
+                                            <i class='bx bx-x me-2'></i>Decline Seat
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -290,6 +310,119 @@
         </div>
     </div>
 </section>
+
+<style>
+    .bg-gradient-warning {
+        background: linear-gradient(45deg, #ffc107, #fd7e14);
+    }
+    
+    .card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+        font-size: 0.8em;
+        padding: 0.5em 0.8em;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 10px;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    /* Timeline Steps */
+    .timeline-steps {
+        position: relative;
+    }
+    
+    .step {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .step:last-child {
+        margin-bottom: 0;
+    }
+    
+    .step::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 40px;
+        bottom: -2rem;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .step:last-child::before {
+        display: none;
+    }
+    
+    .step.completed::before {
+        background: #28a745;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #dee2e6;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .step.completed .step-number {
+        background: #28a745;
+        color: white;
+    }
+    
+    .step-content h6 {
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .d-grid.gap-2.d-md-flex {
+            gap: 0.5rem !important;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .step::before {
+            left: 15px;
+        }
+    }
+</style>
 
 </body>
 </html>

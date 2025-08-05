@@ -69,6 +69,7 @@ public class UserApplication {
     private String allocatedBranch;
     private Boolean seatAccepted = false;
     private String status = "PENDING";
+    private LocalDate submissionDate;
 
     // Constructor
     public UserApplication() {}
@@ -219,4 +220,7 @@ public class UserApplication {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    
+    public LocalDate getSubmissionDate() { return submissionDate; }
+    public void setSubmissionDate(LocalDate submissionDate) { this.submissionDate = submissionDate; }
 }

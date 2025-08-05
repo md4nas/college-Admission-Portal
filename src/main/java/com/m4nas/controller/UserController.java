@@ -1,7 +1,10 @@
 package com.m4nas.controller;
 
 import com.m4nas.model.UserApplication;
+import com.m4nas.model.Announcement;
 import com.m4nas.service.UserApplicationService;
+import com.m4nas.service.AnnouncementService;
+import java.util.List;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -30,6 +33,9 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserApplicationService userApplicationService;
+    
+    @Autowired
+    private AnnouncementService announcementService;
 
 
 
@@ -311,8 +317,12 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         UserDtls user = userRepo.findByEmail(email);
         UserApplication application = userApplicationService.getUserApplicationByEmail(email);
         
+        // Get announcements for students (STUDENT and ALL)
+        List<Announcement> announcements = announcementService.getAnnouncementsByAudience("STUDENT");
+        
         model.addAttribute("user", user);
         model.addAttribute("application", application);
+        model.addAttribute("announcements", announcements);
         model.addAttribute("currentPath", request.getRequestURI());
         return "user/notifications";
     }

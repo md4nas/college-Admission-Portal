@@ -72,33 +72,69 @@
             </div>
         </div>
 
-        <!-- General Notifications -->
+        <!-- General Announcements -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-info text-white">
                         <h5><i class='bx bx-bell-ring me-2'></i>General Announcements</h5>
                     </div>
-                    <div class="card-body">
-                        <div class="alert alert-info">
-                            <h6 class="alert-heading"><i class='bx bx-info-circle me-2'></i>Important Notice</h6>
-                            <p class="mb-2">The admission process for the current academic year is ongoing. Please ensure all your documents are submitted on time.</p>
-                            <hr>
-                            <p class="mb-0"><small>Posted: Today | Category: Admission</small></p>
-                        </div>
-                        
-                        <div class="alert alert-warning">
-                            <h6 class="alert-heading"><i class='bx bx-time me-2'></i>Deadline Reminder</h6>
-                            <p class="mb-2">Last date for fee payment is approaching. Please complete your fee payment to secure your admission.</p>
-                            <hr>
-                            <p class="mb-0"><small>Posted: 2 days ago | Category: Fee Payment</small></p>
-                        </div>
-                        
-                        <div class="alert alert-success">
-                            <h6 class="alert-heading"><i class='bx bx-check-circle me-2'></i>System Update</h6>
-                            <p class="mb-2">Our admission portal has been updated with new features. You can now track your application status in real-time.</p>
-                            <hr>
-                            <p class="mb-0"><small>Posted: 1 week ago | Category: System</small></p>
+                    <div class="card-body p-0">
+                        <div style="max-height: 800px; overflow-y: auto; padding: 15px;">
+                            <div th:each="announcement, iterStat : ${announcements}" th:if="${iterStat.index < 10}" class="mb-3">
+                                <div class="alert" th:classappend="${announcement.announcementType == 'EVENT'} ? 'alert-success' : (${announcement.announcementType == 'DEADLINE'} ? 'alert-warning' : (${announcement.announcementType == 'HOLIDAY'} ? 'alert-info' : 'alert-light'))">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="alert-heading d-flex align-items-center">
+                                                <i th:if="${announcement.announcementType == 'EVENT'}" class='bx bx-calendar-event me-2'></i>
+                                                <i th:if="${announcement.announcementType == 'DEADLINE'}" class='bx bx-alarm me-2'></i>
+                                                <i th:if="${announcement.announcementType == 'HOLIDAY'}" class='bx bx-sun me-2'></i>
+                                                <i th:if="${announcement.announcementType == 'GENERAL'}" class='bx bx-info-circle me-2'></i>
+                                                <span th:text="${announcement.title}">Announcement Title</span>
+                                            </h6>
+                                            <p class="mb-2" th:text="${announcement.content}">Announcement content...</p>
+                                            <hr class="my-2">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="mb-0">
+                                                    <i class='bx bx-time me-1'></i>
+                                                    Posted: <span th:text="${#temporals.format(announcement.createdDate, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                                    | Category: <span th:text="${announcement.announcementType}">Type</span>
+                                                </small>
+                                                <small th:if="${announcement.eventDate != null}" class="text-primary">
+                                                    <i class='bx bx-calendar me-1'></i>
+                                                    Event: <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd, yyyy')}">Event Date</span>
+                                                    <span th:if="${announcement.eventTime != null}" th:text="' at ' + ${announcement.eventTime}"></span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-secondary ms-2" th:text="${announcement.targetAudience}">ALL</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Default announcements if no custom ones exist -->
+                            <div th:if="${#lists.isEmpty(announcements)}">
+                                <div class="alert alert-info">
+                                    <h6 class="alert-heading"><i class='bx bx-info-circle me-2'></i>Important Notice</h6>
+                                    <p class="mb-2">The admission process for the current academic year is ongoing. Please ensure all your documents are submitted on time.</p>
+                                    <hr>
+                                    <p class="mb-0"><small>Posted: System | Category: Admission</small></p>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading"><i class='bx bx-time me-2'></i>Deadline Reminder</h6>
+                                    <p class="mb-2">Last date for fee payment is approaching. Please complete your fee payment to secure your admission.</p>
+                                    <hr>
+                                    <p class="mb-0"><small>Posted: System | Category: Fee Payment</small></p>
+                                </div>
+                                
+                                <div class="alert alert-success">
+                                    <h6 class="alert-heading"><i class='bx bx-check-circle me-2'></i>System Update</h6>
+                                    <p class="mb-2">Our admission portal has been updated with new features. You can now track your application status in real-time.</p>
+                                    <hr>
+                                    <p class="mb-0"><small>Posted: System | Category: System</small></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

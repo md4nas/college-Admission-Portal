@@ -191,7 +191,7 @@
     </nav>
 
     <!-- User Navbar -->
-    <nav th:if="${user != null and user.role == 'ROLE_USER' and (#strings.startsWith(currentPath, '/user') or currentPath == '/verify' or currentPath == '/reset-password')}" class="navbar navbar-expand-lg navbar-dark bg-info fixed-top shadow-sm">
+    <nav th:if="${user != null and user.role == 'ROLE_USER'}" class="navbar navbar-expand-lg navbar-dark bg-info fixed-top shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class='bx bx-user-circle me-2'></i>UserAuth

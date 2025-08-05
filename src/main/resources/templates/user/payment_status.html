@@ -3,7 +3,7 @@
       th:replace="~{base::Layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>Payment Status</title>
+    <title>Fee Payment Portal</title>
 </head>
 <body>
 
@@ -12,70 +12,177 @@
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card bg-primary text-white">
+                <div class="card bg-gradient-primary text-white">
                     <div class="card-body text-center py-4">
-                        <i class='bx bx-wallet-alt' style="font-size: 3rem;"></i>
-                        <h2 class="mt-3 mb-2">Fee Payment Status</h2>
-                        <p class="mb-0">Track your fee payments and outstanding dues</p>
+                        <i class='bx bx-credit-card' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">Fee Payment Portal</h2>
+                        <p class="mb-0">Complete your admission by paying the required fees</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Status for Accepted Students -->
-        <div th:if="${application != null and application.status == 'ACCEPTED'}">
-            <!-- Fee Structure -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-success text-white">
-                            <h5><i class='bx bx-money me-2'></i>Fee Structure</h5>
+        <!-- College Bank Details -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class='bx bx-bank me-2'></i>College Bank Account Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <strong>Account Name:</strong> ABC Engineering College
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Account Number:</strong> <span class="text-primary fw-bold">1234567890123456</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Bank Name:</strong> State Bank of India
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <strong>IFSC Code:</strong> <span class="text-primary fw-bold">SBIN0001234</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Branch:</strong> Main Campus Branch
+                                </div>
+                                <div class="mb-3">
+                                    <strong>UPI ID:</strong> <span class="text-primary fw-bold">abcengineering@sbi</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fee Calculator -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class='bx bx-calculator me-2'></i>Fee Calculator</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="feeCalculatorForm">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-primary">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Select Course <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="courseSelect" onchange="updateBranches()" required>
+                                        <option value="">Choose Course</option>
+                                        <option value="btech">B.Tech (4 Years)</option>
+                                        <option value="bsc">B.Sc (3 Years)</option>
+                                        <option value="bca">BCA (3 Years)</option>
+                                        <option value="mtech">M.Tech (2 Years)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Select Branch <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="branchSelect" onchange="calculateFee()" required>
+                                        <option value="">Choose Branch</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Fee Breakdown - Improved table-like layout -->
+                            <div id="feeBreakdown" class="row g-3" style="display: none;">
+                                <div class="col-md-8">
+                                    <div class="card border-info shadow-sm h-100">
                                         <div class="card-body">
-                                            <h6 class="card-title text-primary">Semester 1 Fees</h6>
-                                            <div class="row">
-                                                <div class="col-8">Tuition Fee</div>
-                                                <div class="col-4 text-end">₹45,000</div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-8">Development Fee</div>
-                                                <div class="col-4 text-end">₹10,000</div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-8">Lab Fee</div>
-                                                <div class="col-4 text-end">₹5,000</div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-8">Library Fee</div>
-                                                <div class="col-4 text-end">₹2,000</div>
-                                            </div>
-                                            <hr>
-                                            <div class="row fw-bold">
-                                                <div class="col-8">Total</div>
-                                                <div class="col-4 text-end">₹62,000</div>
+                                            <h6 class="card-title text-primary mb-4">Fee Breakdown (Per Year)</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-borderless">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td class="w-75">Tuition Fee</td>
+                                                        <td class="w-25 text-end fw-medium" id="tuitionFee">₹45,000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Development Fee</td>
+                                                        <td class="text-end fw-medium" id="developmentFee">₹10,000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Lab Fee</td>
+                                                        <td class="text-end fw-medium" id="labFee">₹8,000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Library Fee</td>
+                                                        <td class="text-end fw-medium" id="libraryFee">₹2,000</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Exam Fee</td>
+                                                        <td class="text-end fw-medium" id="examFee">₹1,500</td>
+                                                    </tr>
+                                                    <tr class="border-top">
+                                                        <td class="pt-3 fw-bold">Total Amount</td>
+                                                        <td class="pt-3 text-end fw-bold text-primary" id="totalAmount">₹66,500</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="card border-info">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-info">Payment Status</h6>
-                                            <div class="text-center mb-3">
-                                                <i class='bx bx-time-five text-warning' style="font-size: 3rem;"></i>
-                                                <h5 class="mt-2 text-warning">Payment Pending</h5>
-                                                <p class="text-muted">Please complete your fee payment to secure admission</p>
-                                            </div>
-                                            <div class="d-grid">
-                                                <button class="btn btn-primary btn-lg" onclick="initiatePayment()">
-                                                    <i class='bx bx-credit-card me-2'></i>Pay Now - ₹62,000
-                                                </button>
-                                            </div>
+                                <div class="col-md-4">
+                                    <div class="card border-success">
+                                        <div class="card-body text-center">
+                                            <i class='bx bx-money text-success' style="font-size: 3rem;"></i>
+                                            <h6 class="mt-2">Amount to Pay</h6>
+                                            <h3 class="text-success" id="payableAmount">₹0</h3>
+                                            <button type="button" class="btn btn-success w-100 mt-3" onclick="showPaymentOptions()" disabled id="proceedBtn">
+                                                <i class='bx bx-arrow-right me-2'></i>Proceed to Pay
+                                            </button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Options -->
+        <div id="paymentOptionsSection" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class='bx bx-credit-card me-2'></i>Payment Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- UPI Payment -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-info payment-option" onclick="selectPaymentMethod('upi')">
+                                    <div class="card-body text-center">
+                                        <i class='bx bx-mobile text-primary' style="font-size: 3rem;"></i>
+                                        <h6 class="mt-2">UPI Payment</h6>
+                                        <p class="text-muted small">Pay using UPI apps like PhonePe, GPay, Paytm</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Bank Transfer -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-success payment-option" onclick="selectPaymentMethod('bank')">
+                                    <div class="card-body text-center">
+                                        <i class='bx bxs-bank text-success' style="font-size: 3rem;"></i>
+                                        <h6 class="mt-2">Bank Transfer</h6>
+                                        <p class="text-muted small">Transfer to college bank account</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Upload Receipt -->
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-info payment-option" onclick="selectPaymentMethod('receipt')">
+                                    <div class="card-body text-center">
+                                        <i class='bx bx-receipt text-info' style="font-size: 3rem;"></i>
+                                        <h6 class="mt-2">Upload Receipt</h6>
+                                        <p class="text-muted small">Upload payment receipt for verification</p>
                                     </div>
                                 </div>
                             </div>
@@ -83,94 +190,112 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Payment Instructions -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-info text-white">
-                            <h5><i class='bx bx-info-circle me-2'></i>Payment Instructions</h5>
-                        </div>
-                        <div class="card-body">
+        </div>
+        
+        <!-- Payment Form -->
+        <div id="paymentFormSection" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class='bx bx-form me-2'></i>Payment Submission</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="paymentForm" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h6 class="text-primary">Online Payment Options</h6>
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Credit/Debit Cards</li>
-                                        <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Net Banking</li>
-                                        <li class="mb-2"><i class='bx bx-check text-success me-2'></i>UPI Payments</li>
-                                        <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Digital Wallets</li>
-                                    </ul>
+                                    <div class="mb-3">
+                                        <label class="form-label">Student Name</label>
+                                        <input type="text" class="form-control" th:value="${user.fullName}" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Course & Branch</label>
+                                        <input type="text" class="form-control" id="courseInfo" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Amount Paid <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="amountPaid" required>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6 class="text-primary">Important Notes</h6>
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2"><i class='bx bx-info-circle text-info me-2'></i>Payment deadline: 30 days from admission</li>
-                                        <li class="mb-2"><i class='bx bx-info-circle text-info me-2'></i>Late payment attracts penalty</li>
-                                        <li class="mb-2"><i class='bx bx-info-circle text-info me-2'></i>Keep payment receipt safe</li>
-                                        <li class="mb-2"><i class='bx bx-info-circle text-info me-2'></i>Contact office for payment issues</li>
-                                    </ul>
+                                    <div class="mb-3">
+                                        <label class="form-label">Payment Method</label>
+                                        <input type="text" class="form-control" id="paymentMethodDisplay" readonly>
+                                    </div>
+                                    <div class="mb-3" id="transactionField">
+                                        <label class="form-label">Transaction ID/Reference Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="transactionId" required>
+                                    </div>
+                                    <div class="mb-3" id="receiptField">
+                                        <label class="form-label">Upload Payment Receipt (Optional)</label>
+                                        <input type="file" class="form-control" id="receiptFile" accept=".jpg,.jpeg,.png,.pdf">
+                                        <small class="text-muted">Upload receipt for faster verification - JPG, PNG, PDF (Max 5MB)</small>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Additional Notes (Optional)</label>
+                                <textarea class="form-control" id="paymentNotes" rows="3" placeholder="Any additional information about the payment"></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success btn-lg me-3">
+                                    <i class='bx bx-check me-2'></i>Submit Payment
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-lg" onclick="resetPaymentForm()">
+                                    <i class='bx bx-refresh me-2'></i>Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header bg-secondary text-white">
+                        <h5><i class='bx bx-history me-2'></i>Payment History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-4">
+                            <i class='bx bx-receipt text-muted' style="font-size: 3rem;"></i>
+                            <h6 class="mt-3 text-muted">No Payment History</h6>
+                            <p class="text-muted mb-0">Your payment transactions will appear here once submitted</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Payment History -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-secondary text-white">
-                            <h5><i class='bx bx-history me-2'></i>Payment History</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="text-center py-4">
-                                <i class='bx bx-receipt text-muted' style="font-size: 3rem;"></i>
-                                <h6 class="mt-3 text-muted">No Payment History</h6>
-                                <p class="text-muted mb-0">Your payment transactions will appear here once completed</p>
+        <!-- Important Instructions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-white">
+                        <h5><i class='bx bx-info-circle me-2'></i>Important Instructions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Payment Guidelines</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Payment deadline: 30 days from admission</li>
+                                    <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Keep payment receipt/transaction ID safe</li>
+                                    <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Upload clear images of receipts</li>
+                                    <li class="mb-2"><i class='bx bx-check text-success me-2'></i>Payment verification takes 2-3 working days</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Contact Information</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class='bx bx-phone text-info me-2'></i>Phone: +91-98765xxxxx</li>
+                                    <li class="mb-2"><i class='bx bx-envelope text-info me-2'></i>Email: fees@abcengineering.edu</li>
+                                    <li class="mb-2"><i class='bx bx-time text-info me-2'></i>Office Hours: 9:00 AM - 5:00 PM</li>
+                                    <li class="mb-2"><i class='bx bx-map text-info me-2'></i>Accounts Office, Ground Floor</li>
+                                </ul>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- For Allocated Students -->
-        <div th:if="${application != null and application.status == 'ALLOCATED'}">
-            <div class="row">
-                <div class="col-12">
-                    <div class="alert alert-warning">
-                        <h5 class="alert-heading"><i class='bx bx-time me-2'></i>Seat Acceptance Required</h5>
-                        <p class="mb-2">Please accept your allocated seat to proceed with fee payment and complete your admission process.</p>
-                        <hr>
-                        <div class="text-center">
-                            <a href="/user/application/status" class="btn btn-warning">
-                                <i class='bx bx-check me-2'></i>Accept Seat Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- For Non-Eligible Students -->
-        <div th:if="${application == null or (application.status != 'ACCEPTED' and application.status != 'ALLOCATED')}">
-            <div class="row">
-                <div class="col-12">
-                    <div class="text-center py-5">
-                        <i class='bx bx-wallet text-muted' style="font-size: 5rem;"></i>
-                        <h3 class="mt-4 text-muted">Payment Not Available</h3>
-                        <p class="text-muted mb-4" th:if="${application == null}">Submit your college application to access fee payment options.</p>
-                        <p class="text-muted mb-4" th:if="${application != null and application.status == 'SUBMITTED'}">Your application is under review. Payment options will be available after seat allocation.</p>
-                        <p class="text-muted mb-4" th:if="${application != null and application.status == 'REJECTED'}">Your application was not approved. Please contact administration for further assistance.</p>
-                        
-                        <a th:if="${application == null}" href="/user/application" class="btn btn-primary btn-lg">
-                            <i class='bx bx-plus me-2'></i>Submit Application
-                        </a>
-                        <a th:if="${application != null}" href="/user/application/status" class="btn btn-info btn-lg">
-                            <i class='bx bx-file-blank me-2'></i>View Application Status
-                        </a>
                     </div>
                 </div>
             </div>
@@ -186,45 +311,182 @@
         </div>
     </div>
 
-    <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class='bx bx-credit-card me-2'></i>Payment Gateway</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <i class='bx bx-credit-card text-primary' style="font-size: 4rem;"></i>
-                    <h5 class="mt-3">Payment Integration</h5>
-                    <p class="text-muted">This is a demo payment interface. In production, this would integrate with payment gateways like Razorpay, PayU, or Paytm.</p>
-                    <div class="alert alert-info">
-                        <strong>Amount to Pay:</strong> ₹62,000<br>
-                        <strong>Student:</strong> <span th:text="${user.fullName}"></span><br>
-                        <strong>Course:</strong> <span th:text="${application?.course}"></span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" onclick="simulatePayment()">
-                        <i class='bx bx-check me-2'></i>Proceed to Pay
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+        }
+        
+        .payment-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .fee-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .fee-item:last-child {
+            border-bottom: none;
+        }
+        
+        .card {
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .card:hover {
+            transform: translateY(-1px);
+        }
+    </style>
 
     <script>
-        function initiatePayment() {
-            const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            paymentModal.show();
+        // Fee structure data
+        const feeStructure = {
+            btech: {
+                'Computer Science': { tuition: 80000, development: 15000, lab: 10000, library: 3000, exam: 2000 },
+                'Mechanical': { tuition: 75000, development: 15000, lab: 8000, library: 3000, exam: 2000 },
+                'Electrical': { tuition: 75000, development: 15000, lab: 8000, library: 3000, exam: 2000 },
+                'Civil': { tuition: 70000, development: 15000, lab: 5000, library: 3000, exam: 2000 },
+                'Electronics': { tuition: 78000, development: 15000, lab: 9000, library: 3000, exam: 2000 }
+            },
+            bsc: {
+                'Physics': { tuition: 45000, development: 10000, lab: 8000, library: 2000, exam: 1500 },
+                'Chemistry': { tuition: 45000, development: 10000, lab: 10000, library: 2000, exam: 1500 },
+                'Mathematics': { tuition: 40000, development: 10000, lab: 3000, library: 2000, exam: 1500 },
+                'Biology': { tuition: 48000, development: 10000, lab: 12000, library: 2000, exam: 1500 }
+            },
+            bca: {
+                'Computer Applications': { tuition: 55000, development: 12000, lab: 8000, library: 2500, exam: 1500 }
+            },
+            mtech: {
+                'Computer Science': { tuition: 90000, development: 20000, lab: 15000, library: 4000, exam: 3000 },
+                'Mechanical': { tuition: 85000, development: 20000, lab: 12000, library: 4000, exam: 3000 },
+                'Electronics': { tuition: 88000, development: 20000, lab: 14000, library: 4000, exam: 3000 }
+            }
+        };
+
+        const branches = {
+            btech: ['Computer Science', 'Mechanical', 'Electrical', 'Civil', 'Electronics'],
+            bsc: ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+            bca: ['Computer Applications'],
+            mtech: ['Computer Science', 'Mechanical', 'Electronics']
+        };
+
+        let selectedPaymentMethod = '';
+        let calculatedAmount = 0;
+
+        function updateBranches() {
+            const courseSelect = document.getElementById('courseSelect');
+            const branchSelect = document.getElementById('branchSelect');
+            const selectedCourse = courseSelect.value;
+
+            branchSelect.innerHTML = '<option value="">Choose Branch</option>';
+            
+            if (selectedCourse && branches[selectedCourse]) {
+                branches[selectedCourse].forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch;
+                    option.textContent = branch;
+                    branchSelect.appendChild(option);
+                });
+            }
+            
+            document.getElementById('feeBreakdown').style.display = 'none';
+            document.getElementById('proceedBtn').disabled = true;
         }
 
-        function simulatePayment() {
-            alert('Payment simulation completed! In production, this would process the actual payment.');
-            const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
-            paymentModal.hide();
+        function calculateFee() {
+            const courseSelect = document.getElementById('courseSelect');
+            const branchSelect = document.getElementById('branchSelect');
+            const selectedCourse = courseSelect.value;
+            const selectedBranch = branchSelect.value;
+
+            if (selectedCourse && selectedBranch && feeStructure[selectedCourse] && feeStructure[selectedCourse][selectedBranch]) {
+                const fees = feeStructure[selectedCourse][selectedBranch];
+                
+                document.getElementById('tuitionFee').textContent = '₹' + fees.tuition.toLocaleString();
+                document.getElementById('developmentFee').textContent = '₹' + fees.development.toLocaleString();
+                document.getElementById('labFee').textContent = '₹' + fees.lab.toLocaleString();
+                document.getElementById('libraryFee').textContent = '₹' + fees.library.toLocaleString();
+                document.getElementById('examFee').textContent = '₹' + fees.exam.toLocaleString();
+                
+                const total = fees.tuition + fees.development + fees.lab + fees.library + fees.exam;
+                calculatedAmount = total;
+                
+                document.getElementById('totalAmount').textContent = '₹' + total.toLocaleString();
+                document.getElementById('payableAmount').textContent = '₹' + total.toLocaleString();
+                
+                document.getElementById('feeBreakdown').style.display = 'block';
+                document.getElementById('proceedBtn').disabled = false;
+            }
         }
+
+        function showPaymentOptions() {
+            document.getElementById('paymentOptionsSection').style.display = 'block';
+            document.getElementById('paymentOptionsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function selectPaymentMethod(method) {
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('border-primary', 'bg-light');
+            });
+            
+            event.currentTarget.classList.add('border-primary', 'bg-light');
+            selectedPaymentMethod = method;
+            
+            const courseSelect = document.getElementById('courseSelect');
+            const branchSelect = document.getElementById('branchSelect');
+            document.getElementById('courseInfo').value = courseSelect.options[courseSelect.selectedIndex].text + ' - ' + branchSelect.value;
+            
+            let methodText = '';
+            switch(method) {
+                case 'upi': methodText = 'UPI Payment'; break;
+                case 'bank': methodText = 'Bank Transfer'; break;
+                case 'receipt': methodText = 'Upload Receipt'; break;
+            }
+            document.getElementById('paymentMethodDisplay').value = methodText;
+            
+            // Show all fields for unified form - always show both transaction ID and receipt upload
+            document.getElementById('transactionField').style.display = 'block';
+            document.getElementById('receiptField').style.display = 'block';
+            document.getElementById('receiptFile').required = false; // Optional for better verification
+            document.getElementById('transactionId').required = true; // Always required
+            
+            document.getElementById('paymentFormSection').style.display = 'block';
+            document.getElementById('paymentFormSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetPaymentForm() {
+            document.getElementById('paymentForm').reset();
+            document.getElementById('courseSelect').value = '';
+            document.getElementById('branchSelect').innerHTML = '<option value="">Choose Branch</option>';
+            document.getElementById('feeBreakdown').style.display = 'none';
+            document.getElementById('paymentOptionsSection').style.display = 'none';
+            document.getElementById('paymentFormSection').style.display = 'none';
+            document.getElementById('proceedBtn').disabled = true;
+            
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('border-primary', 'bg-light');
+            });
+        }
+
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const amountPaid = parseFloat(document.getElementById('amountPaid').value);
+            if (amountPaid !== calculatedAmount) {
+                alert('Amount paid must match the calculated fee amount of ₹' + calculatedAmount.toLocaleString());
+                return;
+            }
+            
+            alert('Payment submission successful! Your payment will be verified within 2-3 working days.');
+            resetPaymentForm();
+        });
     </script>
 </section>
 

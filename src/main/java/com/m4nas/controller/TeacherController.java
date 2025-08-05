@@ -66,10 +66,10 @@ public class TeacherController {
         model.addAttribute("pendingCount", pendingApplications.size());
         model.addAttribute("approvedCount", approvedApplications.size());
         model.addAttribute("allocatedCount", allocatedApplications.size());
-        model.addAttribute("recentApplications", pendingApplications.stream().limit(5).collect(java.util.stream.Collectors.toList()));
+        model.addAttribute("recentApplications", pendingApplications.stream().limit(7).collect(java.util.stream.Collectors.toList()));
         model.addAttribute("statusCounts", statusCounts);
         model.addAttribute("branchStats", branchStats);
-        model.addAttribute("recentUsers", recentUsers.stream().limit(10).collect(java.util.stream.Collectors.toList()));
+        model.addAttribute("recentUsers", recentUsers.stream().limit(7).collect(java.util.stream.Collectors.toList()));
         model.addAttribute("recentAnnouncements", recentAnnouncements);
         
         return "teacher/home";

@@ -221,36 +221,32 @@
                         </div>
                     </div>
                     <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <div th:each="announcement : ${recentAnnouncements}" class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-start">
+                        <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                            <div th:each="announcement : ${recentAnnouncements}" class="list-group-item py-2">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center mb-1">
+                                        <div class="d-flex align-items-center">
                                             <h6 class="mb-0 me-2" th:text="${announcement.title}">Announcement Title</h6>
                                             <span th:if="${announcement.announcementType == 'EVENT'}" class="badge bg-success badge-sm">
-                                                <i class='bx bx-calendar-event'></i> Event
+                                                <i class='bx bx-calendar-event'></i>
                                             </span>
                                             <span th:if="${announcement.announcementType == 'DEADLINE'}" class="badge bg-warning badge-sm">
-                                                <i class='bx bx-alarm'></i> Deadline
+                                                <i class='bx bx-alarm'></i>
                                             </span>
                                             <span th:if="${announcement.announcementType == 'HOLIDAY'}" class="badge bg-info badge-sm">
-                                                <i class='bx bx-sun'></i> Holiday
+                                                <i class='bx bx-sun'></i>
                                             </span>
                                         </div>
-                                        <p class="mb-1 text-muted" th:text="${#strings.abbreviate(announcement.content, 80)}">Announcement content...</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">
-                                                <i class='bx bx-time me-1'></i>
-                                                <span th:text="${#temporals.format(announcement.createdDate, 'MMM dd, yyyy HH:mm')}">Date</span>
-                                            </small>
-                                            <small th:if="${announcement.eventDate != null}" class="text-primary">
+                                        <small class="text-muted">
+                                            <i class='bx bx-time me-1'></i>
+                                            <span th:text="${#temporals.format(announcement.createdDate, 'MMM dd')}">Date</span>
+                                            <span th:if="${announcement.eventDate != null}" class="ms-2 text-primary">
                                                 <i class='bx bx-calendar me-1'></i>
-                                                <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd, yyyy')}">Event Date</span>
-                                                <span th:if="${announcement.eventTime != null}" th:text="' at ' + ${announcement.eventTime}"></span>
-                                            </small>
-                                        </div>
+                                                <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd')}">Event</span>
+                                            </span>
+                                        </small>
                                     </div>
-                                    <span class="badge bg-primary" th:text="${announcement.targetAudience}">ALL</span>
+                                    <span class="badge bg-primary badge-sm" th:text="${announcement.targetAudience}">ALL</span>
                                 </div>
                             </div>
                         </div>

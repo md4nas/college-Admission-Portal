@@ -59,8 +59,8 @@ public class TeacherController {
         // Recent Users
         List<UserDtls> recentUsers = userService.getUsersByRole("ROLE_USER");
         
-        // Recent Announcements
-        List<Announcement> recentAnnouncements = announcementService.getActiveAnnouncements().stream().limit(5).collect(java.util.stream.Collectors.toList());
+        // Recent Announcements (top 10 for scroll)
+        List<Announcement> recentAnnouncements = announcementService.getActiveAnnouncements().stream().limit(10).collect(java.util.stream.Collectors.toList());
         
         // Add to model
         model.addAttribute("pendingCount", pendingApplications.size());

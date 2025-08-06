@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -313,6 +314,78 @@ public class TeacherController {
             session.setAttribute("msg", "Error updating branch: " + e.getMessage());
             session.setAttribute("msgType", "danger");
         }
+        return "redirect:/teacher/seat-management";
+    }
+
+    @PostMapping("/seat-management/bulk-update")
+    public String bulkUpdateApplications(HttpServletRequest request, HttpSession session) {
+        try {
+            int successCount = 0;
+            int totalChanges = 0;
+            
+            // Get all parameters that start with "changes["
+            java.util.Map<String, String[]> paramMap = request.getParameterMap();
+            java.util.Map<String, java.util.Map<String, String>> changesByApp = new java.util.HashMap<>();
+            
+            // Parse the changes parameters
+            for (String paramName : paramMap.keySet()) {
+                if (paramName.startsWith("changes[")) {
+                    String[] values = paramMap.get(paramName);
+                    if (values.length > 0) {
+                        // Extract index and field from parameter name
+                        // Format: changes[0].appId, changes[0].field, changes[0].value
+                        String indexPart = paramName.substring(8, paramName.indexOf(']'));
+                        String fieldPart = paramName.substring(paramName.indexOf('.') + 1);
+                        
+                        changesByApp.computeIfAbsent(indexPart, k -> new java.util.HashMap<>()).put(fieldPart, values[0]);
+                    }
+                }
+            }
+            
+            // Process each change
+            for (java.util.Map<String, String> change : changesByApp.values()) {
+                String appId = change.get("appId");
+                String field = change.get("field");
+                String value = change.get("value");
+                
+                if (appId != null && field != null && value != null) {
+                    totalChanges++;
+                    UserApplication updatedApp = null;
+                    
+                    switch (field) {
+                        case "status":
+                            updatedApp = userApplicationService.updateApplicationStatus(appId, value);
+                            break;
+                        case "course":
+                            updatedApp = userApplicationService.updateApplicationCourse(appId, value);
+                            break;
+                        case "allocatedBranch":
+                            updatedApp = userApplicationService.updateApplicationBranch(appId, value);
+                            break;
+                    }
+                    
+                    if (updatedApp != null) {
+                        successCount++;
+                    }
+                }
+            }
+            
+            if (totalChanges == 0) {
+                session.setAttribute("msg", "No changes to save!");
+                session.setAttribute("msgType", "info");
+            } else if (successCount == totalChanges) {
+                session.setAttribute("msg", "All " + successCount + " changes saved successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", successCount + " out of " + totalChanges + " changes saved successfully.");
+                session.setAttribute("msgType", "warning");
+            }
+            
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error saving changes: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        
         return "redirect:/teacher/seat-management";
     }
 

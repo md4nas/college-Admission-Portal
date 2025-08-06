@@ -4,6 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Seat Management</title>
+    <style>
+        .changed-row {
+            background-color: #fff3cd !important;
+            border-left: 4px solid #ffc107;
+        }
+        .save-indicator {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
 </head>
 <body>
 <section>
@@ -15,98 +28,238 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Student Applications</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div th:if="${applications != null and !applications.empty}">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Student</th>
-                                            <th>Phone</th>
-                                            <th>Status</th>
-                                            <th>Course</th>
-                                            <th>Branch</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="app, iterStat : ${applications}">
-                                            <td th:text="${iterStat.index + 1}">1</td>
-                                            <td>
-                                                <div th:text="${app?.parentsName ?: 'N/A'}">Student Name</div>
-                                                <small class="text-muted" th:text="${app?.userEmail ?: 'N/A'}">email</small>
-                                            </td>
-                                            <td th:text="${app?.phoneNo ?: 'N/A'}">Phone</td>
-                                            <td>
-                                                <form th:action="@{/teacher/seat-management/update-status}" method="post" class="d-inline">
-                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                    <input type="hidden" name="applicationId" th:value="${app?.id ?: ''}" />
-                                                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+        <!-- Save Indicator -->
+        <div id="saveIndicator" class="save-indicator">
+            <div class="alert alert-warning alert-dismissible">
+                <i class='bx bx-info-circle me-2'></i>
+                <span id="changeCount">0</span> unsaved changes
+                <button type="button" class="btn-close" onclick="hideSaveIndicator()"></button>
+            </div>
+        </div>
+
+        <!-- Bulk Save Form -->
+        <form id="bulkUpdateForm" action="/teacher/seat-management/bulk-update" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div id="changesContainer"></div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Student Applications</h5>
+                            <button type="submit" id="saveAllBtn" class="btn btn-success" style="display: none;">
+                                <i class='bx bx-save me-1'></i>Save All Changes (<span id="saveCount">0</span>)
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div th:if="${applications != null and !applications.empty}">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Student</th>
+                                                <th>Phone</th>
+                                                <th>Status</th>
+                                                <th>Course</th>
+                                                <th>Branch</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="app, iterStat : ${applications}" th:id="'row-' + ${app?.id}">
+                                                <td th:text="${iterStat.index + 1}">1</td>
+                                                <td>
+                                                    <div th:text="${app?.parentsName ?: 'N/A'}">Student Name</div>
+                                                    <small class="text-muted" th:text="${app?.userEmail ?: 'N/A'}">email</small>
+                                                </td>
+                                                <td th:text="${app?.phoneNo ?: 'N/A'}">Phone</td>
+                                                <td>
+                                                    <select class="form-select form-select-sm update-field" 
+                                                            th:data-app-id="${app?.id}" 
+                                                            data-field="status"
+                                                            th:data-original="${app?.status}">
                                                         <option value="PENDING" th:selected="${app?.status == 'PENDING'}">Pending</option>
                                                         <option value="REVIEWED" th:selected="${app?.status == 'REVIEWED'}">Reviewed</option>
                                                         <option value="APPROVED" th:selected="${app?.status == 'APPROVED'}">Approved</option>
                                                         <option value="REJECTED" th:selected="${app?.status == 'REJECTED'}">Rejected</option>
                                                     </select>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <form th:action="@{/teacher/seat-management/update-course}" method="post" class="d-inline">
-                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                    <input type="hidden" name="applicationId" th:value="${app?.id ?: ''}" />
-                                                    <select name="course" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm update-field" 
+                                                            th:data-app-id="${app?.id}" 
+                                                            data-field="course"
+                                                            th:data-original="${app?.course}">
                                                         <option value="">Select Course</option>
                                                         <option value="BTECH" th:selected="${app?.course == 'BTECH'}">B.Tech</option>
                                                         <option value="MTECH" th:selected="${app?.course == 'MTECH'}">M.Tech</option>
                                                         <option value="BCA" th:selected="${app?.course == 'BCA'}">BCA</option>
                                                         <option value="MCA" th:selected="${app?.course == 'MCA'}">MCA</option>
                                                     </select>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <form th:action="@{/teacher/seat-management/update-branch}" method="post" class="d-inline">
-                                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                    <input type="hidden" name="applicationId" th:value="${app?.id ?: ''}" />
-                                                    <select name="allocatedBranch" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm update-field" 
+                                                            th:data-app-id="${app?.id}" 
+                                                            data-field="allocatedBranch"
+                                                            th:data-original="${app?.allocatedBranch}">
                                                         <option value="">None</option>
                                                         <option value="CSE" th:selected="${app?.allocatedBranch == 'CSE'}">CSE</option>
                                                         <option value="ECE" th:selected="${app?.allocatedBranch == 'ECE'}">ECE</option>
                                                         <option value="MECHANICAL" th:selected="${app?.allocatedBranch == 'MECHANICAL'}">Mechanical</option>
                                                     </select>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <div th:if="${app?.id != null and !#strings.isEmpty(app.id)}">
-                                                    <a th:href="@{/teacher/application-details/{id}(id=${app.id})}" 
-                                                       class="btn btn-sm btn-outline-info rounded-pill">
-                                                        <i class='bx bx-info-circle me-1'></i>View Details
-                                                    </a>
-                                                    <small class="text-muted d-block mt-1">ID: <span th:text="${app.id}">N/A</span></small>
-                                                </div>
-                                                <div th:if="${app?.id == null or #strings.isEmpty(app.id)}">
-                                                    <span class="text-muted">No ID Available</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                </td>
+                                                <td>
+                                                    <div th:if="${app?.id != null and !#strings.isEmpty(app.id)}">
+                                                        <a th:href="@{/teacher/application-details/{id}(id=${app.id})}" 
+                                                           class="btn btn-sm btn-outline-info rounded-pill">
+                                                            <i class='bx bx-info-circle me-1'></i>View Details
+                                                        </a>
+                                                        <small class="text-muted d-block mt-1">ID: <span th:text="${app.id}">N/A</span></small>
+                                                    </div>
+                                                    <div th:if="${app?.id == null or #strings.isEmpty(app.id)}">
+                                                        <span class="text-muted">No ID Available</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div th:if="${applications == null or applications.empty}" class="text-center py-5">
-                            <p class="text-muted">No applications found</p>
+                            
+                            <div th:if="${applications == null or applications.empty}" class="text-center py-5">
+                                <p class="text-muted">No applications found</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
+
+    <script>
+        let pendingChanges = new Map();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add change listeners to all update fields
+            document.querySelectorAll('.update-field').forEach(field => {
+                field.addEventListener('change', function() {
+                    handleFieldChange(this);
+                });
+            });
+        });
+        
+        function handleFieldChange(field) {
+            const appId = field.dataset.appId;
+            const fieldName = field.dataset.field;
+            const originalValue = field.dataset.original || '';
+            const newValue = field.value;
+            
+            // Create unique key for this field
+            const changeKey = `${appId}-${fieldName}`;
+            
+            if (newValue !== originalValue) {
+                // Mark as changed
+                pendingChanges.set(changeKey, {
+                    appId: appId,
+                    field: fieldName,
+                    value: newValue,
+                    originalValue: originalValue
+                });
+                
+                // Highlight the row
+                const row = document.getElementById(`row-${appId}`);
+                if (row) {
+                    row.classList.add('changed-row');
+                }
+            } else {
+                // Remove from pending changes if value matches original
+                pendingChanges.delete(changeKey);
+                
+                // Check if row has any other changes
+                const hasOtherChanges = Array.from(pendingChanges.keys()).some(key => key.startsWith(`${appId}-`));
+                if (!hasOtherChanges) {
+                    const row = document.getElementById(`row-${appId}`);
+                    if (row) {
+                        row.classList.remove('changed-row');
+                    }
+                }
+            }
+            
+            updateSaveButton();
+            updateSaveIndicator();
+        }
+        
+        function updateSaveButton() {
+            const saveBtn = document.getElementById('saveAllBtn');
+            const saveCount = document.getElementById('saveCount');
+            const changeCount = pendingChanges.size;
+            
+            if (changeCount > 0) {
+                saveBtn.style.display = 'block';
+                saveCount.textContent = changeCount;
+            } else {
+                saveBtn.style.display = 'none';
+            }
+        }
+        
+        function updateSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            const changeCountSpan = document.getElementById('changeCount');
+            const changeCount = pendingChanges.size;
+            
+            if (changeCount > 0) {
+                indicator.style.display = 'block';
+                changeCountSpan.textContent = changeCount;
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+        
+        function hideSaveIndicator() {
+            document.getElementById('saveIndicator').style.display = 'none';
+        }
+        
+        // Handle form submission
+        document.getElementById('bulkUpdateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (pendingChanges.size === 0) {
+                alert('No changes to save!');
+                return;
+            }
+            
+            // Clear existing hidden inputs
+            const container = document.getElementById('changesContainer');
+            container.innerHTML = '';
+            
+            // Add hidden inputs for each change
+            let index = 0;
+            pendingChanges.forEach((change, key) => {
+                const appIdInput = document.createElement('input');
+                appIdInput.type = 'hidden';
+                appIdInput.name = `changes[${index}].appId`;
+                appIdInput.value = change.appId;
+                container.appendChild(appIdInput);
+                
+                const fieldInput = document.createElement('input');
+                fieldInput.type = 'hidden';
+                fieldInput.name = `changes[${index}].field`;
+                fieldInput.value = change.field;
+                container.appendChild(fieldInput);
+                
+                const valueInput = document.createElement('input');
+                valueInput.type = 'hidden';
+                valueInput.name = `changes[${index}].value`;
+                valueInput.value = change.value;
+                container.appendChild(valueInput);
+                
+                index++;
+            });
+            
+            // Submit the form
+            this.submit();
+        });
+    </script>
 </section>
 </body>
 </html>

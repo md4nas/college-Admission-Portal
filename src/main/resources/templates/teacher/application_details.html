@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Details</title>
+</head>
+<body>
+
+<section>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-4">
+                        <i class='bx bx-user-detail' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">Application Details</h2>
+                        <p class="mb-0">Complete student application information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <a href="/teacher/seat-management" class="btn btn-outline-secondary">
+                    <i class='bx bx-arrow-back me-1'></i>Back to Seat Management
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${userApplication != null}">
+            <!-- Application Status & Summary -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center">
+                            <div th:switch="${userApplication.status}">
+                                <div th:case="'PENDING'">
+                                    <i class='bx bx-time-five text-warning' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-warning">Pending</h4>
+                                </div>
+                                <div th:case="'SUBMITTED'">
+                                    <i class='bx bx-check text-info' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-info">Submitted</h4>
+                                </div>
+                                <div th:case="'APPROVED'">
+                                    <i class='bx bx-check-circle text-success' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-success">Approved</h4>
+                                </div>
+                                <div th:case="'ALLOCATED'">
+                                    <i class='bx bx-trophy text-primary' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-primary">Seat Allocated</h4>
+                                </div>
+                                <div th:case="'ACCEPTED'">
+                                    <i class='bx bx-medal text-success' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-success">Seat Accepted</h4>
+                                </div>
+                                <div th:case="'DECLINED'">
+                                    <i class='bx bx-x-circle text-danger' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-danger">Seat Declined</h4>
+                                </div>
+                                <div th:case="'REJECTED'">
+                                    <i class='bx bx-x text-danger' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-danger">Rejected</h4>
+                                </div>
+                                <div th:case="'REVIEWED'">
+                                    <i class='bx bx-search text-info' style="font-size: 4rem;"></i>
+                                    <h4 class="mt-3 text-info">Under Review</h4>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-2">Application Status</p>
+                            <small class="text-muted">Submitted: <span th:text="${userApplication.submissionDate}">Date</span></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5><i class='bx bx-info-circle me-2'></i>Application Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Student Name:</strong> <span th:text="${user != null ? user.fullName : 'N/A'}">Student Name</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Application ID:</strong> <span th:text="${userApplication.id}">ID</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Email:</strong> <span th:text="${userApplication.userEmail}">Email</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Course:</strong> <span th:text="${userApplication.course}">Course</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>First Choice:</strong> <span th:text="${userApplication.branch1}">Branch1</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Second Choice:</strong> <span th:text="${userApplication.branch2}">Branch2</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Class 12 Percentage:</strong> <span th:text="${userApplication.percentage12 != null ? userApplication.percentage12 + '%' : 'N/A'}">Percentage</span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Allocated Branch:</strong> <span th:text="${userApplication.allocatedBranch ?: 'Not Allocated'}">Branch</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5><i class='bx bx-user me-2'></i>Personal Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <strong>Date of Birth:</strong> <span th:text="${userApplication.dob}">DOB</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Gender:</strong> <span th:text="${userApplication.gender}">Gender</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Phone:</strong> <span th:text="${userApplication.phoneNo}">Phone</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Parents Name:</strong> <span th:text="${userApplication.parentsName}">Parents Name</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Parents Phone:</strong> <span th:text="${userApplication.parentsPhoneNo}">Parents Phone</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Religion:</strong> <span th:text="${userApplication.religion ?: 'Not specified'}">Religion</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Caste:</strong> <span th:text="${userApplication.caste ?: 'Not specified'}">Caste</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>City:</strong> <span th:text="${userApplication.city}">City</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>State:</strong> <span th:text="${userApplication.state}">State</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Pincode:</strong> <span th:text="${userApplication.pincode}">Pincode</span>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <strong>Address:</strong> <span th:text="${userApplication.address}">Address</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Information -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class='bx bx-book me-2'></i>Class 10 Details</h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>School:</strong> <span th:text="${userApplication.schoolName10}">School</span></small></div>
+                                <div class="col-6"><small><strong>Board:</strong> <span th:text="${userApplication.board10Name}">Board</span></small></div>
+                                <div class="col-6"><small><strong>Year:</strong> <span th:text="${userApplication.passing10Year}">Year</span></small></div>
+                                <div class="col-6"><small><strong>Roll No:</strong> <span th:text="${userApplication.rollNo10}">Roll No</span></small></div>
+                                <div class="col-6"><small><strong>Total:</strong> <span th:text="${userApplication.total10Marks}">Total</span></small></div>
+                                <div class="col-6"><small><strong>Obtained:</strong> <span th:text="${userApplication.obtain10Marks}">Obtained</span></small></div>
+                                <div class="col-12">
+                                    <small><strong>Percentage:</strong> <span class="text-dark fw-bold" th:text="${userApplication.percentage10 != null ? userApplication.percentage10 + '%' : 'N/A'}">Percentage</span></small>
+                                </div>
+                            </div>
+                            
+                            <hr class="my-2">
+                            <h6 class="mb-2 text-dark"><strong>Subject Marks</strong></h6>
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>Math:</strong> <span th:text="${userApplication.class10Math}">-</span></small></div>
+                                <div class="col-6"><small><strong>Science:</strong> <span th:text="${userApplication.class10Science}">-</span></small></div>
+                                <div class="col-6"><small><strong>English:</strong> <span th:text="${userApplication.class10English}">-</span></small></div>
+                                <div class="col-6"><small><strong>Hindi:</strong> <span th:text="${userApplication.class10Hindi}">-</span></small></div>
+                                <div class="col-12"><small><strong>Social:</strong> <span th:text="${userApplication.class10Social}">-</span></small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-warning text-white">
+                            <h5><i class='bx bx-book-open me-2'></i>Class 12 Details</h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>School:</strong> <span th:text="${userApplication.schoolName12}">School</span></small></div>
+                                <div class="col-6"><small><strong>Board:</strong> <span th:text="${userApplication.board12Name}">Board</span></small></div>
+                                <div class="col-6"><small><strong>Year:</strong> <span th:text="${userApplication.passing12Year}">Year</span></small></div>
+                                <div class="col-6"><small><strong>Roll No:</strong> <span th:text="${userApplication.rollNo12}">Roll No</span></small></div>
+                                <div class="col-6"><small><strong>Total:</strong> <span th:text="${userApplication.total12Marks}">Total</span></small></div>
+                                <div class="col-6"><small><strong>Obtained:</strong> <span th:text="${userApplication.obtain12Marks}">Obtained</span></small></div>
+                                <div class="col-12">
+                                    <small><strong>Percentage:</strong> <span class="text-dark fw-bold" th:text="${userApplication.percentage12 != null ? userApplication.percentage12 + '%' : 'N/A'}">Percentage</span></small>
+                                </div>
+                            </div>
+                            
+                            <hr class="my-2">
+                            <h6 class="mb-2 text-dark"><strong>Subject Marks</strong></h6>
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>Physics:</strong> <span th:text="${userApplication.class12Physics}">-</span></small></div>
+                                <div class="col-6"><small><strong>Chemistry:</strong> <span th:text="${userApplication.class12Chemistry}">-</span></small></div>
+                                <div class="col-6"><small><strong>Maths:</strong> <span th:text="${userApplication.class12Maths}">-</span></small></div>
+                                <div class="col-6"><small><strong>English:</strong> <span th:text="${userApplication.class12English}">-</span></small></div>
+                                <div class="col-12"><small><strong>Optional:</strong> <span th:text="${userApplication.class12Optional}">-</span></small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entrance Exam Details -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5><i class='bx bx-trophy me-2'></i>Entrance Exam Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <strong>Exam Name:</strong> <span th:text="${userApplication.entranceName ?: 'N/A'}">Exam</span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Roll Number:</strong> <span th:text="${userApplication.entranceRollNo ?: 'N/A'}">Roll</span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Year:</strong> <span th:text="${userApplication.entranceYear ?: 'N/A'}">Year</span>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Rank:</strong> <span class="text-primary fw-bold" th:text="${userApplication.entranceRank ?: 'N/A'}">Rank</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${userApplication == null}" class="row">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class='bx bx-error-circle me-2 fs-1'></i>
+                    <h4>Application not found</h4>
+                    <p>The requested application could not be found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

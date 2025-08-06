@@ -62,6 +62,12 @@ public class TeacherController {
         // Recent Announcements (top 10 for scroll)
         List<Announcement> recentAnnouncements = announcementService.getActiveAnnouncements().stream().limit(10).collect(java.util.stream.Collectors.toList());
         
+        System.out.println("=== TEACHER DASHBOARD DEBUG ===");
+        System.out.println("Recent announcements count: " + recentAnnouncements.size());
+        for (Announcement ann : recentAnnouncements) {
+            System.out.println("- " + ann.getTitle() + " by " + ann.getCreatedBy());
+        }
+        
         // Add to model
         model.addAttribute("pendingCount", pendingApplications.size());
         model.addAttribute("approvedCount", approvedApplications.size());
@@ -157,21 +163,39 @@ public class TeacherController {
                                      Principal principal,
                                      HttpSession session) {
         try {
+            System.out.println("=== ANNOUNCEMENT CREATION DEBUG ===");
+            System.out.println("Title: " + title);
+            System.out.println("Content: " + content);
+            System.out.println("Target Audience: " + targetAudience);
+            System.out.println("Type: " + announcementType);
+            System.out.println("Created By: " + principal.getName());
+            
             Announcement announcement = new Announcement(title, content, principal.getName(), targetAudience);
             announcement.setAnnouncementType(announcementType);
             
             if (eventDate != null && !eventDate.isEmpty()) {
                 announcement.setEventDate(java.time.LocalDate.parse(eventDate));
+                System.out.println("Event Date: " + eventDate);
             }
             if (eventTime != null && !eventTime.isEmpty()) {
                 announcement.setEventTime(eventTime);
+                System.out.println("Event Time: " + eventTime);
             }
             
-            announcementService.saveAnnouncement(announcement);
-            session.setAttribute("msg", "Announcement created successfully!");
-            session.setAttribute("msgType", "success");
+            Announcement savedAnnouncement = announcementService.saveAnnouncement(announcement);
+            if (savedAnnouncement != null) {
+                System.out.println("Announcement saved successfully with ID: " + savedAnnouncement.getId());
+                session.setAttribute("msg", "Announcement created successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                System.err.println("Failed to save announcement - returned null");
+                session.setAttribute("msg", "Failed to create announcement.");
+                session.setAttribute("msgType", "danger");
+            }
         } catch (Exception e) {
-            session.setAttribute("msg", "Error creating announcement.");
+            System.err.println("Error creating announcement: " + e.getMessage());
+            e.printStackTrace();
+            session.setAttribute("msg", "Error creating announcement: " + e.getMessage());
             session.setAttribute("msgType", "danger");
         }
         return "redirect:/teacher/";
@@ -180,6 +204,14 @@ public class TeacherController {
     @GetMapping("/announcements")
     public String viewAnnouncements(Model model, Principal principal) {
         List<Announcement> announcements = announcementService.getAnnouncementsByCreator(principal.getName());
+        
+        System.out.println("=== TEACHER ANNOUNCEMENTS PAGE DEBUG ===");
+        System.out.println("Teacher: " + principal.getName());
+        System.out.println("Announcements by teacher: " + announcements.size());
+        for (Announcement ann : announcements) {
+            System.out.println("- " + ann.getTitle() + " (" + ann.getCreatedAt() + ")");
+        }
+        
         model.addAttribute("announcements", announcements);
         return "teacher/announcements";
     }

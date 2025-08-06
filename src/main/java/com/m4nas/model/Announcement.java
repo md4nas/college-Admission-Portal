@@ -12,20 +12,20 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "created_by")
     private String createdBy;
 
-    @Column(name = "target_audience")
-    private String targetAudience; // STUDENT, ADMIN, ALL
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(name = "announcement_type")
-    private String announcementType; // GENERAL, EVENT, DEADLINE, HOLIDAY
+    @Column(name = "creator_role")
+    private String creatorRole;
 
     @Column(name = "event_date")
     private LocalDate eventDate;
@@ -33,14 +33,22 @@ public class Announcement {
     @Column(name = "event_time")
     private String eventTime;
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
+    @Column(name = "active")
+    private Boolean active = true;
 
-    @Column(name = "is_active")
-    private Boolean isActive = true;
+    @Column(name = "target_audience")
+    private String targetAudience;
+
+    @Column(name = "announcement_type")
+    private String announcementType;
 
     // Constructors
-    public Announcement() {}
+    public Announcement() {
+        this.createdAt = LocalDateTime.now();
+        this.active = true;
+        this.creatorRole = "TEACHER";
+        this.announcementType = "GENERAL";
+    }
 
     public Announcement(String title, String content, String createdBy, String targetAudience) {
         this.title = title;
@@ -48,7 +56,9 @@ public class Announcement {
         this.createdBy = createdBy;
         this.targetAudience = targetAudience;
         this.announcementType = "GENERAL";
-        this.createdDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.active = true;
+        this.creatorRole = "TEACHER";
     }
 
     // Getters and Setters
@@ -64,14 +74,11 @@ public class Announcement {
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
 
-    public String getTargetAudience() { return targetAudience; }
-    public void setTargetAudience(String targetAudience) { this.targetAudience = targetAudience; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public LocalDateTime getCreatedDate() { return createdDate; }
-    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
-
-    public String getAnnouncementType() { return announcementType; }
-    public void setAnnouncementType(String announcementType) { this.announcementType = announcementType; }
+    public String getCreatorRole() { return creatorRole; }
+    public void setCreatorRole(String creatorRole) { this.creatorRole = creatorRole; }
 
     public LocalDate getEventDate() { return eventDate; }
     public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
@@ -79,6 +86,28 @@ public class Announcement {
     public String getEventTime() { return eventTime; }
     public void setEventTime(String eventTime) { this.eventTime = eventTime; }
 
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    public String getTargetAudience() { return targetAudience; }
+    public void setTargetAudience(String targetAudience) { this.targetAudience = targetAudience; }
+
+    public String getAnnouncementType() { return announcementType; }
+    public void setAnnouncementType(String announcementType) { this.announcementType = announcementType; }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+        if (this.active == null) {
+            this.active = true;
+        }
+        if (this.announcementType == null) {
+            this.announcementType = "GENERAL";
+        }
+        if (this.creatorRole == null) {
+            this.creatorRole = "TEACHER";
+        }
+    }
 }

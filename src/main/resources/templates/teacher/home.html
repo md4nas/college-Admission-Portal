@@ -116,6 +116,7 @@
                     </div>
                     <div class="card-body">
                         <form th:action="@{/teacher/announcements/create}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Title</label>
@@ -124,25 +125,25 @@
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Target Audience</label>
                                     <select class="form-select" name="targetAudience" required>
-                                        <option value="STUDENT">Students</option>
+                                        <option value="STUDENT" selected>Students</option>
                                         <option value="ADMIN">Admin</option>
                                         <option value="ALL">Everyone</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label class="form-label">Type</label>
-                                    <select class="form-select" name="announcementType" id="announcementType" onchange="toggleDateField()">
+                                    <select class="form-select" name="announcementType">
                                         <option value="GENERAL">General Announcement</option>
-                                        <option value="EVENT">Event/Meeting</option>
+                                        <option value="EVENT" selected>Event/Meeting</option>
                                         <option value="DEADLINE">Important Deadline</option>
                                         <option value="HOLIDAY">Holiday Notice</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="row" id="dateRow" style="display: none;">
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Event Date</label>
-                                    <input type="date" class="form-control" name="eventDate" id="eventDate">
+                                    <input type="date" class="form-control" name="eventDate" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Event Time (Optional)</label>
@@ -153,31 +154,10 @@
                                 <label class="form-label">Content</label>
                                 <textarea class="form-control" name="content" rows="3" required placeholder="Enter announcement details..."></textarea>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <button type="submit" class="btn btn-success">
-                                    <i class='bx bx-send me-1'></i>Post Announcement
-                                </button>
-                                <small class="text-muted">
-                                    <i class='bx bx-info-circle me-1'></i>Select 'Event/Meeting' to add calendar dates
-                                </small>
-                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class='bx bx-send me-1'></i>Post Announcement
+                            </button>
                         </form>
-                        
-                        <script>
-                            function toggleDateField() {
-                                const type = document.getElementById('announcementType').value;
-                                const dateRow = document.getElementById('dateRow');
-                                const eventDate = document.getElementById('eventDate');
-                                
-                                if (type === 'EVENT' || type === 'DEADLINE') {
-                                    dateRow.style.display = 'block';
-                                    eventDate.required = true;
-                                } else {
-                                    dateRow.style.display = 'none';
-                                    eventDate.required = false;
-                                }
-                            }
-                        </script>
                     </div>
                 </div>
             </div>
@@ -227,19 +207,19 @@
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center">
                                             <h6 class="mb-0 me-2" th:text="${announcement.title}">Announcement Title</h6>
-                                            <span th:if="${announcement.announcementType == 'EVENT'}" class="badge bg-success badge-sm">
+                                            <span th:if="${announcement.announcementType == 'EVENT'}" class="badge bg-info badge-sm">
                                                 <i class='bx bx-calendar-event'></i>
                                             </span>
                                             <span th:if="${announcement.announcementType == 'DEADLINE'}" class="badge bg-warning badge-sm">
                                                 <i class='bx bx-alarm'></i>
                                             </span>
-                                            <span th:if="${announcement.announcementType == 'HOLIDAY'}" class="badge bg-info badge-sm">
+                                            <span th:if="${announcement.announcementType == 'HOLIDAY'}" class="badge bg-success badge-sm">
                                                 <i class='bx bx-sun'></i>
                                             </span>
                                         </div>
                                         <small class="text-muted">
                                             <i class='bx bx-time me-1'></i>
-                                            <span th:text="${#temporals.format(announcement.createdDate, 'MMM dd')}">Date</span>
+                                            <span th:text="${#temporals.format(announcement.createdAt, 'MMM dd')}">Date</span>
                                             <span th:if="${announcement.eventDate != null}" class="ms-2 text-primary">
                                                 <i class='bx bx-calendar me-1'></i>
                                                 <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd')}">Event</span>

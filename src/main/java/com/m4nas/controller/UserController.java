@@ -320,6 +320,13 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         // Get announcements for students (STUDENT and ALL)
         List<Announcement> announcements = announcementService.getAnnouncementsByAudience("STUDENT");
         
+        System.out.println("=== USER NOTIFICATIONS DEBUG ===");
+        System.out.println("User: " + email);
+        System.out.println("Announcements found: " + announcements.size());
+        for (Announcement ann : announcements) {
+            System.out.println("- " + ann.getTitle() + " (" + ann.getTargetAudience() + ")");
+        }
+        
         model.addAttribute("user", user);
         model.addAttribute("application", application);
         model.addAttribute("announcements", announcements);

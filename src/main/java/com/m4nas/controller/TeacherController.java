@@ -164,7 +164,7 @@ public class TeacherController {
             model.addAttribute("user", user);
         }
         
-        model.addAttribute("application", application);
+        model.addAttribute("userApplication", application);
         return "teacher/application_details";
     }
 

@@ -283,8 +283,75 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
             return new java.util.ArrayList<>();
         }
     }
+    
+    @Override
+    public List<UserApplication> getAllApplications() {
+        return userApplicationRepo.findAllByOrderBySubmissionDateDesc();
+    }
+    
+    @Override
+    public UserApplication updateApplicationStatus(String applicationId, String status) {
+        try {
+            UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
+            if (application != null) {
+                application.setStatus(status);
+                return userApplicationRepo.save(application);
+            }
+            return null;
+        } catch (Exception e) {
+            System.err.println("Error updating application status: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public UserApplication updateApplicationCourse(String applicationId, String course) {
+        try {
+            UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
+            if (application != null) {
+                application.setCourse(course);
+                return userApplicationRepo.save(application);
+            }
+            return null;
+        } catch (Exception e) {
+            System.err.println("Error updating application course: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public UserApplication updateApplicationBranch(String applicationId, String allocatedBranch) {
+        try {
+            UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
+            if (application != null) {
+                application.setAllocatedBranch(allocatedBranch);
+                return userApplicationRepo.save(application);
+            }
+            return null;
+        } catch (Exception e) {
+            System.err.println("Error updating application branch: " + e.getMessage());
+            return null;
+        }
+    }
 
     // ===== UTILITY METHODS =====
+
+    @Override
+    public UserApplication getApplicationById(String applicationId) {
+        System.out.println("=== SERVICE getApplicationById DEBUG ===");
+        System.out.println("Searching for ID: " + applicationId);
+        
+        // First, let's see all applications in database
+        List<UserApplication> allApps = userApplicationRepo.findAll();
+        System.out.println("Total applications in database: " + allApps.size());
+        for (UserApplication app : allApps) {
+            System.out.println("- ID: " + app.getId() + ", Email: " + app.getUserEmail() + ", Status: " + app.getStatus());
+        }
+        
+        UserApplication result = userApplicationRepo.findById(applicationId).orElse(null);
+        System.out.println("Result: " + (result != null ? "FOUND" : "NOT FOUND"));
+        return result;
+    }
 
     @Override
     public void calculatePercentages(UserApplication application) {

@@ -25,9 +25,18 @@ public interface UserApplicationService {
     List<UserApplication> getAllApplicationsForAdmin();
     List<Object[]> getApplicationStatusCounts();
     List<Object[]> getBranchWiseStatistics();
+    
+    List<UserApplication> getAllApplications();
+    
+    UserApplication updateApplicationStatus(String applicationId, String status);
+    
+    UserApplication updateApplicationCourse(String applicationId, String course);
+    
+    UserApplication updateApplicationBranch(String applicationId, String allocatedBranch);
     List<UserApplication> getApplicationsByStatus(String status);
 
     // ==== UTILITY METHODS ====
     void calculatePercentages(UserApplication application);
+    UserApplication getApplicationById(String applicationId);
 
 }

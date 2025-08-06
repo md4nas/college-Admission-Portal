@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -153,6 +154,20 @@ public class TeacherController {
         return "redirect:/teacher/applications/approved";
     }
 
+    @GetMapping("/application-details/{applicationId}")
+    public String viewApplicationDetails(@PathVariable("applicationId") String applicationId, Model model) {
+        UserApplication application = userApplicationService.getApplicationById(applicationId);
+        
+        if (application != null) {
+            // Get user details for the application
+            UserDtls user = userRepo.findByEmail(application.getUserEmail());
+            model.addAttribute("user", user);
+        }
+        
+        model.addAttribute("application", application);
+        return "teacher/application_details";
+    }
+
     @PostMapping("/announcements/create")
     public String createAnnouncement(@RequestParam("title") String title,
                                      @RequestParam("content") String content,
@@ -215,4 +230,91 @@ public class TeacherController {
         model.addAttribute("announcements", announcements);
         return "teacher/announcements";
     }
+
+    @GetMapping("/seat-management")
+    public String seatManagement(Model model) {
+        List<UserApplication> applications = userApplicationService.getAllApplications();
+        
+        System.out.println("=== SEAT MANAGEMENT DEBUG ===");
+        System.out.println("Total applications: " + applications.size());
+        for (UserApplication app : applications) {
+            System.out.println("App ID: " + app.getId() + ", Email: " + app.getUserEmail() + ", Status: " + app.getStatus());
+            System.out.println("  - Course: " + app.getCourse());
+            System.out.println("  - Parents Name: " + app.getParentsName());
+            System.out.println("  - Phone: " + app.getPhoneNo());
+            System.out.println("  - DOB: " + app.getDob());
+            System.out.println("  - Gender: " + app.getGender());
+            System.out.println("  - Address: " + app.getAddress());
+            System.out.println("  - Branch1: " + app.getBranch1());
+            System.out.println("  - Branch2: " + app.getBranch2());
+            System.out.println("  - Class12 Physics: " + app.getClass12Physics());
+            System.out.println("  - Percentage12: " + app.getPercentage12());
+            System.out.println("  ---");
+        }
+        
+        model.addAttribute("applications", applications);
+        return "teacher/seat_management";
+    }
+
+    @PostMapping("/seat-management/update-status")
+    public String updateApplicationStatus(@RequestParam("applicationId") String applicationId,
+                                          @RequestParam("status") String status,
+                                          HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.updateApplicationStatus(applicationId, status);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Status updated successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to update status.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error updating status: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/seat-management";
+    }
+
+    @PostMapping("/seat-management/update-course")
+    public String updateApplicationCourse(@RequestParam("applicationId") String applicationId,
+                                          @RequestParam("course") String course,
+                                          HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.updateApplicationCourse(applicationId, course);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Course updated successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to update course.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error updating course: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/seat-management";
+    }
+
+    @PostMapping("/seat-management/update-branch")
+    public String updateApplicationBranch(@RequestParam("applicationId") String applicationId,
+                                          @RequestParam("allocatedBranch") String allocatedBranch,
+                                          HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.updateApplicationBranch(applicationId, allocatedBranch);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Branch updated successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to update branch.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error updating branch: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/seat-management";
+    }
+
+
 }

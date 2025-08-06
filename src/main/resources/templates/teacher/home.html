@@ -110,54 +110,97 @@
         <!-- Quick Announcement Form -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class='bx bx-megaphone me-2'></i>Quick Announcement</h5>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-warning text-white border-0">
+                        <button class="btn btn-link p-0 text-decoration-none w-100 text-start text-white" type="button" data-bs-toggle="collapse" data-bs-target="#announcementForm" aria-expanded="false">
+                            <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                                <span><i class='bx bx-megaphone me-2'></i>Quick Announcement</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="opacity-75">Click to create</small>
+                                    <i class='bx bx-chevron-down'></i>
+                                </div>
+                            </h5>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <form th:action="@{/teacher/announcements/create}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Title</label>
-                                    <input type="text" class="form-control" name="title" required>
+                    <div class="collapse" id="announcementForm">
+                        <div class="card-body p-4">
+                            <form th:action="@{/teacher/announcements/create}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                
+                                <!-- Title Row -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class='bx bx-edit-alt me-2 text-primary'></i>Announcement Title
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" name="title" required placeholder="Enter a compelling title...">
+                                    </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Target Audience</label>
-                                    <select class="form-select" name="targetAudience" required>
-                                        <option value="STUDENT" selected>Students</option>
-                                        <option value="ADMIN">Admin</option>
-                                        <option value="ALL">Everyone</option>
-                                    </select>
+                                
+                                <!-- Settings Row -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class='bx bx-group me-2 text-info'></i>Target Audience
+                                        </label>
+                                        <select class="form-select" name="targetAudience" required>
+                                            <option value="STUDENT" selected>👨‍🎓 Students</option>
+                                            <option value="ADMIN">👨‍💼 Admin</option>
+                                            <option value="ALL">👥 Everyone</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class='bx bx-category me-2 text-success'></i>Announcement Type
+                                        </label>
+                                        <select class="form-select" name="announcementType">
+                                            <option value="GENERAL">📢 General Announcement</option>
+                                            <option value="EVENT" selected>📅 Event/Meeting</option>
+                                            <option value="DEADLINE">⏰ Important Deadline</option>
+                                            <option value="HOLIDAY">🌞 Holiday Notice</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Type</label>
-                                    <select class="form-select" name="announcementType">
-                                        <option value="GENERAL">General Announcement</option>
-                                        <option value="EVENT" selected>Event/Meeting</option>
-                                        <option value="DEADLINE ">Important Deadline</option>
-                                        <option value="HOLIDAY">Holiday Notice</option>
-                                    </select>
+                                
+                                <!-- Date & Time Row -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class='bx bx-calendar me-2 text-danger'></i>Event Date
+                                        </label>
+                                        <input type="date" class="form-control" name="eventDate" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            <i class='bx bx-time me-2 text-warning'></i>Event Time
+                                            <span class="badge bg-light text-dark ms-2">Optional</span>
+                                        </label>
+                                        <input type="time" class="form-control" name="eventTime">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Event Date</label>
-                                    <input type="date" class="form-control" name="eventDate" required>
+                                
+                                <!-- Content Row -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">
+                                        <i class='bx bx-message-detail me-2 text-secondary'></i>Announcement Content
+                                    </label>
+                                    <textarea class="form-control" name="content" rows="4" required placeholder="Write your announcement details here... Be clear and informative!"></textarea>
+                                    <div class="form-text">
+                                        <i class='bx bx-info-circle me-1'></i>Tip: Include all important details like location, requirements, or deadlines.
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Event Time (Optional)</label>
-                                    <input type="time" class="form-control" name="eventTime">
+                                
+                                <!-- Submit Button -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-muted small">
+                                        <i class='bx bx-shield-check me-1'></i>Your announcement will be posted immediately
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-lg px-4">
+                                        <i class='bx bx-send me-2'></i>Post Announcement
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Content</label>
-                                <textarea class="form-control" name="content" rows="3" required placeholder="Enter announcement details..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success">
-                                <i class='bx bx-send me-1'></i>Post Announcement
-                            </button>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,23 +210,44 @@
         <div class="row mb-4">
             <!-- Branch Statistics -->
             <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <h5 class="mb-0"><i class='bx bx-bar-chart me-2'></i>Branch Statistics</h5>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-primary text-white border-0">
+                        <button class="btn btn-link p-0 text-decoration-none w-100 text-start text-white" type="button" data-bs-toggle="collapse" data-bs-target="#branchStats" aria-expanded="false">
+                            <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                                <span><i class='bx bx-bar-chart-alt-2 me-2'></i>Branch Statistics</span>
+                                <i class='bx bx-chevron-down'></i>
+                            </h5>
+                        </button>
                     </div>
-                    <div class="card-body">
-                        <div th:each="branch : ${branchStats}" class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="fw-semibold" th:text="${branch[0]}">Branch Name</span>
-                                <span class="badge bg-primary" th:text="${branch[1]}">0</span>
+                    <div class="collapse" id="branchStats">
+                        <div class="card-body p-3">
+                            <div th:each="branch : ${branchStats}" class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class='bx bx-book text-white'></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold" th:text="${branch[0]}">Branch Name</h6>
+                                            <small class="text-muted">Students enrolled</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h5 class="mb-0 text-primary fw-bold" th:text="${branch[1]}">0</h5>
+                                        <small class="text-muted">Total</small>
+                                    </div>
+                                </div>
+                                <div class="progress" style="height: 8px; border-radius: 10px;">
+                                    <div class="progress-bar bg-gradient-primary" th:style="|width: ${branch[1] * 10}%|" style="border-radius: 10px;"></div>
+                                </div>
                             </div>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar" th:style="|width: ${branch[1] * 10}%|"></div>
+                            <div class="text-center py-4" th:if="${#lists.isEmpty(branchStats)}">
+                                <div class="bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    <i class='bx bx-bar-chart text-muted' style="font-size: 1.5rem;"></i>
+                                </div>
+                                <p class="text-muted mb-0">No branch data available</p>
+                                <small class="text-muted">Statistics will appear here once data is available</small>
                             </div>
-                        </div>
-                        <div class="text-center py-3" th:if="${#lists.isEmpty(branchStats)}">
-                            <i class='bx bx-bar-chart text-muted' style="font-size: 2rem;"></i>
-                            <p class="text-muted mt-2 mb-0">No branch data available.</p>
                         </div>
                     </div>
                 </div>
@@ -191,48 +255,67 @@
 
             <!-- Recent Announcements -->
             <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0"><i class='bx bx-bell me-2'></i>Recent Announcements</h5>
-                            <a href="/teacher/announcements" class="btn btn-sm btn-outline-primary">
-                                <i class='bx bx-right-arrow-alt me-1'></i>View All
-                            </a>
-                        </div>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-success text-white border-0">
+                        <button class="btn btn-link p-0 text-decoration-none w-100 text-start text-white" type="button" data-bs-toggle="collapse" data-bs-target="#recentAnnouncements" aria-expanded="false">
+                            <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                                <span><i class='bx bx-bell-ring me-2'></i>Recent Announcements</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="/teacher/announcements" class="btn btn-sm btn-outline-light border-2">
+                                        <i class='bx bx-right-arrow-alt me-1'></i>View All
+                                    </a>
+                                    <i class='bx bx-chevron-down'></i>
+                                </div>
+                            </h5>
+                        </button>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
-                            <div th:each="announcement : ${recentAnnouncements}" class="list-group-item py-2">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center">
-                                            <h6 class="mb-0 me-2" th:text="${announcement.title}">Announcement Title</h6>
-                                            <span th:if="${announcement.announcementType == 'EVENT'}" class="badge bg-info badge-sm">
-                                                <i class='bx bx-calendar-event'></i>
-                                            </span>
-                                            <span th:if="${announcement.announcementType == 'DEADLINE'}" class="badge bg-warning badge-sm">
-                                                <i class='bx bx-alarm'></i>
-                                            </span>
-                                            <span th:if="${announcement.announcementType == 'HOLIDAY'}" class="badge bg-success badge-sm">
-                                                <i class='bx bx-sun'></i>
-                                            </span>
+                    <div class="collapse" id="recentAnnouncements">
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush" style="max-height: 350px; overflow-y: auto;">
+                                <div th:each="announcement : ${recentAnnouncements}" class="list-group-item border-0 py-3">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            <div th:if="${announcement.announcementType == 'EVENT'}" class="bg-info rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                <i class='bx bx-calendar-event text-white'></i>
+                                            </div>
+                                            <div th:if="${announcement.announcementType == 'DEADLINE'}" class="bg-warning rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                <i class='bx bx-alarm text-white'></i>
+                                            </div>
+                                            <div th:if="${announcement.announcementType == 'HOLIDAY'}" class="bg-success rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                <i class='bx bx-sun text-white'></i>
+                                            </div>
+                                            <div th:if="${announcement.announcementType == 'GENERAL'}" class="bg-secondary rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                <i class='bx bx-info-circle text-white'></i>
+                                            </div>
                                         </div>
-                                        <small class="text-muted">
-                                            <i class='bx bx-time me-1'></i>
-                                            <span th:text="${#temporals.format(announcement.createdAt, 'MMM dd')}">Date</span>
-                                            <span th:if="${announcement.eventDate != null}" class="ms-2 text-primary">
-                                                <i class='bx bx-calendar me-1'></i>
-                                                <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd')}">Event</span>
-                                            </span>
-                                        </small>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <h6 class="mb-0 fw-bold" th:text="${announcement.title}">Announcement Title</h6>
+                                                <span class="badge bg-primary rounded-pill" th:text="${announcement.targetAudience}">ALL</span>
+                                            </div>
+                                            <p class="text-muted mb-2 small" th:text="${#strings.abbreviate(announcement.content, 80)}">Content preview...</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class='bx bx-time me-1'></i>
+                                                    <span th:text="${#temporals.format(announcement.createdAt, 'MMM dd, HH:mm')}">Date</span>
+                                                </small>
+                                                <small th:if="${announcement.eventDate != null}" class="text-primary fw-semibold">
+                                                    <i class='bx bx-calendar me-1'></i>
+                                                    <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd')}">Event</span>
+                                                    <span th:if="${announcement.eventTime != null}" th:text="' ' + ${announcement.eventTime}"></span>
+                                                </small>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="badge bg-primary badge-sm" th:text="${announcement.targetAudience}">ALL</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="text-center py-4" th:if="${#lists.isEmpty(recentAnnouncements)}">
-                            <i class='bx bx-bell text-muted' style="font-size: 3rem;"></i>
-                            <p class="text-muted mt-2">No announcements yet.</p>
+                            <div class="text-center py-5" th:if="${#lists.isEmpty(recentAnnouncements)}">
+                                <div class="bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    <i class='bx bx-bell text-muted' style="font-size: 1.5rem;"></i>
+                                </div>
+                                <p class="text-muted mb-0">No announcements yet</p>
+                                <small class="text-muted">Your announcements will appear here</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -242,11 +325,11 @@
         <!-- Recent Applications Row -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-light">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-info text-white border-0">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class='bx bx-file-blank me-2'></i>Recent Applications</h5>
-                            <a href="/teacher/applications" class="btn btn-sm btn-outline-primary">
+                            <a href="/teacher/applications" class="btn btn-sm btn-outline-light border-2">
                                 <i class='bx bx-right-arrow-alt me-1'></i>View All
                             </a>
                         </div>
@@ -254,56 +337,64 @@
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
-                                <thead class="table-light">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th>Sr. No.</th>
-                                        <th>Student</th>
-                                        <th>Course</th>
-                                        <th>Percentage</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th class="border-0 py-3">🔢 Sr.No.</th>
+                                        <th class="border-0 py-3">🎓 Student</th>
+                                        <th class="border-0 py-3">📚 Course</th>
+                                        <th class="border-0 py-3">📊 Score</th>
+                                        <th class="border-0 py-3">📋 Status</th>
+                                        <th class="border-0 py-3">⚡ Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="app, iterStat : ${recentApplications}">
-                                        <td>
-                                            <span class="badge bg-secondary" th:text="${iterStat.count}">1</span>
+                                    <tr th:each="app, iterStat : ${recentApplications}" class="border-bottom">
+                                        <td class="py-3">
+                                            <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem; font-weight: bold;" th:text="${iterStat.count}">1</div>
                                         </td>
-                                        <td>
-                                            <div>
-                                                <div class="fw-semibold" th:text="${app.parentsName ?: 'Student'}">Student Name</div>
-                                                <small class="text-muted">
-                                                    <span th:text="${app.userEmail}">email@example.com</span>
-                                                    <span class="ms-2 text-primary">ID: <span th:text="${app.id}">123</span></span>
-                                                </small>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark" th:text="${app.course ?: 'N/A'}">Course</span>
-                                        </td>
-                                        <td>
+                                        <td class="py-3">
                                             <div class="d-flex align-items-center">
-                                                <div class="progress me-2" style="width: 60px; height: 6px;">
-                                                    <div class="progress-bar bg-success" th:style="|width: ${app.percentage12 ?: 0}%|"></div>
+                                                <div class="bg-info rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                    <i class='bx bx-user'></i>
                                                 </div>
-                                                <small th:text="|${app.percentage12 ?: 0}%|">85%</small>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${app.parentsName ?: 'Student'}">Student Name</div>
+                                                    <small class="text-muted">
+                                                        <i class='bx bx-envelope me-1'></i><span th:text="${app.userEmail}">email@example.com</span>
+                                                        <span class="ms-2 text-primary">ID: <span th:text="${app.id}">123</span></span>
+                                                    </small>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>
-                                            <span class="badge bg-warning" th:text="${app.status}">Pending</span>
+                                        <td class="py-3">
+                                            <span class="badge bg-light text-dark px-3 py-2" th:text="${app.course ?: 'N/A'}">Course</span>
                                         </td>
-                                        <td>
-                                            <a th:href="@{/teacher/applications}" class="btn btn-sm btn-outline-primary">
-                                                <i class='bx bx-edit-alt'></i>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress me-2" style="width: 70px; height: 8px; border-radius: 10px;">
+                                                    <div class="progress-bar bg-gradient-success" th:style="|width: ${app.percentage12 ?: 0}%|" style="border-radius: 10px;"></div>
+                                                </div>
+                                                <span class="fw-bold text-success" th:text="|${app.percentage12 ?: 0}%|">85%</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="badge bg-warning text-dark px-3 py-2" th:text="${app.status}">Pending</span>
+                                        </td>
+                                        <td class="py-3">
+                                            <a th:href="@{/teacher/applications}" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                <i class='bx bx-edit-alt me-1'></i>Review
                                             </a>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="text-center py-4" th:if="${#lists.isEmpty(recentApplications)}">
-                            <i class='bx bx-file text-muted' style="font-size: 3rem;"></i>
-                            <p class="text-muted mt-2">No recent applications to review.</p>
+                        <div class="text-center py-5" th:if="${#lists.isEmpty(recentApplications)}">
+                            <div class="bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-file text-muted' style="font-size: 1.5rem;"></i>
+                            </div>
+                            <p class="text-muted mb-0">No recent applications to review</p>
+                            <small class="text-muted">New applications will appear here</small>
                         </div>
                     </div>
                 </div>
@@ -313,70 +404,80 @@
         <!-- Recent Users Row -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-light">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-secondary text-white border-0">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class='bx bx-group me-2'></i>Recent Users</h5>
-                            <span class="badge bg-secondary" th:text="|${#lists.size(recentUsers)} users|">0 users</span>
+                            <span class="badge bg-light text-dark px-3 py-2 rounded-pill" th:text="|${#lists.size(recentUsers)} users|">0 users</span>
                         </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
-                                <thead class="table-light">
+                                <thead class="bg-light">
                                     <tr>
-                                        <th>Sr. No.</th>
-                                        <th>User</th>
-                                        <th>Email</th>
-                                        <th>Provider</th>
-                                        <th>Status</th>
-                                        <th>Joined</th>
+                                        <th class="border-0 py-3">🔢 Sr.No.</th>
+                                        <th class="border-0 py-3">👤 User</th>
+                                        <th class="border-0 py-3">📧 Email</th>
+                                        <th class="border-0 py-3">🔗 Provider</th>
+                                        <th class="border-0 py-3">✅ Status</th>
+                                        <th class="border-0 py-3">📅 Joined</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="user, iterStat : ${recentUsers}">
-                                        <td>
-                                            <span class="badge bg-secondary" th:text="${iterStat.count}">1</span>
+                                    <tr th:each="user, iterStat : ${recentUsers}" class="border-bottom">
+                                        <td class="py-3">
+                                            <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem; font-weight: bold;" th:text="${iterStat.count}">1</div>
                                         </td>
-                                        <td>
-                                            <div>
-                                                <div class="fw-semibold" th:text="${user.fullName}">User Name</div>
-                                                <small class="text-primary">ID: <span th:text="${user.id}">123</span></small>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                    <i class='bx bx-user'></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold" th:text="${user.fullName}">User Name</div>
+                                                    <small class="text-muted">ID: <span th:text="${user.id}">123</span></small>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>
-                                            <i class='bx bx-envelope me-1 text-muted'></i>
-                                            <span th:text="${user.email}">email@example.com</span>
+                                        <td class="py-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class='bx bx-envelope me-2 text-muted'></i>
+                                                <span th:text="${user.email}">email@example.com</span>
+                                            </div>
                                         </td>
-                                        <td>
-                                            <span th:if="${user.provider == 'local'}" class="badge bg-primary">
+                                        <td class="py-3">
+                                            <span th:if="${user.provider == 'local'}" class="badge bg-primary px-3 py-2 rounded-pill">
                                                 <i class='bx bx-user-circle me-1'></i>Local
                                             </span>
-                                            <span th:if="${user.provider == 'google'}" class="badge bg-danger">
+                                            <span th:if="${user.provider == 'google'}" class="badge bg-danger px-3 py-2 rounded-pill">
                                                 <i class='bx bxl-google me-1'></i>Google
                                             </span>
-                                            <span th:if="${user.provider == 'github'}" class="badge bg-dark">
+                                            <span th:if="${user.provider == 'github'}" class="badge bg-dark px-3 py-2 rounded-pill">
                                                 <i class='bx bxl-github me-1'></i>GitHub
                                             </span>
                                         </td>
-                                        <td>
-                                            <span th:if="${user.enable}" class="badge bg-success">
+                                        <td class="py-3">
+                                            <span th:if="${user.enable}" class="badge bg-success px-3 py-2 rounded-pill">
                                                 <i class='bx bx-check-circle me-1'></i>Active
                                             </span>
-                                            <span th:unless="${user.enable}" class="badge bg-warning">
+                                            <span th:unless="${user.enable}" class="badge bg-warning px-3 py-2 rounded-pill">
                                                 <i class='bx bx-time me-1'></i>Pending
                                             </span>
                                         </td>
-                                        <td>
-                                            <small class="text-muted">Recently</small>
+                                        <td class="py-3">
+                                            <small class="text-muted fw-semibold">Recently</small>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="text-center py-4" th:if="${#lists.isEmpty(recentUsers)}">
-                            <i class='bx bx-user text-muted' style="font-size: 3rem;"></i>
-                            <p class="text-muted mt-2">No users found in the system.</p>
+                        <div class="text-center py-5" th:if="${#lists.isEmpty(recentUsers)}">
+                            <div class="bg-light rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                <i class='bx bx-user text-muted' style="font-size: 1.5rem;"></i>
+                            </div>
+                            <p class="text-muted mb-0">No users found in the system</p>
+                            <small class="text-muted">New users will appear here</small>
                         </div>
                     </div>
                 </div>

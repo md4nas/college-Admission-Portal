@@ -67,4 +67,6 @@ public interface UserApplicationRepository extends JpaRepository<UserApplication
     // Find applications that need seat allocation (submitted but not allocated)
     @Query("SELECT ua FROM UserApplication ua WHERE ua.status = 'SUBMITTED' AND ua.allocatedBranch IS NULL ORDER BY ua.obtain12Marks DESC")
     List<UserApplication> findApplicationsForSeatAllocation();
+    
+    List<UserApplication> findAllByOrderBySubmissionDateDesc();
 }

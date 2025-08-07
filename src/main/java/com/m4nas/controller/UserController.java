@@ -4,6 +4,7 @@ import com.m4nas.model.UserApplication;
 import com.m4nas.model.Announcement;
 import com.m4nas.service.UserApplicationService;
 import com.m4nas.service.AnnouncementService;
+import com.m4nas.service.PaymentService;
 import java.util.List;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Controller
@@ -36,6 +38,9 @@ public class UserController {
     
     @Autowired
     private AnnouncementService announcementService;
+    
+    @Autowired
+    private PaymentService paymentService;
 
 
 
@@ -363,5 +368,43 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         model.addAttribute("application", application);
         model.addAttribute("currentPath", request.getRequestURI());
         return "user/payment_status";
+    }
+    
+    @PostMapping("/payment/submit")
+    public String submitPayment(@RequestParam("studentName") String studentName,
+                               @RequestParam("courseInfo") String courseInfo,
+                               @RequestParam("amountPaid") Double amountPaid,
+                               @RequestParam("paymentMethod") String paymentMethod,
+                               @RequestParam("transactionId") String transactionId,
+                               @RequestParam(value = "receiptFile", required = false) MultipartFile receiptFile,
+                               @RequestParam(value = "paymentNotes", required = false) String paymentNotes,
+                               Principal p, HttpSession session) {
+        
+        try {
+            String email = p.getName();
+            UserApplication application = userApplicationService.getUserApplicationByEmail(email);
+            
+            if (application == null) {
+                session.setAttribute("msg", "No application found!");
+                session.setAttribute("msgType", "danger");
+                return "redirect:/user/payment";
+            }
+            
+            // Extract course and branch from courseInfo or use application data
+            String course = application.getCourse() != null ? application.getCourse() : "N/A";
+            String branch = application.getAllocatedBranch() != null ? application.getAllocatedBranch() : "N/A";
+            
+            paymentService.submitPayment(email, studentName, course, branch, amountPaid, 
+                                       paymentMethod, transactionId, receiptFile, paymentNotes);
+            
+            session.setAttribute("msg", "Payment submitted successfully! Your payment will be verified within 2-3 working days.");
+            session.setAttribute("msgType", "success");
+            
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error submitting payment: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        
+        return "redirect:/user/payment";
     }
 }

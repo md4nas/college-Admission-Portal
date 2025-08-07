@@ -7,6 +7,8 @@ import com.m4nas.repository.UserRepository;
 import com.m4nas.service.UserService;
 import com.m4nas.service.UserApplicationService;
 import com.m4nas.service.AnnouncementService;
+import com.m4nas.service.PaymentService;
+import com.m4nas.model.Payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +40,9 @@ public class TeacherController {
 
     @Autowired
     private AnnouncementService announcementService;
+    
+    @Autowired
+    private PaymentService paymentService;
 
     @ModelAttribute
     private void userDetails(Model m, Principal p, HttpServletRequest request) {
@@ -388,6 +393,52 @@ public class TeacherController {
         
         return "redirect:/teacher/seat-management";
     }
-
+    
+    @GetMapping("/payment-management")
+    public String paymentManagement(Model model, HttpServletRequest request) {
+        List<Payment> payments = paymentService.getAllPayments();
+        
+        // Calculate statistics
+        long pendingCount = payments.stream().filter(p -> p.getStatus() == Payment.PaymentStatus.PENDING).count();
+        long verifiedCount = payments.stream().filter(p -> p.getStatus() == Payment.PaymentStatus.VERIFIED).count();
+        long rejectedCount = payments.stream().filter(p -> p.getStatus() == Payment.PaymentStatus.REJECTED).count();
+        
+        model.addAttribute("payments", payments);
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("verifiedCount", verifiedCount);
+        model.addAttribute("rejectedCount", rejectedCount);
+        model.addAttribute("totalCount", payments.size());
+        model.addAttribute("currentPath", request.getRequestURI());
+        
+        return "teacher/payment_management";
+    }
+    
+    @PostMapping("/payment/verify/{id}")
+    public String verifyPayment(@PathVariable Long id, Principal p, HttpSession session) {
+        try {
+            String teacherEmail = p.getName();
+            paymentService.verifyPayment(id, teacherEmail);
+            session.setAttribute("msg", "Payment verified successfully!");
+            session.setAttribute("msgType", "success");
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error verifying payment: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/payment-management";
+    }
+    
+    @PostMapping("/payment/reject/{id}")
+    public String rejectPayment(@PathVariable Long id, Principal p, HttpSession session) {
+        try {
+            String teacherEmail = p.getName();
+            paymentService.rejectPayment(id, teacherEmail);
+            session.setAttribute("msg", "Payment rejected successfully!");
+            session.setAttribute("msgType", "warning");
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error rejecting payment: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/payment-management";
+    }
 
 }

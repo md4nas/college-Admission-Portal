@@ -268,41 +268,42 @@
                         <h5><i class='bx bx-form me-2'></i>Payment Submission</h5>
                     </div>
                     <div class="card-body">
-                        <form id="paymentForm" enctype="multipart/form-data">
+                        <form id="paymentForm" action="/user/payment/submit" method="post" enctype="multipart/form-data">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label">Student Name</label>
-                                        <input type="text" class="form-control" th:value="${user.fullName}" readonly>
+                                        <input type="text" name="studentName" class="form-control" th:value="${user.fullName}" readonly>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Course & Branch</label>
-                                        <input type="text" class="form-control" id="courseInfo" readonly>
+                                        <input type="text" name="courseInfo" class="form-control" id="courseInfo" readonly>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Amount Paid <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" id="amountPaid" required>
+                                        <input type="number" name="amountPaid" class="form-control" id="amountPaid" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label">Payment Method</label>
-                                        <input type="text" class="form-control" id="paymentMethodDisplay" readonly>
+                                        <input type="text" name="paymentMethod" class="form-control" id="paymentMethodDisplay" readonly>
                                     </div>
                                     <div class="mb-3" id="transactionField">
                                         <label class="form-label">Transaction ID/Reference Number <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="transactionId" required>
+                                        <input type="text" name="transactionId" class="form-control" id="transactionId" required>
                                     </div>
                                     <div class="mb-3" id="receiptField">
                                         <label class="form-label">Upload Payment Receipt (Optional)</label>
-                                        <input type="file" class="form-control" id="receiptFile" accept=".jpg,.jpeg,.png,.pdf">
+                                        <input type="file" name="receiptFile" class="form-control" id="receiptFile" accept=".jpg,.jpeg,.png,.pdf">
                                         <small class="text-muted">Upload receipt for faster verification - JPG, PNG, PDF (Max 5MB)</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Additional Notes (Optional)</label>
-                                <textarea class="form-control" id="paymentNotes" rows="3" placeholder="Any additional information about the payment"></textarea>
+                                <textarea name="paymentNotes" class="form-control" id="paymentNotes" rows="3" placeholder="Any additional information about the payment"></textarea>
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-success btn-lg me-3">
@@ -590,10 +591,12 @@
             }
         });
 
+        // Remove the preventDefault to allow form submission
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Payment submission successful! Your payment will be verified within 2-3 working days.');
-            resetPaymentForm();
+            // Form will submit normally to backend
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-2"></i>Submitting...';
         });
     </script>
 </section>

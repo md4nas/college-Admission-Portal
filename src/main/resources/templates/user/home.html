@@ -185,11 +185,8 @@
                                         <div>
                                             <small class="text-muted">Payment Status</small>
                                             <h6 class="mb-0">
-                                                <span th:switch="${application.paymentStatus ?: 'PENDING'}">
-                                                    <span th:case="'PAID'" class="badge bg-success">Paid</span>
-                                                    <span th:case="'PARTIAL'" class="badge bg-warning">Partial</span>
-                                                    <span th:case="*" class="badge bg-danger">Pending</span>
-                                                </span>
+                                                <span th:if="${hasVerifiedPayment}" class="badge bg-success">Verified</span>
+                                                <span th:if="${!hasVerifiedPayment}" class="badge bg-danger">Pending</span>
                                             </h6>
                                         </div>
                                     </div>
@@ -225,7 +222,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <div class="process-step text-center p-3 rounded" th:classappend="${application.status == 'ACCEPTED'} ? 'bg-success text-white' : 'bg-light'">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${hasVerifiedPayment} ? 'bg-success text-white' : 'bg-light'">
                                                 <i class='bx bx-credit-card' style="font-size: 2rem;"></i>
                                                 <h6 class="mt-2 mb-1">Confirmation</h6>
                                                 <small>Fee Payment</small>

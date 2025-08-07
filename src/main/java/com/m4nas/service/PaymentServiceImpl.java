@@ -96,4 +96,20 @@ public class PaymentServiceImpl implements PaymentService {
     public boolean hasVerifiedPayment(String userEmail) {
         return paymentRepository.existsByUserEmailAndStatus(userEmail, Payment.PaymentStatus.VERIFIED);
     }
+    
+    public Payment updatePaymentStatus(Long paymentId, Payment.PaymentStatus status, String updatedBy) {
+        Payment payment = paymentRepository.findById(paymentId)
+            .orElseThrow(() -> new RuntimeException("Payment not found"));
+        
+        payment.setStatus(status);
+        if (status != Payment.PaymentStatus.PENDING) {
+            payment.setVerificationDate(LocalDateTime.now());
+            payment.setVerifiedBy(updatedBy);
+        } else {
+            payment.setVerificationDate(null);
+            payment.setVerifiedBy(null);
+        }
+        
+        return paymentRepository.save(payment);
+    }
 }

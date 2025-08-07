@@ -320,6 +320,73 @@
         </div>
 
 
+        <!-- Payment History -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-info">
+                    <div class="card-header bg-secondary text-white">
+                        <h5><i class='bx bx-history me-2'></i>Payment History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${paymentHistory != null and !#lists.isEmpty(paymentHistory)}">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Method</th>
+                                            <th>Transaction ID</th>
+                                            <th>Status</th>
+                                            <th>Receipt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="payment : ${paymentHistory}">
+                                            <td>
+                                                <small th:text="${#temporals.format(payment.submissionDate, 'dd-MM-yyyy HH:mm')}">Date</small>
+                                            </td>
+                                            <td>
+                                                <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(payment.amount, 0, 0)}">Amount</strong>
+                                            </td>
+                                            <td th:text="${payment.paymentMethod}">Method</td>
+                                            <td>
+                                                <code th:text="${payment.transactionId}">TXN123</code>
+                                            </td>
+                                            <td>
+                                                <span th:if="${payment.status.name() == 'PENDING'}" class="badge bg-warning">Unverified</span>
+                                                <span th:if="${payment.status.name() == 'VERIFIED'}" class="badge bg-success">Verified</span>
+                                                <span th:if="${payment.status.name() == 'REJECTED'}" class="badge bg-danger">Rejected</span>
+                                            </td>
+                                            <td>
+                                                <div th:if="${payment.receiptFileName != null}">
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            th:data-filename="${payment.receiptFileName}"
+                                                            onclick="viewReceipt(this.dataset.filename)"
+                                                            data-bs-toggle="modal" data-bs-target="#receiptModal">
+                                                        <i class='bx bx-image'></i> View
+                                                    </button>
+                                                </div>
+                                                <div th:if="${payment.receiptFileName == null}">
+                                                    <span class="text-muted small">No receipt</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${paymentHistory == null or #lists.isEmpty(paymentHistory)}" class="text-center py-4">
+                            <i class='bx bx-receipt text-muted' style="font-size: 3rem;"></i>
+                            <h6 class="mt-3 text-muted">No Payment History</h6>
+                            <p class="text-muted mb-0">Your payment transactions will appear here once submitted</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Important Instructions -->
         <div class="row mb-4">
             <div class="col-12">
@@ -359,6 +426,30 @@
                 <a href="/user/" class="btn btn-secondary">
                     <i class='bx bx-arrow-back'></i> Back to Dashboard
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal fade" id="receiptModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Receipt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="receiptImage" src="" alt="Payment Receipt" class="img-fluid" style="max-height: 500px;">
+                    <div id="receiptError" class="alert alert-danger" style="display: none;">
+                        <i class='bx bx-error-circle me-2'></i>Unable to load receipt image.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a id="downloadReceipt" href="" download class="btn btn-primary">
+                        <i class='bx bx-download me-2'></i>Download
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -598,6 +689,24 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-2"></i>Submitting...';
         });
+        
+        function viewReceipt(fileName) {
+            const receiptImage = document.getElementById('receiptImage');
+            const receiptError = document.getElementById('receiptError');
+            const downloadLink = document.getElementById('downloadReceipt');
+            
+            const receiptUrl = '/uploads/receipts/' + fileName;
+            
+            receiptImage.src = receiptUrl;
+            receiptImage.style.display = 'block';
+            receiptError.style.display = 'none';
+            downloadLink.href = receiptUrl;
+            
+            receiptImage.onerror = function() {
+                receiptImage.style.display = 'none';
+                receiptError.style.display = 'block';
+            };
+        }
     </script>
 </section>
 

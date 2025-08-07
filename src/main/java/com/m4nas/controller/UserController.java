@@ -5,7 +5,9 @@ import com.m4nas.model.Announcement;
 import com.m4nas.service.UserApplicationService;
 import com.m4nas.service.AnnouncementService;
 import com.m4nas.service.PaymentService;
+import com.m4nas.model.Payment;
 import java.util.List;
+import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,6 +25,12 @@ import java.time.LocalDate;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 @Controller
@@ -64,6 +72,11 @@ public class UserController {
                     model.addAttribute("appSubmissionDate", application.getSubmissionDate());
                     model.addAttribute("appParentsPhoneNo", application.getParentsPhoneNo());
                 }
+                
+                // Get payment status
+                List<Payment> userPayments = paymentService.getPaymentsByUser(email);
+                boolean hasVerifiedPayment = userPayments.stream().anyMatch(payment -> payment.getStatus() == Payment.PaymentStatus.VERIFIED);
+                model.addAttribute("hasVerifiedPayment", hasVerifiedPayment);
                 return "user/home";
             } else {
                 return "redirect:/signin?error";
@@ -364,8 +377,12 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
             model.addAttribute("appSeatAccepted", application.getSeatAccepted());
         }
         
+        // Get payment history for the user
+        List<Payment> paymentHistory = paymentService.getPaymentsByUser(email);
+        
         model.addAttribute("user", user);
         model.addAttribute("application", application);
+        model.addAttribute("paymentHistory", paymentHistory);
         model.addAttribute("currentPath", request.getRequestURI());
         return "user/payment_status";
     }
@@ -406,5 +423,23 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         }
         
         return "redirect:/user/payment";
+    }
+    
+    @GetMapping("/uploads/receipts/{filename:.+}")
+    public ResponseEntity<Resource> serveReceiptFile(@PathVariable String filename) {
+        try {
+            Path file = Paths.get("uploads/receipts").resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

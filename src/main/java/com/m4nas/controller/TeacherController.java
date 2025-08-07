@@ -398,6 +398,12 @@ public class TeacherController {
     public String paymentManagement(Model model, HttpServletRequest request) {
         List<Payment> payments = paymentService.getAllPayments();
         
+        // Debug: Print payment details
+        System.out.println("=== PAYMENT DEBUG ===");
+        for (Payment payment : payments) {
+            System.out.println("Payment ID: " + payment.getId() + ", Status: " + payment.getStatus() + ", Student: " + payment.getStudentName());
+        }
+        
         // Calculate statistics
         long pendingCount = payments.stream().filter(p -> p.getStatus() == Payment.PaymentStatus.PENDING).count();
         long verifiedCount = payments.stream().filter(p -> p.getStatus() == Payment.PaymentStatus.VERIFIED).count();
@@ -438,6 +444,69 @@ public class TeacherController {
             session.setAttribute("msg", "Error rejecting payment: " + e.getMessage());
             session.setAttribute("msgType", "danger");
         }
+        return "redirect:/teacher/payment-management";
+    }
+    
+    @PostMapping("/payment-management/bulk-update")
+    public String bulkUpdatePayments(HttpServletRequest request, HttpSession session, Principal p) {
+        try {
+            int successCount = 0;
+            int totalChanges = 0;
+            String teacherEmail = p.getName();
+            
+            java.util.Map<String, String[]> paramMap = request.getParameterMap();
+            java.util.Map<String, java.util.Map<String, String>> changesByPayment = new java.util.HashMap<>();
+            
+            for (String paramName : paramMap.keySet()) {
+                if (paramName.startsWith("changes[")) {
+                    String[] values = paramMap.get(paramName);
+                    if (values.length > 0) {
+                        String indexPart = paramName.substring(8, paramName.indexOf(']'));
+                        String fieldPart = paramName.substring(paramName.indexOf('.') + 1);
+                        
+                        changesByPayment.computeIfAbsent(indexPart, k -> new java.util.HashMap<>()).put(fieldPart, values[0]);
+                    }
+                }
+            }
+            
+            for (java.util.Map<String, String> change : changesByPayment.values()) {
+                String paymentId = change.get("paymentId");
+                String field = change.get("field");
+                String value = change.get("value");
+                
+                if (paymentId != null && field != null && value != null && field.equals("status")) {
+                    totalChanges++;
+                    
+                    try {
+                        Long id = Long.parseLong(paymentId);
+                        Payment.PaymentStatus status = Payment.PaymentStatus.valueOf(value);
+                        System.out.println("Updating payment " + id + " to status: " + status);
+                        ((com.m4nas.service.PaymentServiceImpl) paymentService).updatePaymentStatus(id, status, teacherEmail);
+                        successCount++;
+                        System.out.println("Successfully updated payment " + id);
+                    } catch (Exception e) {
+                        System.err.println("Error updating payment " + paymentId + ": " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+            
+            if (totalChanges == 0) {
+                session.setAttribute("msg", "No changes to save!");
+                session.setAttribute("msgType", "info");
+            } else if (successCount == totalChanges) {
+                session.setAttribute("msg", "All " + successCount + " payment status changes saved successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", successCount + " out of " + totalChanges + " changes saved successfully.");
+                session.setAttribute("msgType", "warning");
+            }
+            
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error saving changes: " + e.getMessage());
+            session.setAttribute("msgType", "danger");
+        }
+        
         return "redirect:/teacher/payment-management";
     }
 

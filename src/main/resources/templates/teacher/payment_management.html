@@ -29,7 +29,7 @@
                     <div class="card-body text-center">
                         <i class='bx bx-time text-warning' style="font-size: 2rem;"></i>
                         <h4 class="mt-2" th:text="${pendingCount}">0</h4>
-                        <p class="text-muted mb-0">Pending</p>
+                        <p class="text-muted mb-0">Unverified</p>
                     </div>
                 </div>
             </div>
@@ -62,15 +62,32 @@
             </div>
         </div>
 
-        <!-- Payments Table -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5><i class='bx bx-list-ul me-2'></i>Payment Submissions</h5>
-                    </div>
+        <!-- Save Indicator -->
+        <div id="saveIndicator" class="save-indicator">
+            <div class="alert alert-warning alert-dismissible">
+                <i class='bx bx-info-circle me-2'></i>
+                <span id="changeCount">0</span> unsaved changes
+                <button type="button" class="btn-close" onclick="hideSaveIndicator()"></button>
+            </div>
+        </div>
+
+        <!-- Bulk Save Form -->
+        <form id="bulkUpdateForm" action="/teacher/payment-management/bulk-update" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div id="changesContainer"></div>
+            
+            <!-- Payments Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class='bx bx-list-ul me-2'></i>Payment Submissions</h5>
+                            <button type="submit" id="saveAllBtn" class="btn btn-success">
+                                <i class='bx bx-save me-1'></i>Save All Changes (<span id="saveCount">0</span>)
+                            </button>
+                        </div>
                     <div class="card-body p-0">
-                        <div th:if="${payments != null and !payments.empty}">
+                        <div th:if="${payments != null and !#lists.isEmpty(payments)}">
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0">
                                     <thead class="bg-light">
@@ -83,10 +100,11 @@
                                             <th>Status</th>
                                             <th>Submitted</th>
                                             <th>Actions</th>
+                                            <th>Receipt</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="payment : ${payments}">
+                                        <tr th:each="payment : ${payments}" th:id="'row-' + ${payment?.id}">
                                             <td>
                                                 <div>
                                                     <strong th:text="${payment.studentName}">Student Name</strong>
@@ -107,35 +125,34 @@
                                                 <code th:text="${payment.transactionId}">TXN123</code>
                                             </td>
                                             <td>
-                                                <span th:switch="${payment.status}">
-                                                    <span th:case="'PENDING'" class="badge bg-warning">Pending</span>
-                                                    <span th:case="'VERIFIED'" class="badge bg-success">Verified</span>
-                                                    <span th:case="'REJECTED'" class="badge bg-danger">Rejected</span>
-                                                </span>
+                                                <span th:if="${payment.status.name() == 'PENDING'}" class="badge bg-warning">Unverified</span>
+                                                <span th:if="${payment.status.name() == 'VERIFIED'}" class="badge bg-success">Verified</span>
+                                                <span th:if="${payment.status.name() == 'REJECTED'}" class="badge bg-danger">Rejected</span>
                                             </td>
                                             <td>
                                                 <small th:text="${#temporals.format(payment.submissionDate, 'dd-MM-yyyy HH:mm')}">Date</small>
                                             </td>
                                             <td>
-                                                <div class="btn-group" role="group">
+                                                <select class="form-select form-select-sm update-field" 
+                                                        th:data-payment-id="${payment.id}" 
+                                                        data-field="status"
+                                                        th:data-original="${payment.status.name()}">
+                                                    <option value="PENDING" th:selected="${payment.status.name() == 'PENDING'}">Unverified</option>
+                                                    <option value="VERIFIED" th:selected="${payment.status.name() == 'VERIFIED'}">Verified</option>
+                                                    <option value="REJECTED" th:selected="${payment.status.name() == 'REJECTED'}">Rejected</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div th:if="${payment.receiptFileName != null}">
                                                     <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            th:onclick="'viewPaymentDetails(' + ${payment.id} + ')'">
-                                                        <i class='bx bx-info-circle'></i>
+                                                            th:data-filename="${payment.receiptFileName}"
+                                                            onclick="viewReceipt(this.dataset.filename)"
+                                                            data-bs-toggle="modal" data-bs-target="#receiptModal">
+                                                        <i class='bx bx-image'></i> View
                                                     </button>
-                                                    <div th:if="${payment.status.name() == 'PENDING'}">
-                                                        <form th:action="@{/teacher/payment/verify/{id}(id=${payment.id})}" method="post" class="d-inline">
-                                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Verify this payment?')">
-                                                                <i class='bx bx-check'></i>
-                                                            </button>
-                                                        </form>
-                                                        <form th:action="@{/teacher/payment/reject/{id}(id=${payment.id})}" method="post" class="d-inline">
-                                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Reject this payment?')">
-                                                                <i class='bx bx-x'></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
+                                                </div>
+                                                <div th:if="${payment.receiptFileName == null}">
+                                                    <span class="text-muted small">No receipt</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -144,7 +161,7 @@
                             </div>
                         </div>
                         
-                        <div th:if="${payments == null or payments.empty}" class="text-center py-5">
+                        <div th:if="${payments == null or #lists.isEmpty(payments)}" class="text-center py-5">
                             <i class='bx bx-receipt text-muted' style="font-size: 3rem;"></i>
                             <h5 class="mt-3 text-muted">No Payment Submissions</h5>
                             <p class="text-muted">No students have submitted payment details yet.</p>
@@ -153,7 +170,198 @@
                 </div>
             </div>
         </div>
+        </form>
     </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal fade" id="receiptModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Receipt</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="receiptImage" src="" alt="Payment Receipt" class="img-fluid" style="max-height: 500px;">
+                    <div id="receiptError" class="alert alert-danger" style="display: none;">
+                        <i class='bx bx-error-circle me-2'></i>Unable to load receipt image.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a id="downloadReceipt" href="" download class="btn btn-primary">
+                        <i class='bx bx-download me-2'></i>Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .changed-row {
+            background-color: #fff3cd !important;
+            border-left: 4px solid #ffc107;
+        }
+        .save-indicator {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+
+    <script>
+        let pendingChanges = new Map();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.update-field').forEach(field => {
+                field.addEventListener('change', function() {
+                    handleFieldChange(this);
+                });
+            });
+            
+            // Clear changes after successful save
+            const alertElement = document.querySelector('.alert-success');
+            if (alertElement && alertElement.textContent.includes('saved successfully')) {
+                pendingChanges.clear();
+                document.querySelectorAll('.changed-row').forEach(row => {
+                    row.classList.remove('changed-row');
+                });
+                updateSaveButton();
+                updateSaveIndicator();
+            }
+        });
+        
+        function handleFieldChange(field) {
+            const paymentId = field.dataset.paymentId;
+            const fieldName = field.dataset.field;
+            const originalValue = field.dataset.original || '';
+            const newValue = field.value;
+            
+            const changeKey = `${paymentId}-${fieldName}`;
+            
+            if (newValue !== originalValue) {
+                pendingChanges.set(changeKey, {
+                    paymentId: paymentId,
+                    field: fieldName,
+                    value: newValue,
+                    originalValue: originalValue
+                });
+                
+                const row = document.getElementById(`row-${paymentId}`);
+                if (row) {
+                    row.classList.add('changed-row');
+                }
+            } else {
+                pendingChanges.delete(changeKey);
+                
+                const hasOtherChanges = Array.from(pendingChanges.keys()).some(key => key.startsWith(`${paymentId}-`));
+                if (!hasOtherChanges) {
+                    const row = document.getElementById(`row-${paymentId}`);
+                    if (row) {
+                        row.classList.remove('changed-row');
+                    }
+                }
+            }
+            
+            updateSaveButton();
+            updateSaveIndicator();
+        }
+        
+        function updateSaveButton() {
+            const saveBtn = document.getElementById('saveAllBtn');
+            const saveCount = document.getElementById('saveCount');
+            const changeCount = pendingChanges.size;
+            
+            if (changeCount > 0) {
+                saveBtn.style.display = 'block';
+                saveCount.textContent = changeCount;
+            } else {
+                saveBtn.style.display = 'none';
+            }
+        }
+        
+        function updateSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            const changeCountSpan = document.getElementById('changeCount');
+            const changeCount = pendingChanges.size;
+            
+            if (changeCount > 0) {
+                indicator.style.display = 'block';
+                changeCountSpan.textContent = changeCount;
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+        
+        function hideSaveIndicator() {
+            document.getElementById('saveIndicator').style.display = 'none';
+        }
+        
+        document.getElementById('bulkUpdateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (pendingChanges.size === 0) {
+                alert('No changes to save!');
+                return;
+            }
+            
+            const container = document.getElementById('changesContainer');
+            container.innerHTML = '';
+            
+            // Update original values before submit
+            pendingChanges.forEach((change, key) => {
+                const field = document.querySelector(`[data-payment-id="${change.paymentId}"][data-field="${change.field}"]`);
+                if (field) {
+                    field.dataset.original = change.value;
+                }
+            });
+            
+            let index = 0;
+            pendingChanges.forEach((change, key) => {
+                const paymentIdInput = document.createElement('input');
+                paymentIdInput.type = 'hidden';
+                paymentIdInput.name = `changes[${index}].paymentId`;
+                paymentIdInput.value = change.paymentId;
+                container.appendChild(paymentIdInput);
+                
+                const fieldInput = document.createElement('input');
+                fieldInput.type = 'hidden';
+                fieldInput.name = `changes[${index}].field`;
+                fieldInput.value = change.field;
+                container.appendChild(fieldInput);
+                
+                const valueInput = document.createElement('input');
+                valueInput.type = 'hidden';
+                valueInput.name = `changes[${index}].value`;
+                valueInput.value = change.value;
+                container.appendChild(valueInput);
+                
+                index++;
+            });
+            
+            this.submit();
+        });
+        
+        function viewReceipt(fileName) {
+            const receiptImage = document.getElementById('receiptImage');
+            const receiptError = document.getElementById('receiptError');
+            const downloadLink = document.getElementById('downloadReceipt');
+            
+            const receiptUrl = '/uploads/receipts/' + fileName;
+            
+            receiptImage.src = receiptUrl;
+            receiptImage.style.display = 'block';
+            receiptError.style.display = 'none';
+            downloadLink.href = receiptUrl;
+            
+            receiptImage.onerror = function() {
+                receiptImage.style.display = 'none';
+                receiptError.style.display = 'block';
+            };
+        }
+    </script>
 </section>
 
 </body>

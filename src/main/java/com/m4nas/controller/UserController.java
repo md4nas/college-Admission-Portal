@@ -89,16 +89,6 @@ public class UserController {
             if(updatePasswordUser != null){
                 session.setAttribute("msg","Password changed successfully!");
                 session.setAttribute("msgType", "success");
-                // Clear message after displaying
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(3000);
-                        session.removeAttribute("msg");
-                        session.removeAttribute("msgType");
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }).start();
             }else{
                 session.setAttribute("msg","Something went wrong. Please try again.");
                 session.setAttribute("msgType", "danger");
@@ -235,15 +225,20 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
 }
 
     @PostMapping("/application/accept-seat")
-    public String acceptSeat(Principal p, HttpSession session){
+    public String acceptSeat(Principal p, HttpSession session, @RequestParam(value = "redirectToPayment", required = false) String redirectToPayment){
         String email = p.getName();
         UserApplication application = userApplicationService.getUserApplicationByEmail(email);
 
         if(application != null && "ALLOCATED".equals(application.getStatus())){
             UserApplication updatedApplication = userApplicationService.acceptSeat(application.getId());
             if(updatedApplication != null){
-                session.setAttribute("msg", "Seat accepted successfully!");
+                session.setAttribute("msg", "Seat accepted successfully! You can now proceed with fee payment.");
                 session.setAttribute("msgType", "success");
+                
+                // Redirect to payment page if requested
+                if("true".equals(redirectToPayment)) {
+                    return "redirect:/user/payment";
+                }
             } else {
                 session.setAttribute("msg", "Failed to accept seat. Please try again.");
                 session.setAttribute("msgType", "danger");
@@ -351,6 +346,13 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         String email = p.getName();
         UserDtls user = userRepo.findByEmail(email);
         UserApplication application = userApplicationService.getUserApplicationByEmail(email);
+        
+        // Pass individual fields like application status page
+        if(application != null) {
+            model.addAttribute("appStatus", application.getStatus());
+            model.addAttribute("appCourse", application.getCourse());
+            model.addAttribute("appAllocatedBranch", application.getAllocatedBranch());
+        }
         
         model.addAttribute("user", user);
         model.addAttribute("application", application);

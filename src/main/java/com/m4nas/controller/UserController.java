@@ -356,6 +356,7 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
             model.addAttribute("appStatus", application.getStatus());
             model.addAttribute("appCourse", application.getCourse());
             model.addAttribute("appAllocatedBranch", application.getAllocatedBranch());
+            model.addAttribute("appSeatAccepted", application.getSeatAccepted());
         }
         
         model.addAttribute("user", user);

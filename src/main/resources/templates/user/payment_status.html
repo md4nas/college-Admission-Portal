@@ -520,31 +520,33 @@
             const appStatus = '[[${appStatus}]]';
             const appCourse = '[[${appCourse}]]';
             const appAllocatedBranch = '[[${appAllocatedBranch}]]';
+            const seatAccepted = [[${appSeatAccepted != null and appSeatAccepted}]];
+
+            console.log('Payment page loaded with:', { appStatus, appCourse, appAllocatedBranch, seatAccepted });
 
             const totalFeeElement = document.getElementById('totalFeeAmount');
             const payNowBtn = document.getElementById('payNowBtn');
             const statusMessage = document.getElementById('feeStatusMessage');
 
-            const isEligibleForPayment = (appStatus === 'ACCEPTED' || (appStatus === 'ALLOCATED' && seatAccepted)) &&
-                appCourse && appCourse.trim() !== '' &&
-                appAllocatedBranch && appAllocatedBranch.trim() !== '';
-
-            if (isEligibleForPayment) {
+            // Check if user has course and branch allocated
+            const hasRequiredData = appCourse && appCourse.trim() !== '' && appAllocatedBranch && appAllocatedBranch.trim() !== '';
+            
+            if (hasRequiredData) {
                 const courseMapping = {
                     'BTECH': 'btech',
-                    'BSC': 'bsc',
+                    'BSC': 'bsc', 
                     'BCA': 'bca',
                     'MTECH': 'mtech'
                 };
 
                 const branchMapping = {
                     'CSE': 'Computer Science',
-                    'ECE': 'Electronics',
+                    'ECE': 'Electronics', 
                     'MECHANICAL': 'Mechanical',
                     'CIVIL': 'Civil',
                     'Computer Science': 'Computer Science',
                     'Electronics': 'Electronics',
-                    'Mechanical': 'Mechanical',
+                    'Mechanical': 'Mechanical', 
                     'Civil': 'Civil',
                     'Physics': 'Physics',
                     'Chemistry': 'Chemistry',
@@ -556,6 +558,8 @@
                 const courseKey = courseMapping[appCourse];
                 const branchKey = branchMapping[appAllocatedBranch] || appAllocatedBranch;
 
+                console.log('Mapped keys:', { courseKey, branchKey });
+
                 if (courseKey && feeStructure[courseKey] && feeStructure[courseKey][branchKey]) {
                     const fees = feeStructure[courseKey][branchKey];
                     const totalAmount = fees.tuition + fees.development + fees.lab + fees.library + fees.exam;
@@ -566,14 +570,15 @@
                     payNowBtn.className = 'btn btn-success btn-lg w-100 shadow-sm';
                     statusMessage.textContent = 'Ready for payment';
                     statusMessage.className = 'text-success mt-2 d-block small';
+                    
+                    console.log('Fee calculated:', totalAmount);
                 } else {
                     statusMessage.textContent = 'Fee structure not found for your course/branch';
                     statusMessage.className = 'text-warning mt-2 d-block small';
+                    console.log('Fee structure not found for:', courseKey, branchKey);
                 }
             } else {
-                if (appStatus !== 'ACCEPTED' && !(appStatus === 'ALLOCATED' && seatAccepted)) {
-                    statusMessage.textContent = 'Payment available after seat acceptance';
-                } else if (!appCourse || appCourse.trim() === '') {
+                if (!appCourse || appCourse.trim() === '') {
                     statusMessage.textContent = 'Course not yet assigned';
                 } else if (!appAllocatedBranch || appAllocatedBranch.trim() === '') {
                     statusMessage.textContent = 'Branch not yet allocated';
@@ -581,6 +586,7 @@
                     statusMessage.textContent = 'Fee calculation pending';
                 }
                 statusMessage.className = 'text-muted mt-2 d-block small';
+                console.log('Missing required data for fee calculation');
             }
         });
 

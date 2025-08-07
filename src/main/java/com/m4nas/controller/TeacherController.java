@@ -91,6 +91,12 @@ public class TeacherController {
     @GetMapping("/applications")
     public String viewApplications(Model model) {
         List<UserApplication> applications = userApplicationService.getApplicationsPendingApproval();
+        // Sort by class 12 percentage in descending order
+        applications.sort((a, b) -> {
+            Double percentageA = a.getPercentage12() != null ? a.getPercentage12() : 0.0;
+            Double percentageB = b.getPercentage12() != null ? b.getPercentage12() : 0.0;
+            return Double.compare(percentageB, percentageA);
+        });
         model.addAttribute("applications", applications);
         return "teacher/applications";
     }

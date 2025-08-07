@@ -39,51 +39,42 @@
             <span th:text="${session.msg}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-        
-
 
         <!-- Application Details -->
         <div th:if="${application != null}">
-            <!-- Status Overview -->
-            <div class="row mb-4">
+            <!-- Final Decision Section (Only when ALLOCATED) -->
+            <div th:if="${appStatus == 'ALLOCATED'}" class="row mb-4">
                 <div class="col-md-4">
-                    <div class="card border-0 bg-light">
+                    <div class="card border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0"><i class='bx bx-exclamation-triangle me-2'></i>Final Decision Required</h5>
+                        </div>
                         <div class="card-body text-center">
-                            <div th:switch="${application.status}">
-                                <div th:case="'PENDING'">
-                                    <i class='bx bx-time-five text-warning' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-warning">Pending</h4>
-                                </div>
-                                <div th:case="'SUBMITTED'">
-                                    <i class='bx bx-check text-info' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-info">Submitted</h4>
-                                </div>
-                                <div th:case="'APPROVED'">
-                                    <i class='bx bx-check-circle text-success' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-success">Approved</h4>
-                                </div>
-                                <div th:case="'ALLOCATED'">
-                                    <i class='bx bx-trophy text-primary' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-primary">Seat Allocated</h4>
-                                </div>
-                                <div th:case="'ACCEPTED'">
-                                    <i class='bx bx-medal text-success' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-success">Seat Accepted</h4>
-                                </div>
-                                <div th:case="'DECLINED'">
-                                    <i class='bx bx-x-circle text-danger' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-danger">Seat Declined</h4>
-                                </div>
-                                <div th:case="'REJECTED'">
-                                    <i class='bx bx-x text-danger' style="font-size: 4rem;"></i>
-                                    <h4 class="mt-3 text-danger">Rejected</h4>
-                                </div>
+                            <h6 class="text-warning mb-3">Do you want to accept the seat?</h6>
+                            <p class="small mb-3">
+                                Based on allocated course: <strong th:text="${appCourse}">Course</strong><br>
+                                <span th:if="${appAllocatedBranch != null and !#strings.isEmpty(appAllocatedBranch)}">
+                                    And branch: <strong th:text="${appAllocatedBranch}">Branch</strong>
+                                </span>
+                            </p>
+                            <div class="d-grid gap-2">
+                                <form th:action="@{/user/application/accept-seat}" method="post" onsubmit="return confirmSeatAcceptanceAndRedirect()">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" name="redirectToPayment" value="true" />
+                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                        <i class='bx bx-check me-1'></i>Accept Seat
+                                    </button>
+                                </form>
+                                <form th:action="@{/user/application/decline-seat}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn btn-danger btn-sm w-100">
+                                        <i class='bx bx-x me-1'></i>Decline Seat
+                                    </button>
+                                </form>
                             </div>
-                            <p class="text-muted mb-0">Current Status</p>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header bg-primary text-white">
@@ -91,17 +82,66 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <strong>Course:</strong> <span th:text="${appCourse}"></span>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Application Status:</strong> 
+                                    <span class="badge fs-6" th:classappend="${appStatus == 'APPROVED' or appStatus == 'ALLOCATED' or appStatus == 'ACCEPTED' ? 'bg-success' : (appStatus == 'REJECTED' or appStatus == 'DECLINED' ? 'bg-danger' : 'bg-warning')}" th:text="${appStatus}">Status</span>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>First Choice:</strong> <span th:text="${appBranch1}"></span>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Assigned Course:</strong> 
+                                    <span th:if="${appCourse != null and !#strings.isEmpty(appCourse)}" class="badge bg-info fs-6" th:text="${appCourse}">Course</span>
+                                    <span th:if="${appCourse == null or #strings.isEmpty(appCourse)}" class="text-muted">Not yet assigned</span>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Second Choice:</strong> <span th:text="${appBranch2}"></span>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Allocated Branch:</strong> 
+                                    <span th:if="${appAllocatedBranch != null and !#strings.isEmpty(appAllocatedBranch)}" class="badge bg-success fs-6" th:text="${appAllocatedBranch}">Branch</span>
+                                    <span th:if="${appAllocatedBranch == null or #strings.isEmpty(appAllocatedBranch)}" class="text-muted">Not yet allocated</span>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Class 12 Percentage:</strong> <span th:text="${appPercentage12} + '%'"></span>
+                                <div class="col-md-4 mb-3">
+                                    <strong>First Choice:</strong> <span th:text="${appBranch1}">Branch1</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Second Choice:</strong> <span th:text="${appBranch2}">Branch2</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Class 12 Percentage:</strong> <span th:text="${appPercentage12} + '%'">Percentage</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Application Summary (When NOT ALLOCATED) -->
+            <div th:if="${appStatus != 'ALLOCATED'}" class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5><i class='bx bx-info-circle me-2'></i>Application Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <strong>Application Status:</strong> 
+                                    <span class="badge fs-6" th:classappend="${appStatus == 'APPROVED' or appStatus == 'ALLOCATED' or appStatus == 'ACCEPTED' ? 'bg-success' : (appStatus == 'REJECTED' or appStatus == 'DECLINED' ? 'bg-danger' : 'bg-warning')}" th:text="${appStatus}">Status</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Assigned Course:</strong> 
+                                    <span th:if="${appCourse != null and !#strings.isEmpty(appCourse)}" class="badge bg-info fs-6" th:text="${appCourse}">Course</span>
+                                    <span th:if="${appCourse == null or #strings.isEmpty(appCourse)}" class="text-muted">Not yet assigned</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Allocated Branch:</strong> 
+                                    <span th:if="${appAllocatedBranch != null and !#strings.isEmpty(appAllocatedBranch)}" class="badge bg-success fs-6" th:text="${appAllocatedBranch}">Branch</span>
+                                    <span th:if="${appAllocatedBranch == null or #strings.isEmpty(appAllocatedBranch)}" class="text-muted">Not yet allocated</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>First Choice:</strong> <span th:text="${appBranch1}">Branch1</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Second Choice:</strong> <span th:text="${appBranch2}">Branch2</span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <strong>Class 12 Percentage:</strong> <span th:text="${appPercentage12} + '%'">Percentage</span>
                                 </div>
                             </div>
                         </div>
@@ -119,37 +159,37 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <strong>Date of Birth:</strong> <span th:text="${appDob}"></span>
+                                    <strong>Date of Birth:</strong> <span th:text="${appDob}">DOB</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Gender:</strong> <span th:text="${appGender}"></span>
+                                    <strong>Gender:</strong> <span th:text="${appGender}">Gender</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Phone:</strong> <span th:text="${appPhone}"></span>
+                                    <strong>Phone:</strong> <span th:text="${appPhone}">Phone</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Parents Name:</strong> <span th:text="${appParentsName}"></span>
+                                    <strong>Parents Name:</strong> <span th:text="${appParentsName}">Parents Name</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Parents Phone:</strong> <span th:text="${appParentsPhoneNo}"></span>
+                                    <strong>Parents Phone:</strong> <span th:text="${appParentsPhoneNo}">Parents Phone</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Religion:</strong> <span th:text="${appReligion ?: 'Not specified'}"></span>
+                                    <strong>Religion:</strong> <span th:text="${appReligion ?: 'Not specified'}">Religion</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Caste:</strong> <span th:text="${appCaste ?: 'Not specified'}"></span>
+                                    <strong>Caste:</strong> <span th:text="${appCaste ?: 'Not specified'}">Caste</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>City:</strong> <span th:text="${appCity}"></span>
+                                    <strong>City:</strong> <span th:text="${appCity}">City</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>State:</strong> <span th:text="${appState}"></span>
+                                    <strong>State:</strong> <span th:text="${appState}">State</span>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <strong>Pincode:</strong> <span th:text="${appPincode}"></span>
+                                    <strong>Pincode:</strong> <span th:text="${appPincode}">Pincode</span>
                                 </div>
                                 <div class="col-md-12 mb-3">
-                                    <strong>Address:</strong> <span th:text="${appAddress}"></span>
+                                    <strong>Address:</strong> <span th:text="${appAddress}">Address</span>
                                 </div>
                             </div>
                         </div>
@@ -164,75 +204,84 @@
                         <div class="card-header bg-success text-white">
                             <h5><i class='bx bx-book me-2'></i>Class 10 Details</h5>
                         </div>
-                        <div class="card-body">
-                            <p><strong>School:</strong> <span th:text="${appSchoolName10}"></span></p>
-                            <p><strong>Board:</strong> <span th:text="${appBoard10Name}"></span></p>
-                            <p><strong>Year:</strong> <span th:text="${appPassing10Year}"></span></p>
-                            <p><strong>Roll Number:</strong> <span th:text="${appRollNo10}"></span></p>
-                            <hr>
-                            <h6 class="text-primary">Subject-wise Marks:</h6>
-                            <div class="row">
-                                <div class="col-md-6"><strong>Math:</strong> <span th:text="${appClass10Math}"></span></div>
-                                <div class="col-md-6"><strong>Science:</strong> <span th:text="${appClass10Science}"></span></div>
-                                <div class="col-md-6"><strong>English:</strong> <span th:text="${appClass10English}"></span></div>
-                                <div class="col-md-6"><strong>Hindi:</strong> <span th:text="${appClass10Hindi}"></span></div>
-                                <div class="col-md-6"><strong>Social:</strong> <span th:text="${appClass10Social}"></span></div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>School:</strong> <span th:text="${appSchoolName10}">School</span></small></div>
+                                <div class="col-6"><small><strong>Board:</strong> <span th:text="${appBoard10Name}">Board</span></small></div>
+                                <div class="col-6"><small><strong>Year:</strong> <span th:text="${appPassing10Year}">Year</span></small></div>
+                                <div class="col-6"><small><strong>Roll No:</strong> <span th:text="${appRollNo10}">Roll No</span></small></div>
+                                <div class="col-6"><small><strong>Total:</strong> <span th:text="${appTotal10Marks}">Total</span></small></div>
+                                <div class="col-6"><small><strong>Obtained:</strong> <span th:text="${appObtain10Marks}">Obtained</span></small></div>
+                                <div class="col-12">
+                                    <small><strong>Percentage:</strong> <span class="text-dark fw-bold" th:text="${appPercentage10 != null ? appPercentage10 + '%' : 'N/A'}">Percentage</span></small>
+                                </div>
                             </div>
-                            <hr>
-                            <p><strong>Total Marks:</strong> <span th:text="${appTotal10Marks}"></span></p>
-                            <p><strong>Obtained Marks:</strong> <span th:text="${appObtain10Marks}"></span></p>
-                            <p><strong>Percentage:</strong> <span class="badge bg-success" th:text="${appPercentage10} + '%'"></span></p>
+                            
+                            <hr class="my-2">
+                            <h6 class="mb-2 text-dark"><strong>Subject Marks</strong></h6>
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>Math:</strong> <span th:text="${appClass10Math}">-</span></small></div>
+                                <div class="col-6"><small><strong>Science:</strong> <span th:text="${appClass10Science}">-</span></small></div>
+                                <div class="col-6"><small><strong>English:</strong> <span th:text="${appClass10English}">-</span></small></div>
+                                <div class="col-6"><small><strong>Hindi:</strong> <span th:text="${appClass10Hindi}">-</span></small></div>
+                                <div class="col-12"><small><strong>Social:</strong> <span th:text="${appClass10Social}">-</span></small></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="card h-100">
-                        <div class="card-header bg-warning text-dark">
-                            <h5><i class='bx bx-graduation me-2'></i>Class 12 Details</h5>
+                        <div class="card-header bg-warning text-white">
+                            <h5><i class='bx bx-book-open me-2'></i>Class 12 Details</h5>
                         </div>
-                        <div class="card-body">
-                            <p><strong>School:</strong> <span th:text="${appSchoolName12}"></span></p>
-                            <p><strong>Board:</strong> <span th:text="${appBoard12Name}"></span></p>
-                            <p><strong>Year:</strong> <span th:text="${appPassing12Year}"></span></p>
-                            <p><strong>Roll Number:</strong> <span th:text="${appRollNo12}"></span></p>
-                            <hr>
-                            <h6 class="text-primary">Subject-wise Marks (PCM):</h6>
-                            <div class="row">
-                                <div class="col-md-6"><strong>Physics:</strong> <span th:text="${appClass12Physics}"></span></div>
-                                <div class="col-md-6"><strong>Chemistry:</strong> <span th:text="${appClass12Chemistry}"></span></div>
-                                <div class="col-md-6"><strong>Math:</strong> <span th:text="${appClass12Maths}"></span></div>
-                                <div class="col-md-6"><strong>English:</strong> <span th:text="${appClass12English}"></span></div>
-                                <div class="col-md-6"><strong>Optional:</strong> <span th:text="${appClass12Optional ?: 'Not taken'}"></span></div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>School:</strong> <span th:text="${appSchoolName12}">School</span></small></div>
+                                <div class="col-6"><small><strong>Board:</strong> <span th:text="${appBoard12Name}">Board</span></small></div>
+                                <div class="col-6"><small><strong>Year:</strong> <span th:text="${appPassing12Year}">Year</span></small></div>
+                                <div class="col-6"><small><strong>Roll No:</strong> <span th:text="${appRollNo12}">Roll No</span></small></div>
+                                <div class="col-6"><small><strong>Total:</strong> <span th:text="${appTotal12Marks}">Total</span></small></div>
+                                <div class="col-6"><small><strong>Obtained:</strong> <span th:text="${appObtain12Marks}">Obtained</span></small></div>
+                                <div class="col-12">
+                                    <small><strong>Percentage:</strong> <span class="text-dark fw-bold" th:text="${appPercentage12 != null ? appPercentage12 + '%' : 'N/A'}">Percentage</span></small>
+                                </div>
                             </div>
-                            <hr>
-                            <p><strong>Total Marks:</strong> <span th:text="${appTotal12Marks}"></span></p>
-                            <p><strong>Obtained Marks:</strong> <span th:text="${appObtain12Marks}"></span></p>
-                            <p><strong>Percentage:</strong> <span class="badge bg-success" th:text="${appPercentage12} + '%'"></span></p>
+                            
+                            <hr class="my-2">
+                            <h6 class="mb-2 text-dark"><strong>Subject Marks</strong></h6>
+                            <div class="row g-2">
+                                <div class="col-6"><small><strong>Physics:</strong> <span th:text="${appClass12Physics}">-</span></small></div>
+                                <div class="col-6"><small><strong>Chemistry:</strong> <span th:text="${appClass12Chemistry}">-</span></small></div>
+                                <div class="col-6"><small><strong>Maths:</strong> <span th:text="${appClass12Maths}">-</span></small></div>
+                                <div class="col-6"><small><strong>English:</strong> <span th:text="${appClass12English}">-</span></small></div>
+                                <div class="col-12"><small><strong>Optional:</strong> <span th:text="${appClass12Optional}">-</span></small></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Entrance Exam Information -->
-            <div th:if="${application.entranceName != null and !#strings.isEmpty(application.entranceName)}" class="row mb-4">
+            <!-- Entrance Exam Details -->
+            <div class="row mb-4">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header bg-dark text-white">
                             <h5><i class='bx bx-trophy me-2'></i>Entrance Exam Details</h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <strong>Exam Name:</strong> <span th:text="${application.entranceName}"></span>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Exam Name:</strong> <span th:text="${application.entranceName ?: 'N/A'}">Exam</span>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Roll Number:</strong> <span th:text="${application.entranceRollNo ?: 'Not provided'}"></span>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Roll Number:</strong> <span th:text="${application.entranceRollNo ?: 'N/A'}">Roll</span>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Exam Year:</strong> <span th:text="${application.entranceYear ?: 'Not provided'}"></span>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Year:</strong> <span th:text="${application.entranceYear ?: 'N/A'}">Year</span>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Rank/Score:</strong> <span th:text="${application.entranceRank ?: 'Not provided'}"></span>
+                                <div class="col-md-3 mb-3">
+                                    <strong>Rank:</strong> <span class="text-primary fw-bold" th:text="${application.entranceRank ?: 'N/A'}">Rank</span>
                                 </div>
                             </div>
                         </div>
@@ -293,16 +342,14 @@
 </section>
 
 <script>
-    // Auto-dismiss alerts after 5 seconds
-    setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            if (alert.classList.contains('show')) {
-                alert.classList.remove('show');
-            }
-        });
-    }, 5000);
+    function confirmSeatAcceptanceAndRedirect() {
+        const confirmed = confirm('Submit your fee now to fully book your seat. You will be redirected to the payment page. Do you want to proceed?');
+        if (confirmed) {
+            // Form will submit and redirect will be handled by backend
+            return true;
+        }
+        return false;
+    }
 </script>
-
 </body>
 </html>

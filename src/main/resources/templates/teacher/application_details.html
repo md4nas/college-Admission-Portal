@@ -73,6 +73,14 @@
                             </div>
                             <p class="text-muted mb-2">Application Status</p>
                             <small class="text-muted">Submitted: <span th:text="${userApplication.submissionDate}">Date</span></small>
+                            <div class="mt-2">
+                                <div th:if="${userApplication.course != null and !#strings.isEmpty(userApplication.course)}">
+                                    <small class="badge bg-info me-1">Course: <span th:text="${userApplication.course}">Course</span></small>
+                                </div>
+                                <div th:if="${userApplication.allocatedBranch != null and !#strings.isEmpty(userApplication.allocatedBranch)}">
+                                    <small class="badge bg-success">Branch: <span th:text="${userApplication.allocatedBranch}">Branch</span></small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

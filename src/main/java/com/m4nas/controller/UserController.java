@@ -51,8 +51,12 @@ public class UserController {
                 model.addAttribute("application", application);
                 model.addAttribute("currentPath", request.getRequestURI());
                 
-                // Add parents phone number if application exists
+                // Pass individual fields like application status page
                 if(application != null) {
+                    model.addAttribute("appStatus", application.getStatus());
+                    model.addAttribute("appCourse", application.getCourse());
+                    model.addAttribute("appAllocatedBranch", application.getAllocatedBranch());
+                    model.addAttribute("appSubmissionDate", application.getSubmissionDate());
                     model.addAttribute("appParentsPhoneNo", application.getParentsPhoneNo());
                 }
                 return "user/home";

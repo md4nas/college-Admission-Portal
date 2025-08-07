@@ -139,18 +139,7 @@
                                         <i class='bx bx-calendar text-success me-3' style="font-size: 2rem;"></i>
                                         <div>
                                             <small class="text-muted">Submission Date</small>
-                                            <h6 class="mb-0" th:text="${application.submissionDate}"></h6>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <div class="d-flex align-items-center p-3 bg-light rounded">
-                                        <i class='bx bx-check-circle text-info me-3' style="font-size: 2rem;"></i>
-                                        <div>
-                                            <small class="text-muted">Application Status</small>
-                                            <h6 class="mb-0">
-                                                <span class="badge bg-success">Submitted</span>
-                                            </h6>
+                                            <h6 class="mb-0" th:text="${appSubmissionDate}"></h6>
                                         </div>
                                     </div>
                                 </div>
@@ -158,18 +147,9 @@
                                     <div class="d-flex align-items-center p-3 bg-light rounded">
                                         <i class='bx bx-search text-info me-3' style="font-size: 2rem;"></i>
                                         <div>
-                                            <small class="text-muted">Application Review</small>
+                                            <small class="text-muted">Application Status</small>
                                             <h6 class="mb-0">
-                                                <span th:switch="${application.status}">
-                                                    <span th:case="'PENDING'" class="badge bg-warning">Pending</span>
-                                                    <span th:case="'SUBMITTED'" class="badge bg-info">Under Review</span>
-                                                    <span th:case="'APPROVED'" class="badge bg-success">Approved</span>
-                                                    <span th:case="'ALLOCATED'" class="badge bg-success">Approved</span>
-                                                    <span th:case="'ACCEPTED'" class="badge bg-success">Approved</span>
-                                                    <span th:case="'DECLINED'" class="badge bg-danger">Declined</span>
-                                                    <span th:case="'REJECTED'" class="badge bg-danger">Rejected</span>
-                                                    <span th:case="*" class="badge bg-warning">Pending</span>
-                                                </span>
+                                                <span class="badge fs-6" th:classappend="${appStatus == 'APPROVED' or appStatus == 'ALLOCATED' or appStatus == 'ACCEPTED' ? 'bg-success' : (appStatus == 'REJECTED' or appStatus == 'DECLINED' ? 'bg-danger' : 'bg-warning')}" th:text="${appStatus}">Status</span>
                                             </h6>
                                         </div>
                                     </div>
@@ -178,10 +158,22 @@
                                     <div class="d-flex align-items-center p-3 bg-light rounded">
                                         <i class='bx bx-book-bookmark text-warning me-3' style="font-size: 2rem;"></i>
                                         <div>
-                                            <small class="text-muted">Course Allocated</small>
+                                            <small class="text-muted">Assigned Course</small>
                                             <h6 class="mb-0">
-                                                <span th:if="${application.allocatedBranch != null}" class="badge bg-success" th:text="${application.allocatedBranch}"></span>
-                                                <span th:unless="${application.allocatedBranch != null}" class="text-muted">Awaiting Allocation</span>
+                                                <span th:if="${appCourse != null and !#strings.isEmpty(appCourse)}" class="badge bg-info fs-6" th:text="${appCourse}">Course</span>
+                                                <span th:if="${appCourse == null or #strings.isEmpty(appCourse)}" class="text-muted">Not yet assigned</span>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                                        <i class='bx bx-buildings text-info me-3' style="font-size: 2rem;"></i>
+                                        <div>
+                                            <small class="text-muted">Allocated Branch</small>
+                                            <h6 class="mb-0">
+                                                <span th:if="${appAllocatedBranch != null and !#strings.isEmpty(appAllocatedBranch)}" class="badge bg-success fs-6" th:text="${appAllocatedBranch}">Branch</span>
+                                                <span th:if="${appAllocatedBranch == null or #strings.isEmpty(appAllocatedBranch)}" class="text-muted">Not yet allocated</span>
                                             </h6>
                                         </div>
                                     </div>
@@ -226,7 +218,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <div class="process-step text-center p-3 rounded" th:classappend="${application.status == 'ALLOCATED' || application.status == 'ACCEPTED'} ? 'bg-success text-white' : 'bg-light'">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${appAllocatedBranch != null and !#strings.isEmpty(appAllocatedBranch)} ? 'bg-success text-white' : 'bg-light'">
                                                 <i class='bx bx-trophy' style="font-size: 2rem;"></i>
                                                 <h6 class="mt-2 mb-1">Seat Allocation</h6>
                                                 <small>Branch Assignment</small>
@@ -284,7 +276,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="p-3">
-                                    <i class='bx bx-shield-check text-primary' style="font-size: 3rem;"></i>
+                                    <i class='bx bx-shield-quarter text-primary' style="font-size: 3rem;"></i>
                                     <h5 class="mt-2">Secure Login</h5>
                                     <p class="text-muted mb-0">Protected with encryption</p>
                                 </div>

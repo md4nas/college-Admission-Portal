@@ -310,6 +310,10 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
             UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
             if (application != null) {
                 application.setCourse(course);
+                // Auto-update status based on course assignment
+                if (course != null && !course.isEmpty() && "PENDING".equals(application.getStatus())) {
+                    application.setStatus("REVIEWED");
+                }
                 return userApplicationRepo.save(application);
             }
             return null;
@@ -324,7 +328,20 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
         try {
             UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
             if (application != null) {
+                String oldBranch = application.getAllocatedBranch();
                 application.setAllocatedBranch(allocatedBranch);
+                
+                // Auto-update status based on branch allocation
+                if (allocatedBranch != null && !allocatedBranch.isEmpty()) {
+                    // Branch allocated - set status to ALLOCATED
+                    application.setStatus("ALLOCATED");
+                } else if ((oldBranch != null && !oldBranch.isEmpty()) && (allocatedBranch == null || allocatedBranch.isEmpty())) {
+                    // Branch removed - revert to previous status
+                    if ("ALLOCATED".equals(application.getStatus()) || "ACCEPTED".equals(application.getStatus()) || "DECLINED".equals(application.getStatus())) {
+                        application.setStatus("APPROVED");
+                    }
+                }
+                
                 return userApplicationRepo.save(application);
             }
             return null;

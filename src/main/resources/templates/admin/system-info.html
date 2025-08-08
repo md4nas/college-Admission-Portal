@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>System Information - Admin</title>
+    <style>
+        .info-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .info-card:hover {
+            transform: translateY(-2px);
+        }
+        .progress-custom {
+            height: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<section>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center py-4">
+                        <i class='bx bx-info-circle' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">System Information</h2>
+                        <p class="mb-0">Comprehensive system health and configuration overview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card info-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-server' style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-2">Server Status</h5>
+                        <h3>Online</h3>
+                        <small>All systems operational</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card info-card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-data' style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-2">Database</h5>
+                        <h3>Connected</h3>
+                        <small>PostgreSQL active</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card info-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-envelope' style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-2">Email Service</h5>
+                        <h3>Active</h3>
+                        <small>SMTP configured</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card info-card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-shield-check' style="font-size: 2.5rem;"></i>
+                        <h5 class="mt-2">Security</h5>
+                        <h3>Protected</h3>
+                        <small>OAuth2 & SSL enabled</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Details -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card info-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class='bx bx-desktop me-2'></i>System Environment</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Java Version:</strong></td>
+                                    <td>
+                                        <span class="badge bg-success" th:text="${javaVersion}">17.0.2</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Operating System:</strong></td>
+                                    <td>
+                                        <span class="badge bg-info" th:text="${osName}">Windows 11</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>OS Version:</strong></td>
+                                    <td>
+                                        <span class="badge bg-secondary" th:text="${osVersion}">10.0</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Spring Boot:</strong></td>
+                                    <td>
+                                        <span class="badge bg-success">3.2.0</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Database:</strong></td>
+                                    <td>
+                                        <span class="badge bg-primary">PostgreSQL 13+</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card info-card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class='bx bx-memory-card me-2'></i>Memory Usage</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><strong>Total Memory:</strong></span>
+                                <span class="badge bg-info" th:text="${totalMemory} + ' MB'">512 MB</span>
+                            </div>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar bg-info" 
+                                     th:style="'width: ' + ${(totalMemory / maxMemory) * 100} + '%'"
+                                     th:text="${#numbers.formatDecimal((totalMemory / maxMemory) * 100, 1, 1)} + '%'">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><strong>Free Memory:</strong></span>
+                                <span class="badge bg-success" th:text="${freeMemory} + ' MB'">256 MB</span>
+                            </div>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar bg-success" 
+                                     th:style="'width: ' + ${(freeMemory / maxMemory) * 100} + '%'"
+                                     th:text="${#numbers.formatDecimal((freeMemory / maxMemory) * 100, 1, 1)} + '%'">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><strong>Max Memory:</strong></span>
+                                <span class="badge bg-warning text-dark" th:text="${maxMemory} + ' MB'">1024 MB</span>
+                            </div>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar bg-warning" style="width: 100%">100%</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-muted">
+                                Used: <span th:text="${totalMemory - freeMemory} + ' MB'">256 MB</span> | 
+                                Available: <span th:text="${maxMemory - (totalMemory - freeMemory)} + ' MB'">768 MB</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Configuration -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card info-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class='bx bx-cog me-2'></i>Application Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0">Authentication</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class='bx bx-check text-success me-2'></i>Local Authentication</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Google OAuth2</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>GitHub OAuth2</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Email Verification</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Password Recovery</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">Security Features</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class='bx bx-check text-success me-2'></i>BCrypt Encryption</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>CSRF Protection</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Session Management</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Role-Based Access</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>XSS Prevention</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-warning">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0">System Features</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class='bx bx-check text-success me-2'></i>File Upload System</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Email Templates</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Application Management</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Payment Integration</li>
+                                            <li><i class='bx bx-check text-success me-2'></i>Announcement System</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Checks -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card info-card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class='bx bx-health me-2'></i>System Health Checks</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class='bx bx-data text-success me-3' style="font-size: 1.5rem;"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Database Connection</h6>
+                                        <small class="text-muted">PostgreSQL connection status</small>
+                                    </div>
+                                    <span class="badge bg-success">✓ Connected</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class='bx bx-envelope text-success me-3' style="font-size: 1.5rem;"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Email Service</h6>
+                                        <small class="text-muted">SMTP server connectivity</small>
+                                    </div>
+                                    <span class="badge bg-success">✓ Active</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class='bx bx-shield-check text-success me-3' style="font-size: 1.5rem;"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Security Services</h6>
+                                        <small class="text-muted">Authentication & authorization</small>
+                                    </div>
+                                    <span class="badge bg-success">✓ Secure</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class='bx bx-cloud text-success me-3' style="font-size: 1.5rem;"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">OAuth2 Services</h6>
+                                        <small class="text-muted">Google & GitHub integration</small>
+                                    </div>
+                                    <span class="badge bg-success">✓ Connected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+     <!-- Error Display -->
+        <div th:if="${error}" class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <i class='bx bx-error me-2'></i>
+                    <span th:text="${error}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

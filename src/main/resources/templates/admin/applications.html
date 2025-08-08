@@ -22,8 +22,49 @@
             </div>
         </div>
 
+        <!-- Summary Statistics -->
+        <div class="row mt-4" th:if="${!#lists.isEmpty(applications)}">
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-group' style="font-size: 2rem;"></i>
+                        <h4 th:text="${applications.size()}"></h4>
+                        <p class="mb-0">Total Applications</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-trophy' style="font-size: 2rem;"></i>
+                        <h4 th:text="${applications.?[status == 'APPROVED'].size()}"></h4>
+                        <p class="mb-0">Approved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <i class='bx bx-time' style="font-size: 2rem;"></i>
+                        <h4 th:text="${applications.?[status == 'PENDING'].size()}"></h4>
+                        <p class="mb-0">Pending</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <i class='bx bx-x' style="font-size: 2rem;"></i>
+                        <h4 th:text="${applications.?[status == 'REJECTED'].size()}"></h4>
+                        <p class="mb-0">Rejected</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Filter Buttons -->
-        <div class="row mb-4">
+        <div class="row mb-4 mt-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
@@ -32,17 +73,11 @@
                             <a href="/admin/applications" class="btn btn-outline-primary">
                                 <i class='bx bx-list-ul'></i> All Applications
                             </a>
-                            <a href="/admin/applications/status?status=SUBMITTED" class="btn btn-outline-info">
-                                <i class='bx bx-time'></i> Submitted
+                            <a href="/admin/applications/status?status=PENDING" class="btn btn-outline-warning">
+                                <i class='bx bx-time'></i> Pending
                             </a>
                             <a href="/admin/applications/status?status=APPROVED" class="btn btn-outline-success">
                                 <i class='bx bx-check'></i> Approved
-                            </a>
-                            <a href="/admin/applications/status?status=ALLOCATED" class="btn btn-outline-primary">
-                                <i class='bx bx-trophy'></i> Allocated
-                            </a>
-                            <a href="/admin/applications/status?status=ACCEPTED" class="btn btn-outline-success">
-                                <i class='bx bx-medal'></i> Accepted
                             </a>
                             <a href="/admin/applications/status?status=REJECTED" class="btn btn-outline-danger">
                                 <i class='bx bx-x'></i> Rejected
@@ -78,7 +113,7 @@
                             <p class="text-muted">No applications match the current filter criteria.</p>
                         </div>
 
-                        <div th:if="${#lists.isEmpty(applications)}" class="table-responsive">
+                        <div th:if="${!#lists.isEmpty(applications)}" class="table-responsive">
                             <table class="table table-hover table-sm">
                                 <thead class="table-dark">
                                     <tr>
@@ -155,6 +190,7 @@
                                                 <i class='bx bx-user'></i> <span th:text="${app.parentsName}"></span>
                                             </small>
                                         </td>
+
                                     </tr>
                                 </tbody>
                             </table>
@@ -164,59 +200,18 @@
             </div>
         </div>
 
-        <!-- Summary Statistics -->
-        <div class="row mt-4" th:if="${#lists.isEmpty(applications)}">
-            <div class="col-md-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body text-center">
-                        <i class='bx bx-group' style="font-size: 2rem;"></i>
-                        <h4 th:text="${applications.size()}"></h4>
-                        <p class="mb-0">Total Applications</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <i class='bx bx-trophy' style="font-size: 2rem;"></i>
-                        <h4 th:text="${#lists.size(#lists.select(applications, app.status == 'ALLOCATED' or app.status == 'ACCEPTED'))}"></h4>
-                        <p class="mb-0">Seats Allocated</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-warning text-dark">
-                    <div class="card-body text-center">
-                        <i class='bx bx-time' style="font-size: 2rem;"></i>
-                        <h4 th:text="${#lists.size(#lists.select(applications, app.status == 'SUBMITTED'))}"></h4>
-                        <p class="mb-0">Pending Review</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card bg-danger text-white">
-                    <div class="card-body text-center">
-                        <i class='bx bx-x' style="font-size: 2rem;"></i>
-                        <h4 th:text="${#lists.size(#lists.select(applications, app.status == 'REJECTED'))}"></h4>
-                        <p class="mb-0">Rejected</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Navigation -->
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <a href="/admin/" class="btn btn-secondary me-3">
+                <a href="/admin/" class="btn btn-secondary">
                     <i class='bx bx-arrow-back'></i> Back to Dashboard
-                </a>
-                <a href="/admin/statistics" class="btn btn-primary">
-                    <i class='bx bx-bar-chart'></i> View Statistics
                 </a>
             </div>
         </div>
     </div>
 </section>
+
+
 
 </body>
 </html>

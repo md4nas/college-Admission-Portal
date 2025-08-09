@@ -140,9 +140,25 @@ public class ForgotPassController {
      * @return password reset page or error page
      */
     @PostMapping("/verify-otp")
-    public String verifyOTP(@RequestParam("otp") int enteredOtp, HttpSession session, Model model){
+    public String verifyOTP(@RequestParam("otp") String enteredOtpStr, HttpSession session, Model model){
         
         logger.info("Processing OTP verification");
+        
+        // Validate OTP input
+        if(enteredOtpStr == null || enteredOtpStr.trim().isEmpty()) {
+            logger.warn("Empty OTP submitted");
+            model.addAttribute("error", "Please enter the OTP.");
+            return "verify_otp";
+        }
+        
+        int enteredOtp;
+        try {
+            enteredOtp = Integer.parseInt(enteredOtpStr.trim());
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid OTP format submitted: {}", enteredOtpStr);
+            model.addAttribute("error", "Please enter a valid 6-digit OTP.");
+            return "verify_otp";
+        }
         
         // Retrieve OTP data from session
         Integer sessionOtp = (Integer) session.getAttribute("otp");

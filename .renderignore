@@ -1,0 +1,43 @@
+# Render ignore file - exclude unnecessary files from deployment
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.factorypath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Screenshots and documentation
+screenshots/
+*.md
+!README.md
+!RENDER_DEPLOYMENT.md
+
+# Test files
+src/test/
+
+# Maven target (will be rebuilt)
+target/classes/
+target/test-classes/
+target/maven-status/
+target/generated-sources/
+target/generated-test-sources/
+
+# Uploads (user generated content)
+uploads/

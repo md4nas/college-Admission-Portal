@@ -166,18 +166,35 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         const branchMapping = {
+            // Engineering branches
             'CSE': 'Computer Science',
-            'ECE': 'Electronics', 
+            'CS': 'Computer Science',
+            'IT': 'Computer Science',
+            'ECE': 'Electronics',
+            'EEE': 'Electrical',
+            'EE': 'Electrical',
+            'ME': 'Mechanical',
+            'MECH': 'Mechanical',
             'MECHANICAL': 'Mechanical',
+            'CE': 'Civil',
             'CIVIL': 'Civil',
+            // Full names
             'Computer Science': 'Computer Science',
             'Electronics': 'Electronics',
             'Mechanical': 'Mechanical', 
             'Civil': 'Civil',
+            'Electrical': 'Electrical',
+            // Science branches
+            'PHY': 'Physics',
             'Physics': 'Physics',
+            'CHEM': 'Chemistry',
             'Chemistry': 'Chemistry',
+            'MATH': 'Mathematics',
             'Mathematics': 'Mathematics',
+            'BIO': 'Biology',
             'Biology': 'Biology',
+            // Computer Applications
+            'CA': 'Computer Applications',
             'Computer Applications': 'Computer Applications'
         };
 

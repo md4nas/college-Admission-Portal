@@ -1,0 +1,17 @@
+/**
+ * Seat Management Page Styles
+ * Styles for teacher seat management page
+ */
+
+.changed-row {
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107;
+}
+
+.save-indicator {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}

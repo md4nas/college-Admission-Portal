@@ -153,6 +153,10 @@
                         <h5 class="mb-0"><i class='bx bx-credit-card me-2'></i>Fee Payment Center</h5>
                     </div>
                     <div class="card-body p-4">
+                        <!-- Hidden inputs for JavaScript -->
+                        <input type="hidden" id="appCourse" th:value="${appCourse}">
+                        <input type="hidden" id="appBranch" th:value="${appAllocatedBranch}">
+                        
                         <div class="row mb-4">
                             <div class="col-md-4 mb-3">
                                 <div class="d-flex align-items-center p-3 bg-light rounded">

@@ -141,67 +141,31 @@ function viewReceipt(fileName) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Get application data from the page elements
-    const courseElement = document.querySelector('.badge.bg-info');
-    const branchElement = document.querySelector('.badge.bg-success');
-    
-    const appCourse = courseElement ? courseElement.textContent.trim() : '';
-    const appAllocatedBranch = branchElement ? branchElement.textContent.trim() : '';
-
     const totalFeeElement = document.getElementById('totalFeeAmount');
     const payNowBtn = document.getElementById('payNowBtn');
     const statusMessage = document.getElementById('feeStatusMessage');
 
-    const hasRequiredData = appCourse && appCourse !== '' && appAllocatedBranch && appAllocatedBranch !== '';
-    
-    if (hasRequiredData) {
-        const courseMapping = {
-            'BTECH': 'btech',
-            'B.TECH': 'btech',
-            'BSC': 'bsc',
-            'B.SC': 'bsc', 
-            'BCA': 'bca',
-            'MTECH': 'mtech',
-            'M.TECH': 'mtech'
-        };
+    // Get course and branch from hidden inputs
+    const appCourse = document.getElementById('appCourse')?.value || '';
+    const appBranch = document.getElementById('appBranch')?.value || '';
 
-        const branchMapping = {
-            // Engineering branches
-            'CSE': 'Computer Science',
-            'CS': 'Computer Science',
-            'IT': 'Computer Science',
-            'ECE': 'Electronics',
-            'EEE': 'Electrical',
-            'EE': 'Electrical',
-            'ME': 'Mechanical',
-            'MECH': 'Mechanical',
-            'MECHANICAL': 'Mechanical',
-            'CE': 'Civil',
-            'CIVIL': 'Civil',
-            // Full names
-            'Computer Science': 'Computer Science',
-            'Electronics': 'Electronics',
-            'Mechanical': 'Mechanical', 
-            'Civil': 'Civil',
-            'Electrical': 'Electrical',
-            // Science branches
-            'PHY': 'Physics',
-            'Physics': 'Physics',
-            'CHEM': 'Chemistry',
-            'Chemistry': 'Chemistry',
-            'MATH': 'Mathematics',
-            'Mathematics': 'Mathematics',
-            'BIO': 'Biology',
-            'Biology': 'Biology',
-            // Computer Applications
-            'CA': 'Computer Applications',
-            'Computer Applications': 'Computer Applications'
-        };
+    console.log('Course:', appCourse, 'Branch:', appBranch);
 
-        const courseKey = courseMapping[appCourse.toUpperCase()] || appCourse.toLowerCase();
-        const branchKey = branchMapping[appAllocatedBranch] || appAllocatedBranch;
+    if (appCourse && appBranch) {
+        // Map course to fee structure key
+        const courseKey = appCourse.toLowerCase().replace('.', '');
+        
+        // Map branch to fee structure key
+        let branchKey = appBranch;
+        if (appBranch === 'CSE') branchKey = 'Computer Science';
+        if (appBranch === 'ECE') branchKey = 'Electronics';
+        if (appBranch === 'ME' || appBranch === 'MECH') branchKey = 'Mechanical';
+        if (appBranch === 'CE') branchKey = 'Civil';
+        if (appBranch === 'EEE') branchKey = 'Electrical';
 
-        if (courseKey && feeStructure[courseKey] && feeStructure[courseKey][branchKey]) {
+        console.log('Mapped - Course:', courseKey, 'Branch:', branchKey);
+
+        if (feeStructure[courseKey] && feeStructure[courseKey][branchKey]) {
             const fees = feeStructure[courseKey][branchKey];
             const totalAmount = fees.tuition + fees.development + fees.lab + fees.library + fees.exam;
 
@@ -212,18 +176,11 @@ document.addEventListener('DOMContentLoaded', function() {
             statusMessage.textContent = 'Ready for payment';
             statusMessage.className = 'text-success mt-2 d-block small';
         } else {
-            statusMessage.textContent = 'Fee structure not found for your course/branch';
+            statusMessage.textContent = 'Fee structure not found for ' + courseKey + ' - ' + branchKey;
             statusMessage.className = 'text-warning mt-2 d-block small';
-            console.log('Course:', appCourse, 'Branch:', appAllocatedBranch, 'CourseKey:', courseKey, 'BranchKey:', branchKey);
         }
     } else {
-        if (!appCourse || appCourse === '') {
-            statusMessage.textContent = 'Course not yet assigned';
-        } else if (!appAllocatedBranch || appAllocatedBranch === '') {
-            statusMessage.textContent = 'Branch not yet allocated';
-        } else {
-            statusMessage.textContent = 'Fee calculation pending';
-        }
+        statusMessage.textContent = 'Course or branch not assigned';
         statusMessage.className = 'text-muted mt-2 d-block small';
     }
 

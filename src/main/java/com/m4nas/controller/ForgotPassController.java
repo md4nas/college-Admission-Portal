@@ -22,7 +22,7 @@ import java.security.SecureRandom;
  * 3. OTP verification with time expiration
  * 4. Password reset with validation
  * 
- * @author User Management Team
+ * @author College Technical Team
  * @version 1.0
  */
 @Controller

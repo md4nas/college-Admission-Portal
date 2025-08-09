@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     public void sendVerificationMail(UserDtls user, String url) throws MessagingException, UnsupportedEncodingException {
         String fromAddress = "kabiranas7890@gmail.com";
         String toAddress = user.getEmail().trim().toLowerCase();
-        String senderName = "User Management Team";
+        String senderName = "College Technical Team";
         String subject = "Account Verification";
 
         try {
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
     public boolean sendForgotPasswordOTP(String email, int otp) {
         try {
             String fromAddress = "kabiranas7890@gmail.com";
-            String senderName = "User Management Team";
+            String senderName = "College Technical Team";
             String subject = "Password Reset OTP";
 
             Resource resource = resourceLoader.getResource("classpath:templates/forget_otp_mail.html");

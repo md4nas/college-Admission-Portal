@@ -8,7 +8,7 @@ import java.util.List;
  * Repository interface for UserDtls entity operations.
  * Provides custom query methods for user management functionality.
  * 
- * @author User Management Team
+ * @author College Technical Team
  * @version 1.0
  */
 public interface UserRepository extends JpaRepository<UserDtls, String> {

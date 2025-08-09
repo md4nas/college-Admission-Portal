@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management System</title>
+    <title>College Admission Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="/css/user-portal-style.css">
@@ -30,8 +30,8 @@
     <!-- Public Pages Navbar (Index, Login, Register) -->
     <nav th:if="${currentPath == '/' or currentPath == '/signin' or currentPath == '/register' or currentPath == '/forgot-password'}" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class='bx bx-shield-check me-2'></i>UserAuth
+            <a class="navbar-brand fw-bold" href="/">
+                <i class='bx bx-graduation me-2'></i>College Admission Portal
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#indexNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -39,24 +39,36 @@
             <div class="collapse navbar-collapse" id="indexNavbar">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" th:href="${user == null ? '/' : (user.role == 'ROLE_ADMIN' ? '/admin/' : (user.role == 'ROLE_TEACHER' ? '/teacher/' : '/user/'))}">Home</a>
+                        <a class="nav-link" th:href="${user == null ? '/' : (user.role == 'ROLE_ADMIN' ? '/admin/' : (user.role == 'ROLE_TEACHER' ? '/teacher/' : '/user/'))}">
+                            <i class='bx bx-home me-1'></i>Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/#features">Features</a>
+                        <a class="nav-link" href="/#features">
+                            <i class='bx bx-star me-1'></i>Features
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/#about">About</a>
+                        <a class="nav-link" href="/#admission-process">
+                            <i class='bx bx-list-check me-1'></i>Process
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/#contact">Contact</a>
+                        <a class="nav-link" href="/#contact">
+                            <i class='bx bx-phone me-1'></i>Contact
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav" th:if="${user == null}">
                     <li class="nav-item">
-                        <a class="nav-link" href="/signin">Sign In</a>
+                        <a class="nav-link" href="/signin">
+                            <i class='bx bx-log-in me-1'></i>Sign In
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/register">Register</a>
+                        <a class="nav-link btn btn-outline-light ms-2 px-3" href="/register">
+                            <i class='bx bx-user-plus me-1'></i>Apply Now
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav" th:if="${user != null}">
@@ -85,8 +97,8 @@
     <!-- Admin Navbar -->
     <nav th:if="${user != null and user.role == 'ROLE_ADMIN' and currentPath != '/'}" class="navbar navbar-expand-lg navbar-dark bg-danger fixed-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class='bx bx-shield me-2'></i>UserAuth
+            <a class="navbar-brand fw-bold" href="/">
+                <i class='bx bx-graduation me-2'></i>College Portal
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -104,27 +116,29 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/statistics">
-                            <i class='bx bx-bar-chart me-1'></i>Statistics
+                        <a class="nav-link" href="/admin/users">
+                            <i class='bx bx-users me-1'></i>Manage Users
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class='bx bx-users me-1'></i>Manage Users
+                        <a class="nav-link" href="/admin/announcements">
+                            <i class='bx bx-megaphone me-1'></i>Announcements
                         </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" data-bs-toggle="dropdown">
-                            <i class='bx bx-user me-1'></i>[[${user.fullName}]]
+                            <i class='bx bx-user-circle me-2'></i>[[${user.fullName}]]
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/admin/system-info"><i class='bx bx-info-circle me-2'></i>System Info</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="/logout" method="post" style="display: inline;">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <button type="submit" class="dropdown-item text-danger" style="border: none; background: none; width: 100%; text-align: left;">
-                                        <i class='bx bx-log-out me-1'></i>Logout
+                                        <i class='bx bx-log-out me-2'></i>Logout
                                     </button>
                                 </form>
                             </li>
@@ -138,8 +152,8 @@
     <!-- Teacher Navbar -->
     <nav th:if="${user != null and user.role == 'ROLE_TEACHER' and currentPath != '/'}" class="navbar navbar-expand-lg navbar-dark bg-success fixed-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class='bx bx-chalkboard me-2'></i>UserAuth
+            <a class="navbar-brand fw-bold" href="/">
+                <i class='bx bx-graduation me-2'></i>College Portal
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#teacherNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -153,22 +167,22 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/teacher/applications">
-                            <i class='bx bx-file-blank me-1'></i>Review Applications
+                            <i class='bx bx-file-blank me-1'></i>Applications
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/teacher/payment-management">
-                            <i class='bx bx-credit-card me-1'></i>Payment Management
+                            <i class='bx bxs-credit-card me-1'></i>Payment
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/teacher/seat-management">
-                            <i class='bx bx-chair me-1'></i>Seat Management
+                            <i class='bx bx-chair me-1'></i>Allocation
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/teacher/announcements">
-                            <i class='bx bx-megaphone me-1'></i>Announcements
+                            <i class='bx bxs-megaphone me-1'></i>Announcements
                         </a>
                     </li>
                 </ul>
@@ -198,8 +212,8 @@
     <!-- User Navbar -->
     <nav th:if="${user != null and user.role == 'ROLE_USER'}" class="navbar navbar-expand-lg navbar-dark bg-info fixed-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class='bx bx-user-circle me-2'></i>UserAuth
+            <a class="navbar-brand fw-bold" href="/">
+                <i class='bx bx-graduation me-2'></i>College Portal
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#userNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -268,59 +282,59 @@
             <div class="row">
                 <div class="col-lg-4 mb-4">
                     <h5 class="fw-bold mb-3">
-                        <i class="bi bi-shield-check me-2 text-primary"></i>UserAuth
+                        <i class='bx bx-graduation me-2 text-primary'></i>College Admission Portal
                     </h5>
                     <p class="text-light opacity-75 mb-3">
-                        Enterprise-grade user management system with advanced security features and seamless integration.
+                        Streamline your college admission process with our comprehensive portal. Apply, track, and manage applications seamlessly.
                     </p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-light">
-                            <i class="bi bi-github fs-5"></i>
+                        <a href="https://github.com/md4nas" target="_blank" class="text-light">
+                            <i class='bx bxl-github fs-5'></i>
                         </a>
-                        <a href="#" class="text-light">
-                            <i class="bi bi-envelope fs-5"></i>
+                        <a href="mailto:md.anas1028@gmail.com" class="text-light">
+                            <i class='bx bx-envelope fs-5'></i>
                         </a>
-                        <a href="#" class="text-light">
-                            <i class="bi bi-linkedin fs-5"></i>
+                        <a href="https://www.linkedin.com/in/mohd-anas-3a4a04287/" target="_blank" class="text-light">
+                            <i class='bx bxl-linkedin fs-5'></i>
                         </a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-semibold mb-3">Product</h6>
+                    <h6 class="fw-semibold mb-3">Portal</h6>
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="/#features" class="text-light opacity-75 text-decoration-none">Features</a></li>
-                        <li class="mb-2"><a href="/#about" class="text-light opacity-75 text-decoration-none">About</a></li>
+                        <li class="mb-2"><a href="/#admission-process" class="text-light opacity-75 text-decoration-none">Process</a></li>
                         <li class="mb-2"><a href="/signin" class="text-light opacity-75 text-decoration-none">Sign In</a></li>
-                        <li class="mb-2"><a href="/register" class="text-light opacity-75 text-decoration-none">Register</a></li>
+                        <li class="mb-2"><a href="/register" class="text-light opacity-75 text-decoration-none">Apply Now</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-semibold mb-3">Resources</h6>
+                    <h6 class="fw-semibold mb-3">Support</h6>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Documentation</a></li>
+                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Help Center</a></li>
                         <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Support</a></li>
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">GitHub</a></li>
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">API Reference</a></li>
+                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">FAQ</a></li>
+                        <li class="mb-2"><a href="mailto:md.anas1028@gmail.com" class="text-light opacity-75 text-decoration-none">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-4 mb-4">
                     <h6 class="fw-semibold mb-3">Stay Updated</h6>
-                    <p class="text-light opacity-75 mb-3">Get the latest updates and security patches.</p>
+                    <p class="text-light opacity-75 mb-3">Get the latest admission updates and notifications.</p>
                     <div class="d-flex">
                         <input type="email" class="form-control me-2" placeholder="Enter your email">
                         <button class="btn btn-primary px-3">
-                            <i class="bi bi-arrow-right"></i>
+                            <i class='bx bx-right-arrow-alt'></i>
                         </button>
                     </div>
                     <div class="mt-3">
                         <span class="badge bg-success me-2">
-                            <i class="bi bi-shield-check me-1"></i>Secure
+                            <i class='bx bx-shield-check me-1'></i>Secure
                         </span>
                         <span class="badge bg-info me-2">
-                            <i class="bi bi-code-slash me-1"></i>Open Source
+                            <i class='bx bx-time me-1'></i>24/7 Support
                         </span>
                         <span class="badge bg-warning text-dark">
-                            <i class="bi bi-lightning-charge me-1"></i>Fast Setup
+                            <i class='bx bx-rocket me-1'></i>Fast Process
                         </span>
                     </div>
                 </div>
@@ -329,12 +343,12 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <p class="text-light opacity-75 mb-0">
-                        © 2025 UserAuth System. All rights reserved.
+                        © 2025 College Admission Portal. All rights reserved.
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <small class="text-light opacity-50">
-                        Made with <i class="bi bi-heart-fill text-danger"></i> by <a href="https://github.com/md4nas" target="_blank" class="text-light text-decoration-none">@md4nas</a>
+                        Made with <i class='bx bxs-heart text-danger'></i> by <a href="https://github.com/md4nas" target="_blank" class="text-light text-decoration-none">@md4nas</a>
                     </small>
                 </div>
             </div>

@@ -4,27 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Seat Management</title>
-    <style>
-        .changed-row {
-            background-color: #fff3cd !important;
-            border-left: 4px solid #ffc107;
-        }
-        .save-indicator {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-        }
-    </style>
+    <link href="/css/seat-management.css" rel="stylesheet">
 </head>
 <body>
 <section>
     <div class="container-fluid">
+        <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <h2><i class='bx bx-chair me-2 text-primary'></i>Seat Management</h2>
-                <p class="text-muted">Manage student applications and seat allocations</p>
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-4">
+                        <i class='bx bx-chair' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">Seat Management</h2>
+                        <p class="mb-0">Manage student applications and seat allocations</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -57,34 +51,52 @@
                                     <table class="table table-hover mb-0">
                                         <thead class="bg-light">
                                             <tr>
-                                                <th>#</th>
-                                                <th>Student</th>
-                                                <th>Phone</th>
-                                                <th>Status</th>
-                                                <th>Course</th>
-                                                <th>Branch</th>
-                                                <th>Action</th>
+                                                <th class="border-0 py-3">🔢 Rank</th>
+                                                <th class="border-0 py-3">🎓 Student</th>
+                                                <th class="border-0 py-3">📞 Contact</th>
+                                                <th class="border-0 py-3">📋 Status</th>
+                                                <th class="border-0 py-3">📚 Course</th>
+                                                <th class="border-0 py-3">🌿 Branch</th>
+                                                <th class="border-0 py-3">⚡ Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr th:each="app, iterStat : ${applications}" th:id="'row-' + ${app?.id}">
-                                                <td th:text="${iterStat.index + 1}">1</td>
-                                                <td>
-                                                    <div th:text="${app?.parentsName ?: 'N/A'}">Student Name</div>
-                                                    <small class="text-muted" th:text="${app?.userEmail ?: 'N/A'}">email</small>
+                                            <tr th:each="app, iterStat : ${applications}" th:id="'row-' + ${app?.id}" class="border-bottom">
+                                                <td class="py-3">
+                                                    <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem; font-weight: bold;" th:text="${iterStat.count}">1</div>
                                                 </td>
-                                                <td th:text="${app?.phoneNo ?: 'N/A'}">Phone</td>
-                                                <td>
+                                                <td class="py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-info rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                            <i class='bx bx-user'></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-bold" th:text="${studentNames[app?.userEmail] ?: 'N/A'}">Student Name</div>
+                                                            <small class="text-muted">
+                                                                <i class='bx bx-location-plus me-1'></i><span th:text="${app?.city + ', ' + app?.state}">Location</span>
+                                                                <span class="ms-2 text-primary">ID: <span th:text="${app?.id}">123</span></span>
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3">
+                                                    <small>
+                                                        <i class='bx bx-phone me-1'></i><span th:text="${app?.phoneNo ?: 'N/A'}">Phone</span><br>
+                                                        <i class='bx bx-envelope me-1'></i><span th:text="${app?.userEmail ?: 'N/A'}">Email</span>
+                                                    </small>
+                                                </td>
+                                                <td class="py-3">
                                                     <select class="form-select form-select-sm update-field" 
                                                             th:data-app-id="${app?.id}" 
                                                             data-field="status"
                                                             th:data-original="${app?.status}">
                                                         <option value="PENDING" th:selected="${app?.status == 'PENDING'}">Pending</option>
+                                                        <option value="SUBMITTED" th:selected="${app?.status == 'SUBMITTED'}">Submitted</option>
                                                         <option value="APPROVED" th:selected="${app?.status == 'APPROVED'}">Approved</option>
                                                         <option value="REJECTED" th:selected="${app?.status == 'REJECTED'}">Rejected</option>
                                                     </select>
                                                 </td>
-                                                <td>
+                                                <td class="py-3">
                                                     <select class="form-select form-select-sm update-field" 
                                                             th:data-app-id="${app?.id}" 
                                                             data-field="course"
@@ -96,7 +108,7 @@
                                                         <option value="MCA" th:selected="${app?.course == 'MCA'}">MCA</option>
                                                     </select>
                                                 </td>
-                                                <td>
+                                                <td class="py-3">
                                                     <select class="form-select form-select-sm update-field" 
                                                             th:data-app-id="${app?.id}" 
                                                             data-field="allocatedBranch"
@@ -107,7 +119,7 @@
                                                         <option value="MECHANICAL" th:selected="${app?.allocatedBranch == 'MECHANICAL'}">Mechanical</option>
                                                     </select>
                                                 </td>
-                                                <td>
+                                                <td class="py-3">
                                                     <div th:if="${app?.id != null and !#strings.isEmpty(app.id)}">
                                                         <a th:href="@{/teacher/application-details/{id}(id=${app.id})}" 
                                                            class="btn btn-sm btn-outline-info rounded-pill">
@@ -124,7 +136,7 @@
                                     </table>
                                 </div>
                             </div>
-                            
+
                             <div th:if="${applications == null or applications.empty}" class="text-center py-5">
                                 <p class="text-muted">No applications found</p>
                             </div>
@@ -135,130 +147,7 @@
         </form>
     </div>
 
-    <script>
-        let pendingChanges = new Map();
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add change listeners to all update fields
-            document.querySelectorAll('.update-field').forEach(field => {
-                field.addEventListener('change', function() {
-                    handleFieldChange(this);
-                });
-            });
-        });
-        
-        function handleFieldChange(field) {
-            const appId = field.dataset.appId;
-            const fieldName = field.dataset.field;
-            const originalValue = field.dataset.original || '';
-            const newValue = field.value;
-            
-            // Create unique key for this field
-            const changeKey = `${appId}-${fieldName}`;
-            
-            if (newValue !== originalValue) {
-                // Mark as changed
-                pendingChanges.set(changeKey, {
-                    appId: appId,
-                    field: fieldName,
-                    value: newValue,
-                    originalValue: originalValue
-                });
-                
-                // Highlight the row
-                const row = document.getElementById(`row-${appId}`);
-                if (row) {
-                    row.classList.add('changed-row');
-                }
-            } else {
-                // Remove from pending changes if value matches original
-                pendingChanges.delete(changeKey);
-                
-                // Check if row has any other changes
-                const hasOtherChanges = Array.from(pendingChanges.keys()).some(key => key.startsWith(`${appId}-`));
-                if (!hasOtherChanges) {
-                    const row = document.getElementById(`row-${appId}`);
-                    if (row) {
-                        row.classList.remove('changed-row');
-                    }
-                }
-            }
-            
-            updateSaveButton();
-            updateSaveIndicator();
-        }
-        
-        function updateSaveButton() {
-            const saveBtn = document.getElementById('saveAllBtn');
-            const saveCount = document.getElementById('saveCount');
-            const changeCount = pendingChanges.size;
-            
-            if (changeCount > 0) {
-                saveBtn.style.display = 'block';
-                saveCount.textContent = changeCount;
-            } else {
-                saveBtn.style.display = 'none';
-            }
-        }
-        
-        function updateSaveIndicator() {
-            const indicator = document.getElementById('saveIndicator');
-            const changeCountSpan = document.getElementById('changeCount');
-            const changeCount = pendingChanges.size;
-            
-            if (changeCount > 0) {
-                indicator.style.display = 'block';
-                changeCountSpan.textContent = changeCount;
-            } else {
-                indicator.style.display = 'none';
-            }
-        }
-        
-        function hideSaveIndicator() {
-            document.getElementById('saveIndicator').style.display = 'none';
-        }
-        
-        // Handle form submission
-        document.getElementById('bulkUpdateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (pendingChanges.size === 0) {
-                alert('No changes to save!');
-                return;
-            }
-            
-            // Clear existing hidden inputs
-            const container = document.getElementById('changesContainer');
-            container.innerHTML = '';
-            
-            // Add hidden inputs for each change
-            let index = 0;
-            pendingChanges.forEach((change, key) => {
-                const appIdInput = document.createElement('input');
-                appIdInput.type = 'hidden';
-                appIdInput.name = `changes[${index}].appId`;
-                appIdInput.value = change.appId;
-                container.appendChild(appIdInput);
-                
-                const fieldInput = document.createElement('input');
-                fieldInput.type = 'hidden';
-                fieldInput.name = `changes[${index}].field`;
-                fieldInput.value = change.field;
-                container.appendChild(fieldInput);
-                
-                const valueInput = document.createElement('input');
-                valueInput.type = 'hidden';
-                valueInput.name = `changes[${index}].value`;
-                valueInput.value = change.value;
-                container.appendChild(valueInput);
-                
-                index++;
-            });
-            
-            // Submit the form
-            this.submit();
-        });
-    </script>
+    <script src="/js/seat-management.js"></script>
 </section>
 </body>
 </html>

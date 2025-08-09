@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment Management</title>
+    <link rel="stylesheet" th:href="@{/css/teacher/payment_management.css}">
 </head>
 <body>
 
@@ -92,67 +93,68 @@
                                 <table class="table table-hover mb-0">
                                     <thead class="bg-light">
                                         <tr>
-                                            <th>Student</th>
-                                            <th>Course/Branch</th>
-                                            <th>Amount</th>
-                                            <th>Method</th>
-                                            <th>Transaction ID</th>
-                                            <th>Status</th>
-                                            <th>Submitted</th>
-                                            <th>Actions</th>
-                                            <th>Receipt</th>
+                                            <th class="border-0 py-3">🔢 Rank</th>
+                                            <th class="border-0 py-3">🎓 Student</th>
+                                            <th class="border-0 py-3">📞 Contact</th>
+                                            <th class="border-0 py-3">💰 Amount</th>
+                                            <th class="border-0 py-3">📋 Status</th>
+                                            <th class="border-0 py-3">⚡ Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="payment : ${payments}" th:id="'row-' + ${payment?.id}">
-                                            <td>
+                                        <tr th:each="payment, iterStat : ${payments}" th:id="'row-' + ${payment?.id}" class="border-bottom">
+                                            <td class="py-3">
+                                                <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 0.8rem; font-weight: bold;" th:text="${iterStat.count}">1</div>
+                                            </td>
+                                            <td class="py-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-info rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                        <i class='bx bx-user'></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold" th:text="${studentNames[payment.userEmail] ?: payment.studentName}">Student Name</div>
+                                                        <small class="text-muted">
+                                                            <i class='bx bx-envelope me-1'></i><span th:text="${payment.userEmail}">Email</span>
+                                                            <span class="ms-2 text-primary">ID: <span th:text="${payment.id}">123</span></span>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3">
+                                                <small>
+                                                    <i class='bx bx-phone me-1'></i><span th:text="${studentPhones[payment.userEmail] ?: 'N/A'}">Phone</span>
+                                                </small>
+                                            </td>
+                                            <td class="py-3">
                                                 <div>
-                                                    <strong th:text="${payment.studentName}">Student Name</strong>
+                                                    <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(payment.amount, 0, 0)}">Amount</strong>
                                                     <br>
-                                                    <small class="text-muted" th:text="${payment.userEmail}">email</small>
+                                                    <small class="text-muted" th:text="${payment.paymentMethod}">Method</small>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <span class="badge bg-info" th:text="${payment.course}">Course</span>
-                                                <br>
-                                                <small th:text="${payment.branch}">Branch</small>
+                                            <td class="py-3">
+                                                <span th:if="${payment.status.name() == 'PENDING'}" class="badge bg-warning px-3 py-2">Unverified</span>
+                                                <span th:if="${payment.status.name() == 'VERIFIED'}" class="badge bg-success px-3 py-2">Verified</span>
+                                                <span th:if="${payment.status.name() == 'REJECTED'}" class="badge bg-danger px-3 py-2">Rejected</span>
                                             </td>
-                                            <td>
-                                                <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(payment.amount, 0, 0)}">Amount</strong>
-                                            </td>
-                                            <td th:text="${payment.paymentMethod}">Method</td>
-                                            <td>
-                                                <code th:text="${payment.transactionId}">TXN123</code>
-                                            </td>
-                                            <td>
-                                                <span th:if="${payment.status.name() == 'PENDING'}" class="badge bg-warning">Unverified</span>
-                                                <span th:if="${payment.status.name() == 'VERIFIED'}" class="badge bg-success">Verified</span>
-                                                <span th:if="${payment.status.name() == 'REJECTED'}" class="badge bg-danger">Rejected</span>
-                                            </td>
-                                            <td>
-                                                <small th:text="${#temporals.format(payment.submissionDate, 'dd-MM-yyyy HH:mm')}">Date</small>
-                                            </td>
-                                            <td>
-                                                <select class="form-select form-select-sm update-field" 
-                                                        th:data-payment-id="${payment.id}" 
-                                                        data-field="status"
-                                                        th:data-original="${payment.status.name()}">
-                                                    <option value="PENDING" th:selected="${payment.status.name() == 'PENDING'}">Unverified</option>
-                                                    <option value="VERIFIED" th:selected="${payment.status.name() == 'VERIFIED'}">Verified</option>
-                                                    <option value="REJECTED" th:selected="${payment.status.name() == 'REJECTED'}">Rejected</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <div th:if="${payment.receiptFileName != null}">
-                                                    <button type="button" class="btn btn-sm btn-outline-info" 
-                                                            th:data-filename="${payment.receiptFileName}"
-                                                            onclick="viewReceipt(this.dataset.filename)"
-                                                            data-bs-toggle="modal" data-bs-target="#receiptModal">
-                                                        <i class='bx bx-image'></i> View
-                                                    </button>
-                                                </div>
-                                                <div th:if="${payment.receiptFileName == null}">
-                                                    <span class="text-muted small">No receipt</span>
+                                            <td class="py-3">
+                                                <div class="d-flex gap-2">
+                                                    <div th:if="${payment.receiptFileName != null}">
+                                                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill" 
+                                                                th:data-filename="${payment.receiptFileName}"
+                                                                onclick="viewReceipt(this.dataset.filename)"
+                                                                data-bs-toggle="modal" data-bs-target="#receiptModal">
+                                                            <i class='bx bx-image'></i>
+                                                        </button>
+                                                    </div>
+                                                    <select class="form-select form-select-sm update-field" style="width: 120px;"
+                                                            th:data-payment-id="${payment.id}" 
+                                                            data-field="status"
+                                                            th:data-original="${payment.status.name()}">
+                                                        <option value="PENDING" th:selected="${payment.status.name() == 'PENDING'}">Unverified</option>
+                                                        <option value="VERIFIED" th:selected="${payment.status.name() == 'VERIFIED'}">Verified</option>
+                                                        <option value="REJECTED" th:selected="${payment.status.name() == 'REJECTED'}">Rejected</option>
+                                                    </select>
                                                 </div>
                                             </td>
                                         </tr>
@@ -197,171 +199,7 @@
         </div>
     </div>
 
-    <style>
-        .changed-row {
-            background-color: #fff3cd !important;
-            border-left: 4px solid #ffc107;
-        }
-        .save-indicator {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-        }
-    </style>
-
-    <script>
-        let pendingChanges = new Map();
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.update-field').forEach(field => {
-                field.addEventListener('change', function() {
-                    handleFieldChange(this);
-                });
-            });
-            
-            // Clear changes after successful save
-            const alertElement = document.querySelector('.alert-success');
-            if (alertElement && alertElement.textContent.includes('saved successfully')) {
-                pendingChanges.clear();
-                document.querySelectorAll('.changed-row').forEach(row => {
-                    row.classList.remove('changed-row');
-                });
-                updateSaveButton();
-                updateSaveIndicator();
-            }
-        });
-        
-        function handleFieldChange(field) {
-            const paymentId = field.dataset.paymentId;
-            const fieldName = field.dataset.field;
-            const originalValue = field.dataset.original || '';
-            const newValue = field.value;
-            
-            const changeKey = `${paymentId}-${fieldName}`;
-            
-            if (newValue !== originalValue) {
-                pendingChanges.set(changeKey, {
-                    paymentId: paymentId,
-                    field: fieldName,
-                    value: newValue,
-                    originalValue: originalValue
-                });
-                
-                const row = document.getElementById(`row-${paymentId}`);
-                if (row) {
-                    row.classList.add('changed-row');
-                }
-            } else {
-                pendingChanges.delete(changeKey);
-                
-                const hasOtherChanges = Array.from(pendingChanges.keys()).some(key => key.startsWith(`${paymentId}-`));
-                if (!hasOtherChanges) {
-                    const row = document.getElementById(`row-${paymentId}`);
-                    if (row) {
-                        row.classList.remove('changed-row');
-                    }
-                }
-            }
-            
-            updateSaveButton();
-            updateSaveIndicator();
-        }
-        
-        function updateSaveButton() {
-            const saveBtn = document.getElementById('saveAllBtn');
-            const saveCount = document.getElementById('saveCount');
-            const changeCount = pendingChanges.size;
-            
-            if (changeCount > 0) {
-                saveBtn.style.display = 'block';
-                saveCount.textContent = changeCount;
-            } else {
-                saveBtn.style.display = 'none';
-            }
-        }
-        
-        function updateSaveIndicator() {
-            const indicator = document.getElementById('saveIndicator');
-            const changeCountSpan = document.getElementById('changeCount');
-            const changeCount = pendingChanges.size;
-            
-            if (changeCount > 0) {
-                indicator.style.display = 'block';
-                changeCountSpan.textContent = changeCount;
-            } else {
-                indicator.style.display = 'none';
-            }
-        }
-        
-        function hideSaveIndicator() {
-            document.getElementById('saveIndicator').style.display = 'none';
-        }
-        
-        document.getElementById('bulkUpdateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (pendingChanges.size === 0) {
-                alert('No changes to save!');
-                return;
-            }
-            
-            const container = document.getElementById('changesContainer');
-            container.innerHTML = '';
-            
-            // Update original values before submit
-            pendingChanges.forEach((change, key) => {
-                const field = document.querySelector(`[data-payment-id="${change.paymentId}"][data-field="${change.field}"]`);
-                if (field) {
-                    field.dataset.original = change.value;
-                }
-            });
-            
-            let index = 0;
-            pendingChanges.forEach((change, key) => {
-                const paymentIdInput = document.createElement('input');
-                paymentIdInput.type = 'hidden';
-                paymentIdInput.name = `changes[${index}].paymentId`;
-                paymentIdInput.value = change.paymentId;
-                container.appendChild(paymentIdInput);
-                
-                const fieldInput = document.createElement('input');
-                fieldInput.type = 'hidden';
-                fieldInput.name = `changes[${index}].field`;
-                fieldInput.value = change.field;
-                container.appendChild(fieldInput);
-                
-                const valueInput = document.createElement('input');
-                valueInput.type = 'hidden';
-                valueInput.name = `changes[${index}].value`;
-                valueInput.value = change.value;
-                container.appendChild(valueInput);
-                
-                index++;
-            });
-            
-            this.submit();
-        });
-        
-        function viewReceipt(fileName) {
-            const receiptImage = document.getElementById('receiptImage');
-            const receiptError = document.getElementById('receiptError');
-            const downloadLink = document.getElementById('downloadReceipt');
-            
-            const receiptUrl = '/uploads/receipts/' + fileName;
-            
-            receiptImage.src = receiptUrl;
-            receiptImage.style.display = 'block';
-            receiptError.style.display = 'none';
-            downloadLink.href = receiptUrl;
-            
-            receiptImage.onerror = function() {
-                receiptImage.style.display = 'none';
-                receiptError.style.display = 'block';
-            };
-        }
-    </script>
+    <script th:src="@{/js/teacher/payment_management.js}"></script>
 </section>
 
 </body>

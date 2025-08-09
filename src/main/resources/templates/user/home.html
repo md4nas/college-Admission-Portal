@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>User Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/user/home.css}">
 </head>
 <body>
 
@@ -201,14 +202,14 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-3 mb-3">
-                                            <div class="process-step text-center p-3 rounded bg-success text-white">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${appStatus == 'SUBMITTED' || appStatus == 'APPROVED' || appStatus == 'ALLOCATED' || appStatus == 'ACCEPTED'} ? 'bg-success text-white' : 'bg-light'">
                                                 <i class='bx bx-check-circle' style="font-size: 2rem;"></i>
                                                 <h6 class="mt-2 mb-1">Application</h6>
                                                 <small>Submitted</small>
                                             </div>
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <div class="process-step text-center p-3 rounded" th:classappend="${application.status != 'PENDING' && application.status != 'SUBMITTED'} ? 'bg-success text-white' : 'bg-light'">
+                                            <div class="process-step text-center p-3 rounded" th:classappend="${appStatus == 'SUBMITTED' || appStatus == 'APPROVED' || appStatus == 'ALLOCATED' || appStatus == 'ACCEPTED'} ? 'bg-success text-white' : 'bg-light'">
                                                 <i class='bx bx-calculator' style="font-size: 2rem;"></i>
                                                 <h6 class="mt-2 mb-1">Merit List</h6>
                                                 <small>Rank Calculation</small>
@@ -300,118 +301,7 @@
     </div>
 </section>
 
-<style>
-    .bg-gradient-warning {
-        background: linear-gradient(45deg, #ffc107, #fd7e14);
-    }
-    
-    .card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
-    .badge {
-        font-size: 0.8em;
-        padding: 0.5em 0.8em;
-    }
-    
-    .alert {
-        border: none;
-        border-radius: 10px;
-    }
-    
-    .btn {
-        border-radius: 8px;
-        transition: all 0.2s ease-in-out;
-    }
-    
-    .btn:hover {
-        transform: translateY(-1px);
-    }
-    
-    /* Timeline Steps */
-    .timeline-steps {
-        position: relative;
-    }
-    
-    .step {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 2rem;
-        position: relative;
-    }
-    
-    .step:last-child {
-        margin-bottom: 0;
-    }
-    
-    .step::before {
-        content: '';
-        position: absolute;
-        left: 20px;
-        top: 40px;
-        bottom: -2rem;
-        width: 2px;
-        background: #dee2e6;
-    }
-    
-    .step:last-child::before {
-        display: none;
-    }
-    
-    .step.completed::before {
-        background: #28a745;
-    }
-    
-    .step-number {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #dee2e6;
-        color: #6c757d;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        margin-right: 1rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .step.completed .step-number {
-        background: #28a745;
-        color: white;
-    }
-    
-    .step-content h6 {
-        margin-bottom: 0.25rem;
-        font-weight: 600;
-    }
-    
-    @media (max-width: 768px) {
-        .card-body {
-            padding: 1rem;
-        }
-        
-        .d-grid.gap-2.d-md-flex {
-            gap: 0.5rem !important;
-        }
-        
-        .step-number {
-            width: 30px;
-            height: 30px;
-            font-size: 0.9rem;
-        }
-        
-        .step::before {
-            left: 15px;
-        }
-    }
-</style>
+<script th:src="@{/js/user/home.js}"></script>
 
 </body>
 </html>

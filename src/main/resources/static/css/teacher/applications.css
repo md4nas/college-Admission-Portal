@@ -1,0 +1,26 @@
+/* Teacher applications page styles */
+.stats-card {
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.filter-buttons .btn {
+    border-radius: 25px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5em 0.75em;
+}

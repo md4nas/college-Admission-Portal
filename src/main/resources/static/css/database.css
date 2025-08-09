@@ -1,0 +1,26 @@
+/**
+ * Database Management Page Styles
+ * Styles for admin database management page
+ */
+
+.db-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.db-card:hover {
+    transform: translateY(-2px);
+}
+
+.danger-zone {
+    border: 2px solid #dc3545;
+    border-radius: 10px;
+    background-color: #fff5f5;
+}
+
+.warning-zone {
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    background-color: #fffbf0;
+}

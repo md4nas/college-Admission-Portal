@@ -130,15 +130,11 @@ public class UserController {
         //check if user already had an application
         UserApplication existingApp = userApplicationService.getUserApplicationByEmail(email);
         if(existingApp != null){
-            System.out.println("User " + email + " already has application with ID: " + existingApp.getId());
-            // Redirect to home page where status is shown
             return "redirect:/user/";
         }
         
-        // Also check by hasUserSubmittedApplication method
         boolean hasSubmitted = userApplicationService.hasUserSubmittedApplication(email);
         if(hasSubmitted) {
-            System.out.println("User " + email + " has already submitted application (found by alternative check)");
             return "redirect:/user/";
         }
         
@@ -162,25 +158,15 @@ public class UserController {
         }
 
         try{
-            // Debug logging
-            System.out.println("=== APPLICATION SUBMISSION DEBUG ===");
-            System.out.println("User: " + email + ", User ID: " + (user != null ? user.getId() : "null"));
-            System.out.println("Application ID set to: " + application.getId());
-            System.out.println("Application data: " + application.getCourse() + ", " + application.getBranch1());
-            
             UserApplication savedApp = userApplicationService.saveAcademicInfo(application);
             if(savedApp != null){
-                System.out.println("Application saved successfully with ID: " + savedApp.getId());
                 session.setAttribute("msg","Application submitted successfully!");
                 session.setAttribute("msgType","success");
             } else {
                 session.setAttribute("msg","Failed to submit application. Please try again");
                 session.setAttribute("msgType","danger");
             }
-        } catch (Exception e){
-            // Log the actual error
-            System.err.println("Error submitting application: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception e) {
             session.setAttribute("msg","Error occurred while submitting application: " + e.getMessage());
             session.setAttribute("msgType","danger");
         }
@@ -237,6 +223,12 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         model.addAttribute("appClass12Optional", application.getClass12Optional());
         model.addAttribute("appAllocatedBranch", application.getAllocatedBranch());
         model.addAttribute("appSeatAccepted", application.getSeatAccepted());
+        
+        // Entrance exam fields
+        model.addAttribute("appEntranceName", application.getEntranceName());
+        model.addAttribute("appEntranceRollNo", application.getEntranceRollNo());
+        model.addAttribute("appEntranceYear", application.getEntranceYear());
+        model.addAttribute("appEntranceRank", application.getEntranceRank());
     }
     
     model.addAttribute("user", user);
@@ -337,12 +329,7 @@ public String applicationStatus(Principal p, Model model, HttpServletRequest req
         // Get announcements for students (STUDENT and ALL)
         List<Announcement> announcements = announcementService.getAnnouncementsByAudience("STUDENT");
         
-        System.out.println("=== USER NOTIFICATIONS DEBUG ===");
-        System.out.println("User: " + email);
-        System.out.println("Announcements found: " + announcements.size());
-        for (Announcement ann : announcements) {
-            System.out.println("- " + ann.getTitle() + " (" + ann.getTargetAudience() + ")");
-        }
+
         
         model.addAttribute("user", user);
         model.addAttribute("application", application);

@@ -58,31 +58,50 @@ public class TeacherController {
     public String home(Model model){
         // Dashboard Statistics
         List<UserApplication> pendingApplications = userApplicationService.getApplicationsPendingApproval();
-        List<UserApplication> approvedApplications = userApplicationService.getApprovedApplicationsForSeatAllocation();
         List<UserApplication> allocatedApplications = userApplicationService.getAllocatedApplicationsPendingResponse();
+        List<UserApplication> approvedApplications = userApplicationService.getApprovedApplicationsForSeatAllocation();
         List<Object[]> statusCounts = userApplicationService.getApplicationStatusCounts();
         List<Object[]> branchStats = userApplicationService.getBranchWiseStatistics();
         
-        // Recent Users
-        List<UserDtls> recentUsers = userService.getUsersByRole("ROLE_USER");
+
         
         // Recent Announcements (top 10 for scroll)
         List<Announcement> recentAnnouncements = announcementService.getActiveAnnouncements().stream().limit(10).collect(java.util.stream.Collectors.toList());
         
-        System.out.println("=== TEACHER DASHBOARD DEBUG ===");
-        System.out.println("Recent announcements count: " + recentAnnouncements.size());
-        for (Announcement ann : recentAnnouncements) {
-            System.out.println("- " + ann.getTitle() + " by " + ann.getCreatedBy());
-        }
+
         
         // Add to model
         model.addAttribute("pendingCount", pendingApplications.size());
         model.addAttribute("approvedCount", approvedApplications.size());
         model.addAttribute("allocatedCount", allocatedApplications.size());
-        model.addAttribute("recentApplications", pendingApplications.stream().limit(7).collect(java.util.stream.Collectors.toList()));
+        // Recent Applications (all applications, not just pending)
+        List<UserApplication> allApplications = userApplicationService.getAllApplications();
+        List<UserApplication> recentApplications = allApplications.stream()
+            .sorted((a, b) -> {
+                if (a.getSubmissionDate() == null && b.getSubmissionDate() == null) return 0;
+                if (a.getSubmissionDate() == null) return 1;
+                if (b.getSubmissionDate() == null) return -1;
+                return b.getSubmissionDate().compareTo(a.getSubmissionDate());
+            })
+            .limit(7)
+            .collect(java.util.stream.Collectors.toList());
+        
+        // Create a map of email to student name for recent applications
+        java.util.Map<String, String> studentNames = new java.util.HashMap<>();
+        for (UserApplication app : recentApplications) {
+            if (app.getUserEmail() != null) {
+                UserDtls student = userRepo.findByEmail(app.getUserEmail());
+                if (student != null) {
+                    studentNames.put(app.getUserEmail(), student.getFullName());
+                }
+            }
+        }
+        
+        model.addAttribute("recentApplications", recentApplications);
+        model.addAttribute("studentNames", studentNames);
         model.addAttribute("statusCounts", statusCounts);
         model.addAttribute("branchStats", branchStats);
-        model.addAttribute("recentUsers", recentUsers.stream().limit(7).collect(java.util.stream.Collectors.toList()));
+
         model.addAttribute("recentAnnouncements", recentAnnouncements);
         
         return "teacher/home";
@@ -90,23 +109,93 @@ public class TeacherController {
 
     @GetMapping("/applications")
     public String viewApplications(Model model) {
-        List<UserApplication> applications = userApplicationService.getApplicationsPendingApproval();
+        List<UserApplication> applications = userApplicationService.getAllApplications();
         // Sort by class 12 percentage in descending order
         applications.sort((a, b) -> {
             Double percentageA = a.getPercentage12() != null ? a.getPercentage12() : 0.0;
             Double percentageB = b.getPercentage12() != null ? b.getPercentage12() : 0.0;
             return Double.compare(percentageB, percentageA);
         });
+        
+        // Create a map of email to student name
+        java.util.Map<String, String> studentNames = new java.util.HashMap<>();
+        for (UserApplication app : applications) {
+            if (app.getUserEmail() != null) {
+                UserDtls student = userRepo.findByEmail(app.getUserEmail());
+                if (student != null) {
+                    studentNames.put(app.getUserEmail(), student.getFullName());
+                }
+            }
+        }
+        
         model.addAttribute("applications", applications);
+        model.addAttribute("studentNames", studentNames);
         return "teacher/applications";
     }
 
-    @GetMapping("/applications/approve")
-    public String viewApprovedApplications(Model model) {
-        List<UserApplication> applications = userApplicationService.getApprovedApplicationsForSeatAllocation();
+    @GetMapping("/applications/status")
+    public String viewApplicationsByStatus(@RequestParam("status") String status, Model model) {
+        List<UserApplication> applications = userApplicationService.getApplicationsByStatus(status);
+        applications.sort((a, b) -> {
+            Double percentageA = a.getPercentage12() != null ? a.getPercentage12() : 0.0;
+            Double percentageB = b.getPercentage12() != null ? b.getPercentage12() : 0.0;
+            return Double.compare(percentageB, percentageA);
+        });
+        
+        // Create a map of email to student name
+        java.util.Map<String, String> studentNames = new java.util.HashMap<>();
+        for (UserApplication app : applications) {
+            if (app.getUserEmail() != null) {
+                UserDtls student = userRepo.findByEmail(app.getUserEmail());
+                if (student != null) {
+                    studentNames.put(app.getUserEmail(), student.getFullName());
+                }
+            }
+        }
+        
         model.addAttribute("applications", applications);
-        return "teacher/seat_allocation";
+        model.addAttribute("studentNames", studentNames);
+        model.addAttribute("filterStatus", status);
+        return "teacher/applications";
     }
+
+    @PostMapping("/applications/update-status")
+    public String updateApplicationStatusTeacher(@RequestParam("applicationId") String applicationId,
+                                          @RequestParam("newStatus") String newStatus,
+                                          HttpSession session) {
+        try {
+            UserApplication updatedApp = userApplicationService.updateApplicationStatus(applicationId, newStatus);
+            if(updatedApp != null) {
+                session.setAttribute("msg", "Application status updated successfully!");
+                session.setAttribute("msgType", "success");
+            } else {
+                session.setAttribute("msg", "Failed to update application status.");
+                session.setAttribute("msgType", "danger");
+            }
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error updating application status.");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/applications";
+    }
+
+    @PostMapping("/applications/delete/{applicationId}")
+    public String deleteApplicationTeacher(@PathVariable("applicationId") String applicationId,
+                                    HttpSession session) {
+        try {
+            userApplicationService.deleteApplication(Long.parseLong(applicationId));
+            session.setAttribute("msg", "Application deleted successfully!");
+            session.setAttribute("msgType", "success");
+        } catch (Exception e) {
+            session.setAttribute("msg", "Error deleting application.");
+            session.setAttribute("msgType", "danger");
+        }
+        return "redirect:/teacher/applications";
+    }
+
+
+
+
 
     @PostMapping("/applications/approve")
     public String approveApplication(@RequestParam("applicationId") String applicationId,
@@ -146,34 +235,16 @@ public class TeacherController {
         return "redirect:/teacher/applications";
     }
 
-    @PostMapping("/applications/allocate-seat")
-    public String allocateSeat(@RequestParam("applicationId") String applicationId,
-                               @RequestParam("allocatedBranch") String allocatedBranch,
-                               HttpSession session) {
-        try {
-            UserApplication updatedApp = userApplicationService.allocateSeat(applicationId, allocatedBranch);
-            if(updatedApp != null) {
-                session.setAttribute("msg", "Seat allocated successfully to " + allocatedBranch + " branch!");
-                session.setAttribute("msgType", "success");
-            } else {
-                session.setAttribute("msg", "Failed to allocate seat.");
-                session.setAttribute("msgType", "danger");
-            }
-        } catch (Exception e) {
-            session.setAttribute("msg", "Error occurred while allocating seat.");
-            session.setAttribute("msgType", "danger");
-        }
-        return "redirect:/teacher/applications/approved";
-    }
+
 
     @GetMapping("/application-details/{applicationId}")
     public String viewApplicationDetails(@PathVariable("applicationId") String applicationId, Model model) {
         UserApplication application = userApplicationService.getApplicationById(applicationId);
         
         if (application != null) {
-            // Get user details for the application
-            UserDtls user = userRepo.findByEmail(application.getUserEmail());
-            model.addAttribute("user", user);
+            // Get user details for the application (student details)
+            UserDtls studentUser = userRepo.findByEmail(application.getUserEmail());
+            model.addAttribute("studentUser", studentUser);
         }
         
         model.addAttribute("userApplication", application);
@@ -190,38 +261,25 @@ public class TeacherController {
                                      Principal principal,
                                      HttpSession session) {
         try {
-            System.out.println("=== ANNOUNCEMENT CREATION DEBUG ===");
-            System.out.println("Title: " + title);
-            System.out.println("Content: " + content);
-            System.out.println("Target Audience: " + targetAudience);
-            System.out.println("Type: " + announcementType);
-            System.out.println("Created By: " + principal.getName());
-            
             Announcement announcement = new Announcement(title, content, principal.getName(), targetAudience);
             announcement.setAnnouncementType(announcementType);
             
             if (eventDate != null && !eventDate.isEmpty()) {
                 announcement.setEventDate(java.time.LocalDate.parse(eventDate));
-                System.out.println("Event Date: " + eventDate);
             }
             if (eventTime != null && !eventTime.isEmpty()) {
                 announcement.setEventTime(eventTime);
-                System.out.println("Event Time: " + eventTime);
             }
             
             Announcement savedAnnouncement = announcementService.saveAnnouncement(announcement);
             if (savedAnnouncement != null) {
-                System.out.println("Announcement saved successfully with ID: " + savedAnnouncement.getId());
                 session.setAttribute("msg", "Announcement created successfully!");
                 session.setAttribute("msgType", "success");
             } else {
-                System.err.println("Failed to save announcement - returned null");
                 session.setAttribute("msg", "Failed to create announcement.");
                 session.setAttribute("msgType", "danger");
             }
         } catch (Exception e) {
-            System.err.println("Error creating announcement: " + e.getMessage());
-            e.printStackTrace();
             session.setAttribute("msg", "Error creating announcement: " + e.getMessage());
             session.setAttribute("msgType", "danger");
         }
@@ -232,12 +290,7 @@ public class TeacherController {
     public String viewAnnouncements(Model model, Principal principal) {
         List<Announcement> announcements = announcementService.getAnnouncementsByCreator(principal.getName());
         
-        System.out.println("=== TEACHER ANNOUNCEMENTS PAGE DEBUG ===");
-        System.out.println("Teacher: " + principal.getName());
-        System.out.println("Announcements by teacher: " + announcements.size());
-        for (Announcement ann : announcements) {
-            System.out.println("- " + ann.getTitle() + " (" + ann.getCreatedAt() + ")");
-        }
+
         
         model.addAttribute("announcements", announcements);
         return "teacher/announcements";
@@ -247,24 +300,19 @@ public class TeacherController {
     public String seatManagement(Model model) {
         List<UserApplication> applications = userApplicationService.getAllApplications();
         
-        System.out.println("=== SEAT MANAGEMENT DEBUG ===");
-        System.out.println("Total applications: " + applications.size());
+        // Create a map of email to student name
+        java.util.Map<String, String> studentNames = new java.util.HashMap<>();
         for (UserApplication app : applications) {
-            System.out.println("App ID: " + app.getId() + ", Email: " + app.getUserEmail() + ", Status: " + app.getStatus());
-            System.out.println("  - Course: " + app.getCourse());
-            System.out.println("  - Parents Name: " + app.getParentsName());
-            System.out.println("  - Phone: " + app.getPhoneNo());
-            System.out.println("  - DOB: " + app.getDob());
-            System.out.println("  - Gender: " + app.getGender());
-            System.out.println("  - Address: " + app.getAddress());
-            System.out.println("  - Branch1: " + app.getBranch1());
-            System.out.println("  - Branch2: " + app.getBranch2());
-            System.out.println("  - Class12 Physics: " + app.getClass12Physics());
-            System.out.println("  - Percentage12: " + app.getPercentage12());
-            System.out.println("  ---");
+            if (app.getUserEmail() != null) {
+                UserDtls student = userRepo.findByEmail(app.getUserEmail());
+                if (student != null) {
+                    studentNames.put(app.getUserEmail(), student.getFullName());
+                }
+            }
         }
         
         model.addAttribute("applications", applications);
+        model.addAttribute("studentNames", studentNames);
         return "teacher/seat_management";
     }
 
@@ -404,10 +452,24 @@ public class TeacherController {
     public String paymentManagement(Model model, HttpServletRequest request) {
         List<Payment> payments = paymentService.getAllPayments();
         
-        // Debug: Print payment details
-        System.out.println("=== PAYMENT DEBUG ===");
+        // Create maps for student names and phone numbers
+        java.util.Map<String, String> studentNames = new java.util.HashMap<>();
+        java.util.Map<String, String> studentPhones = new java.util.HashMap<>();
         for (Payment payment : payments) {
-            System.out.println("Payment ID: " + payment.getId() + ", Status: " + payment.getStatus() + ", Student: " + payment.getStudentName());
+            if (payment.getUserEmail() != null) {
+                UserDtls student = userRepo.findByEmail(payment.getUserEmail());
+                if (student != null) {
+                    studentNames.put(payment.getUserEmail(), student.getFullName());
+                }
+                // Get phone from UserApplication if available
+                List<UserApplication> allApps = userApplicationService.getAllApplications();
+                for (UserApplication app : allApps) {
+                    if (app.getUserEmail() != null && app.getUserEmail().equals(payment.getUserEmail()) && app.getPhoneNo() != null) {
+                        studentPhones.put(payment.getUserEmail(), app.getPhoneNo());
+                        break;
+                    }
+                }
+            }
         }
         
         // Calculate statistics
@@ -416,6 +478,8 @@ public class TeacherController {
         long rejectedCount = payments.stream().filter(p -> p.getStatus() == Payment.PaymentStatus.REJECTED).count();
         
         model.addAttribute("payments", payments);
+        model.addAttribute("studentNames", studentNames);
+        model.addAttribute("studentPhones", studentPhones);
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("verifiedCount", verifiedCount);
         model.addAttribute("rejectedCount", rejectedCount);
@@ -486,13 +550,9 @@ public class TeacherController {
                     try {
                         Long id = Long.parseLong(paymentId);
                         Payment.PaymentStatus status = Payment.PaymentStatus.valueOf(value);
-                        System.out.println("Updating payment " + id + " to status: " + status);
                         ((com.m4nas.service.PaymentServiceImpl) paymentService).updatePaymentStatus(id, status, teacherEmail);
                         successCount++;
-                        System.out.println("Successfully updated payment " + id);
                     } catch (Exception e) {
-                        System.err.println("Error updating payment " + paymentId + ": " + e.getMessage());
-                        e.printStackTrace();
                     }
                 }
             }

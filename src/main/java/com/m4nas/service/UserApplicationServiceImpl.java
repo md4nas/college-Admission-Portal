@@ -10,17 +10,16 @@ import java.util.List;
 
 @Service
 @Transactional
-public class UserApplicationServiceImpl implements  UserApplicationService{
+public class UserApplicationServiceImpl implements UserApplicationService{
 
     @Autowired
     private UserApplicationRepository userApplicationRepo;
-    
+
     @Autowired
     private com.m4nas.repository.UserRepository userRepository;
 
     @Override
     public UserApplication savePersonalInfo(UserApplication application) {
-        // Generate ID if new application
         if(application.getId() == null){
             application.setId(RandomString.generateUserId());
             application.setStatus("PENDING");
@@ -30,11 +29,9 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
 
     @Override
     public UserApplication saveAcademicInfo(UserApplication application) {
-        // Use user ID as application ID for better tracking
         if(application.getId() == null || application.getId().isEmpty()){
             String userEmail = application.getUserEmail();
             if(userEmail != null) {
-                // Get user by email and use their ID as application ID
                 com.m4nas.model.UserDtls user = userRepository.findByEmail(userEmail);
                 if(user != null) {
                     application.setId(user.getId());
@@ -43,80 +40,24 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
                 }
             }
         }
-        
-        //calculate percentage automatically
-        calculatePercentages(application);
 
-        //change status to SUBMITTED when academic info is completed
+        calculatePercentages(application);
         application.setStatus("SUBMITTED");
-        
-        // Debug: Print application data before saving
-        System.out.println("=== BEFORE SAVING APPLICATION ===");
-        System.out.println("ID: " + application.getId());
-        System.out.println("Email: " + application.getUserEmail());
-        System.out.println("Course: " + application.getCourse());
-        System.out.println("Branch1: " + application.getBranch1());
-        System.out.println("DOB: " + application.getDob());
-        System.out.println("Gender: " + application.getGender());
-        System.out.println("Phone: " + application.getPhoneNo());
-        System.out.println("Class12 Physics: " + application.getClass12Physics());
-        System.out.println("Obtain12Marks: " + application.getObtain12Marks());
-        
-        UserApplication savedApp = userApplicationRepo.save(application);
-        
-        // Debug: Print saved application data
-        System.out.println("=== AFTER SAVING APPLICATION ===");
-        if(savedApp != null) {
-            System.out.println("Saved ID: " + savedApp.getId());
-            System.out.println("Saved Course: " + savedApp.getCourse());
-            System.out.println("Saved Branch1: " + savedApp.getBranch1());
-            System.out.println("Saved DOB: " + savedApp.getDob());
-        }
-        
-        return savedApp;
+        return userApplicationRepo.save(application);
     }
 
     @Override
     public UserApplication getUserApplicationByEmail(String email) {
-        System.out.println("=== SERVICE DEBUG ===");
-        System.out.println("Looking for application with email: " + email);
-        
-        // First try to find by email
         UserApplication app = userApplicationRepo.findByUserEmail(email);
-        System.out.println("First lookup by email result: " + (app != null ? "FOUND" : "NOT FOUND"));
-        
-        // Try with explicit query
         if(app == null) {
-            System.out.println("Trying explicit query...");
             app = userApplicationRepo.findByUserEmailWithAllFields(email);
-            System.out.println("Explicit query result: " + (app != null ? "FOUND" : "NOT FOUND"));
         }
-        
-        // If not found by email, try to find by user ID
         if(app == null) {
             com.m4nas.model.UserDtls user = userRepository.findByEmail(email);
             if(user != null) {
-                System.out.println("Trying to find application by user ID: " + user.getId());
                 app = userApplicationRepo.findById(user.getId()).orElse(null);
-                System.out.println("User ID lookup result: " + (app != null ? "FOUND" : "NOT FOUND"));
             }
         }
-        
-        // If found, print all field values for debugging
-        if(app != null) {
-            System.out.println("=== APPLICATION FIELD DEBUG ===");
-            System.out.println("Course: " + app.getCourse());
-            System.out.println("Branch1: " + app.getBranch1());
-            System.out.println("DOB: " + app.getDob());
-            System.out.println("Gender: " + app.getGender());
-            System.out.println("Phone: " + app.getPhoneNo());
-            System.out.println("Address: " + app.getAddress());
-            System.out.println("Class12 Physics: " + app.getClass12Physics());
-            System.out.println("Obtain12Marks: " + app.getObtain12Marks());
-            System.out.println("Percentage12: " + app.getPercentage12());
-        }
-        
-        System.out.println("Found application: " + (app != null ? "YES - ID: " + app.getId() + ", Email: " + app.getUserEmail() + ", Status: " + app.getStatus() : "NO"));
         return app;
     }
 
@@ -128,7 +69,7 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
             app.setStatus("ACCEPTED");
             return userApplicationRepo.save(app);
         }
-        return null; // Fixed: return null if app is null or wrong status
+        return null;
     }
 
     @Override
@@ -144,21 +85,15 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
 
     @Override
     public boolean hasUserSubmittedApplication(String email) {
-        // Check by email first
         boolean existsByEmail = userApplicationRepo.existsByUserEmail(email);
-        
-        // If not found by email, check by user ID
         if(!existsByEmail) {
             com.m4nas.model.UserDtls user = userRepository.findByEmail(email);
             if(user != null) {
                 return userApplicationRepo.existsById(user.getId());
             }
         }
-        
         return existsByEmail;
     }
-
-    // ==== TEACHER OPERATION ====
 
     @Override
     public List<UserApplication> getApplicationsPendingApproval() {
@@ -206,14 +141,11 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
         return null;
     }
 
-    // ===== ADMIN OPERATIONS (READ-ONLY) =====
-
     @Override
     public List<UserApplication> getAllApplicationsForAdmin() {
         try {
             return userApplicationRepo.findAll();
         } catch (Exception e) {
-            System.err.println("Error getting all applications: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
@@ -221,23 +153,8 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
     @Override
     public List<Object[]> getApplicationStatusCounts() {
         try {
-            List<Object[]> result = userApplicationRepo.getApplicationStatusCounts();
-            if (result == null || result.isEmpty()) {
-                // Fallback: create manual count
-                List<UserApplication> allApps = userApplicationRepo.findAll();
-                java.util.Map<String, Long> statusMap = new java.util.HashMap<>();
-                for (UserApplication app : allApps) {
-                    statusMap.put(app.getStatus(), statusMap.getOrDefault(app.getStatus(), 0L) + 1);
-                }
-                List<Object[]> fallbackResult = new java.util.ArrayList<>();
-                for (java.util.Map.Entry<String, Long> entry : statusMap.entrySet()) {
-                    fallbackResult.add(new Object[]{entry.getKey(), entry.getValue()});
-                }
-                return fallbackResult;
-            }
-            return result;
+            return userApplicationRepo.getApplicationStatusCounts();
         } catch (Exception e) {
-            System.err.println("Error getting status counts: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
@@ -245,31 +162,8 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
     @Override
     public List<Object[]> getBranchWiseStatistics() {
         try {
-            List<Object[]> result = userApplicationRepo.getBranchWiseStatistics();
-            if (result == null || result.isEmpty()) {
-                // Fallback: create manual statistics
-                List<UserApplication> allocatedApps = userApplicationRepo.findAll().stream()
-                    .filter(app -> app.getAllocatedBranch() != null)
-                    .collect(java.util.stream.Collectors.toList());
-                
-                java.util.Map<String, java.util.List<UserApplication>> branchMap = new java.util.HashMap<>();
-                for (UserApplication app : allocatedApps) {
-                    branchMap.computeIfAbsent(app.getAllocatedBranch(), k -> new java.util.ArrayList<>()).add(app);
-                }
-                
-                List<Object[]> fallbackResult = new java.util.ArrayList<>();
-                for (java.util.Map.Entry<String, java.util.List<UserApplication>> entry : branchMap.entrySet()) {
-                    String branch = entry.getKey();
-                    List<UserApplication> apps = entry.getValue();
-                    long count = apps.size();
-                    double avgMarks = apps.stream().mapToInt(UserApplication::getObtain12Marks).average().orElse(0.0);
-                    fallbackResult.add(new Object[]{branch, count, avgMarks});
-                }
-                return fallbackResult;
-            }
-            return result;
+            return userApplicationRepo.getBranchWiseStatistics();
         } catch (Exception e) {
-            System.err.println("Error getting branch statistics: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
@@ -279,16 +173,15 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
         try {
             return userApplicationRepo.findByStatus(status);
         } catch (Exception e) {
-            System.err.println("Error getting applications by status: " + e.getMessage());
             return new java.util.ArrayList<>();
         }
     }
-    
+
     @Override
     public List<UserApplication> getAllApplications() {
         return userApplicationRepo.findAllByOrderBySubmissionDateDesc();
     }
-    
+
     @Override
     public UserApplication updateApplicationStatus(String applicationId, String status) {
         try {
@@ -299,94 +192,97 @@ public class UserApplicationServiceImpl implements  UserApplicationService{
             }
             return null;
         } catch (Exception e) {
-            System.err.println("Error updating application status: " + e.getMessage());
             return null;
         }
     }
-    
+
     @Override
     public UserApplication updateApplicationCourse(String applicationId, String course) {
         try {
             UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
             if (application != null) {
                 application.setCourse(course);
-                // Auto-update status based on course assignment
-                if (course != null && !course.isEmpty() && "PENDING".equals(application.getStatus())) {
-                    application.setStatus("REVIEWED");
-                }
                 return userApplicationRepo.save(application);
             }
             return null;
         } catch (Exception e) {
-            System.err.println("Error updating application course: " + e.getMessage());
             return null;
         }
     }
-    
+
     @Override
     public UserApplication updateApplicationBranch(String applicationId, String allocatedBranch) {
         try {
             UserApplication application = userApplicationRepo.findById(applicationId).orElse(null);
             if (application != null) {
-                String oldBranch = application.getAllocatedBranch();
                 application.setAllocatedBranch(allocatedBranch);
-                
-                // Auto-update status based on branch allocation
                 if (allocatedBranch != null && !allocatedBranch.isEmpty()) {
-                    // Branch allocated - set status to ALLOCATED
                     application.setStatus("ALLOCATED");
-                } else if ((oldBranch != null && !oldBranch.isEmpty()) && (allocatedBranch == null || allocatedBranch.isEmpty())) {
-                    // Branch removed - revert to previous status
-                    if ("ALLOCATED".equals(application.getStatus()) || "ACCEPTED".equals(application.getStatus()) || "DECLINED".equals(application.getStatus())) {
-                        application.setStatus("APPROVED");
-                    }
                 }
-                
                 return userApplicationRepo.save(application);
             }
             return null;
         } catch (Exception e) {
-            System.err.println("Error updating application branch: " + e.getMessage());
             return null;
         }
     }
 
-    // ===== UTILITY METHODS =====
+    @Override
+    public void deleteApplication(Long applicationId) {
+        try {
+            if (userApplicationRepo.existsById(String.valueOf(applicationId))) {
+                userApplicationRepo.deleteById(String.valueOf(applicationId));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete application", e);
+        }
+    }
+
+    @Override
+    public void deleteApplicationsByUserEmail(String userEmail) {
+        try {
+            UserApplication application = userApplicationRepo.findByUserEmail(userEmail);
+            if (application != null) {
+                userApplicationRepo.delete(application);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete applications for user", e);
+        }
+    }
+
+    @Override
+    public UserApplication updateApplicationStatus(Long applicationId, String status) {
+        try {
+            UserApplication application = userApplicationRepo.findById(String.valueOf(applicationId)).orElse(null);
+            if (application != null) {
+                application.setStatus(status);
+                return userApplicationRepo.save(application);
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     @Override
     public UserApplication getApplicationById(String applicationId) {
-        System.out.println("=== SERVICE getApplicationById DEBUG ===");
-        System.out.println("Searching for ID: " + applicationId);
-        
-        // First, let's see all applications in database
-        List<UserApplication> allApps = userApplicationRepo.findAll();
-        System.out.println("Total applications in database: " + allApps.size());
-        for (UserApplication app : allApps) {
-            System.out.println("- ID: " + app.getId() + ", Email: " + app.getUserEmail() + ", Status: " + app.getStatus());
-        }
-        
-        UserApplication result = userApplicationRepo.findById(applicationId).orElse(null);
-        System.out.println("Result: " + (result != null ? "FOUND" : "NOT FOUND"));
-        return result;
+        return userApplicationRepo.findById(applicationId).orElse(null);
     }
 
     @Override
     public void calculatePercentages(UserApplication application) {
-        // Calculate class 10 percentage
         if (application.getTotal10Marks() != null && application.getObtain10Marks() != null
-        && application.getTotal10Marks() > 0 ) {
+                && application.getTotal10Marks() > 0 ) {
             double percentage10 = (application.getObtain10Marks().doubleValue() /
                     application.getTotal10Marks().doubleValue()) * 100;
             application.setPercentage10(Math.round(percentage10 * 100.0) / 100.0);
         }
 
-        // Calculate Class 12 percentage
         if (application.getTotal12Marks() != null && application.getObtain12Marks() != null
                 && application.getTotal12Marks() > 0) {
             double percentage12 = (application.getObtain12Marks().doubleValue() /
                     application.getTotal12Marks().doubleValue()) * 100;
             application.setPercentage12(Math.round(percentage12 * 100.0) / 100.0);
         }
-
     }
 }

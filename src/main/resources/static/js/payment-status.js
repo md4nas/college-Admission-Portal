@@ -141,22 +141,28 @@ function viewReceipt(fileName) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const appStatus = document.querySelector('[th\\:text="${appStatus}"]')?.textContent || '';
-    const appCourse = document.querySelector('[th\\:text="${appCourse}"]')?.textContent || '';
-    const appAllocatedBranch = document.querySelector('[th\\:text="${appAllocatedBranch}"]')?.textContent || '';
+    // Get application data from the page elements
+    const courseElement = document.querySelector('.badge.bg-info');
+    const branchElement = document.querySelector('.badge.bg-success');
+    
+    const appCourse = courseElement ? courseElement.textContent.trim() : '';
+    const appAllocatedBranch = branchElement ? branchElement.textContent.trim() : '';
 
     const totalFeeElement = document.getElementById('totalFeeAmount');
     const payNowBtn = document.getElementById('payNowBtn');
     const statusMessage = document.getElementById('feeStatusMessage');
 
-    const hasRequiredData = appCourse && appCourse.trim() !== '' && appAllocatedBranch && appAllocatedBranch.trim() !== '';
+    const hasRequiredData = appCourse && appCourse !== '' && appAllocatedBranch && appAllocatedBranch !== '';
     
     if (hasRequiredData) {
         const courseMapping = {
             'BTECH': 'btech',
-            'BSC': 'bsc', 
+            'B.TECH': 'btech',
+            'BSC': 'bsc',
+            'B.SC': 'bsc', 
             'BCA': 'bca',
-            'MTECH': 'mtech'
+            'MTECH': 'mtech',
+            'M.TECH': 'mtech'
         };
 
         const branchMapping = {
@@ -175,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'Computer Applications': 'Computer Applications'
         };
 
-        const courseKey = courseMapping[appCourse];
+        const courseKey = courseMapping[appCourse.toUpperCase()] || appCourse.toLowerCase();
         const branchKey = branchMapping[appAllocatedBranch] || appAllocatedBranch;
 
         if (courseKey && feeStructure[courseKey] && feeStructure[courseKey][branchKey]) {
@@ -191,11 +197,12 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             statusMessage.textContent = 'Fee structure not found for your course/branch';
             statusMessage.className = 'text-warning mt-2 d-block small';
+            console.log('Course:', appCourse, 'Branch:', appAllocatedBranch, 'CourseKey:', courseKey, 'BranchKey:', branchKey);
         }
     } else {
-        if (!appCourse || appCourse.trim() === '') {
+        if (!appCourse || appCourse === '') {
             statusMessage.textContent = 'Course not yet assigned';
-        } else if (!appAllocatedBranch || appAllocatedBranch.trim() === '') {
+        } else if (!appAllocatedBranch || appAllocatedBranch === '') {
             statusMessage.textContent = 'Branch not yet allocated';
         } else {
             statusMessage.textContent = 'Fee calculation pending';

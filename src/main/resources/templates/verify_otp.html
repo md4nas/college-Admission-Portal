@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Verify OTP</title>
+    <link href="/css/verify-otp.css" rel="stylesheet">
 </head>
 <body>
     <section>
@@ -49,83 +50,7 @@
                                     </div>
                                 </div>
                                 
-                                <style>
-                                    .otp-input {
-                                        width: 50px;
-                                        height: 60px;
-                                        text-align: center;
-                                        font-size: 1.8rem;
-                                        font-weight: bold;
-                                        border: 2px solid #dee2e6;
-                                        border-radius: 8px;
-                                        background: #f8f9fa;
-                                        transition: all 0.3s ease;
-                                    }
-                                    .otp-input:focus {
-                                        outline: none;
-                                        border-color: #0d6efd;
-                                        background: #ffffff;
-                                        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-                                        transform: scale(1.05);
-                                    }
-                                    .otp-input.filled {
-                                        background: #e7f3ff;
-                                        border-color: #0d6efd;
-                                    }
-                                </style>
-                                
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const inputs = document.querySelectorAll('.otp-input');
-                                        const hiddenInput = document.getElementById('hiddenOtp');
-                                        
-                                        inputs.forEach((input, index) => {
-                                            input.addEventListener('input', function(e) {
-                                                const value = e.target.value;
-                                                if (!/^[0-9]$/.test(value)) {
-                                                    e.target.value = '';
-                                                    return;
-                                                }
-                                                
-                                                e.target.classList.add('filled');
-                                                
-                                                if (index < inputs.length - 1) {
-                                                    inputs[index + 1].focus();
-                                                }
-                                                
-                                                updateHiddenInput();
-                                            });
-                                            
-                                            input.addEventListener('keydown', function(e) {
-                                                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                                                    inputs[index - 1].focus();
-                                                    inputs[index - 1].value = '';
-                                                    inputs[index - 1].classList.remove('filled');
-                                                    updateHiddenInput();
-                                                } else if (e.key === 'Backspace' && e.target.value) {
-                                                    e.target.classList.remove('filled');
-                                                }
-                                            });
-                                            
-                                            input.addEventListener('paste', function(e) {
-                                                e.preventDefault();
-                                                const paste = e.clipboardData.getData('text');
-                                                if (/^[0-9]{6}$/.test(paste)) {
-                                                    for (let i = 0; i < 6; i++) {
-                                                        inputs[i].value = paste[i];
-                                                        inputs[i].classList.add('filled');
-                                                    }
-                                                    updateHiddenInput();
-                                                }
-                                            });
-                                        });
-                                        
-                                        function updateHiddenInput() {
-                                            const otp = Array.from(inputs).map(input => input.value).join('');
-                                            hiddenInput.value = otp;
-                                        }
-                                    });
-                                </script>
+
                                 
                                 <div class="d-grid mb-3">
                                     <button type="submit" class="btn btn-primary btn-lg">
@@ -148,5 +73,6 @@
             </div>
         </div>
     </section>
+    <script src="/js/verify-otp.js"></script>
 </body>
 </html>

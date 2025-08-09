@@ -35,6 +35,11 @@ public interface UserApplicationService {
     UserApplication updateApplicationBranch(String applicationId, String allocatedBranch);
     List<UserApplication> getApplicationsByStatus(String status);
 
+    // ==== ADMIN CRUD OPERATIONS ====
+    void deleteApplication(Long applicationId);
+    void deleteApplicationsByUserEmail(String userEmail);
+    UserApplication updateApplicationStatus(Long applicationId, String status);
+    
     // ==== UTILITY METHODS ====
     void calculatePercentages(UserApplication application);
     UserApplication getApplicationById(String applicationId);

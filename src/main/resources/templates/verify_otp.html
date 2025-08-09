@@ -36,9 +36,8 @@
                                 <div class="mb-4">
                                     <label class="form-label fw-bold text-center d-block">One-Time Password (OTP)</label>
                                     <div class="otp-container d-flex justify-content-center mb-3">
-                                        <input type="text" class="otp-input form-control text-center" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="Enter 6-digit OTP" style="font-size: 1.2rem; letter-spacing: 0.5rem; width: 250px;">
+                                        <input type="text" name="otp" class="otp-input form-control text-center" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="Enter 6-digit OTP" style="font-size: 1.2rem; letter-spacing: 0.5rem; width: 250px;" required>
                                     </div>
-                                    <input type="hidden" name="otp" id="hiddenOtp" required>
                                     <div class="form-text text-center mt-2">
                                         <i class="bi bi-clock-fill text-warning me-1"></i>
                                         OTP expires in 10 minutes

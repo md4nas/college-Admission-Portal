@@ -1,55 +1,39 @@
 /**
  * Verify OTP Page JavaScript
- * Handles OTP input functionality
+ * Handles single OTP input functionality
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    const inputs = document.querySelectorAll('.otp-input');
+    const otpInput = document.querySelector('.otp-input');
     const hiddenInput = document.getElementById('hiddenOtp');
     
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', function(e) {
-            const value = e.target.value;
-            if (!/^[0-9]$/.test(value)) {
-                e.target.value = '';
-                return;
-            }
-            
+    otpInput.addEventListener('input', function(e) {
+        const value = e.target.value;
+        // Only allow numeric input and max 6 digits
+        const numericValue = value.replace(/[^0-9]/g, '').substring(0, 6);
+        e.target.value = numericValue;
+        
+        // Update hidden input
+        hiddenInput.value = numericValue;
+        
+        // Add visual feedback
+        if (numericValue.length === 6) {
             e.target.classList.add('filled');
-            
-            if (index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-            
-            updateHiddenInput();
-        });
-        
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                inputs[index - 1].focus();
-                inputs[index - 1].value = '';
-                inputs[index - 1].classList.remove('filled');
-                updateHiddenInput();
-            } else if (e.key === 'Backspace' && e.target.value) {
-                e.target.classList.remove('filled');
-            }
-        });
-        
-        input.addEventListener('paste', function(e) {
-            e.preventDefault();
-            const paste = e.clipboardData.getData('text');
-            if (/^[0-9]{6}$/.test(paste)) {
-                for (let i = 0; i < 6; i++) {
-                    inputs[i].value = paste[i];
-                    inputs[i].classList.add('filled');
-                }
-                updateHiddenInput();
-            }
-        });
+        } else {
+            e.target.classList.remove('filled');
+        }
     });
     
-    function updateHiddenInput() {
-        const otp = Array.from(inputs).map(input => input.value).join('');
-        hiddenInput.value = otp;
-    }
+    // Handle paste event
+    otpInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const paste = e.clipboardData.getData('text');
+        const numericPaste = paste.replace(/[^0-9]/g, '').substring(0, 6);
+        e.target.value = numericPaste;
+        hiddenInput.value = numericPaste;
+        
+        if (numericPaste.length === 6) {
+            e.target.classList.add('filled');
+        }
+    });
 });

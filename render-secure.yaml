@@ -1,0 +1,49 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: college-portal-db
+    plan: free
+    databaseName: college_portal_db
+    user: college_user
+
+  # Spring Boot Application
+  - type: web
+    name: college-admission-portal
+    env: java
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Xmx400m -Dspring.profiles.active=prod -Dserver.port=$PORT -jar target/UserManagemetPortal.jar
+    envVars:
+      # Database Configuration
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: college-portal-db
+          property: connectionString
+      - key: DATABASE_USERNAME
+        value: college_user
+      - key: DATABASE_PASSWORD
+        fromService:
+          type: pserv
+          name: college-portal-db
+          envVarKey: POSTGRES_PASSWORD
+      
+      # Spring Profile
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      
+      # Admin Configuration
+      - key: ADMIN_EMAIL
+        value: admin@collegeportal.com
+      - key: ADMIN_PASSWORD
+        value: Admin@123
+      - key: ADMIN_NAME
+        value: System Administrator
+      
+      # Note: Add these manually in Render dashboard for security
+      # MAIL_USERNAME
+      # BREVO_SMTP_PASSWORD
+      # GOOGLE_CLIENT_ID
+      # GOOGLE_CLIENT_SECRET
+      # GITHUB_CLIENT_ID
+      # GITHUB_CLIENT_SECRET

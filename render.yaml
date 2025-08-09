@@ -1,0 +1,53 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: college-portal-db
+    plan: free
+    databaseName: college_portal_db
+    user: college_user
+
+  # Spring Boot Application
+  - type: web
+    name: college-admission-portal
+    env: java
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -Xmx400m -Dspring.profiles.active=prod -Dserver.port=$PORT -jar target/UserManagemetPortal.jar
+    envVars:
+      # Database Configuration
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: college-portal-db
+          property: connectionString
+      - key: DATABASE_USERNAME
+        value: college_user
+      - key: DATABASE_PASSWORD
+        fromService:
+          type: pserv
+          name: college-portal-db
+          envVarKey: POSTGRES_PASSWORD
+      
+      # Spring Profile
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      
+      # Admin Configuration
+      - key: ADMIN_EMAIL
+        value: admin@collegeportal.com
+      - key: ADMIN_PASSWORD
+        value: Admin@123
+      - key: ADMIN_NAME
+        value: System Administrator
+      
+      # OAuth2 Redirect URIs (Non-sensitive)
+      - key: GOOGLE_REDIRECT_URI
+        value: https://college-admission-portal.onrender.com/login/oauth2/code/google
+      - key: GOOGLE_AUTHORIZATION_URI
+        value: https://accounts.google.com/o/oauth2/auth?prompt=consent
+      - key: GOOGLE_TOKEN_URI
+        value: https://oauth2.googleapis.com/token
+      - key: GOOGLE_USER_INFO_URI
+        value: https://www.googleapis.com/oauth2/v3/userinfo
+      - key: GITHUB_REDIRECT_URI
+        value: https://college-admission-portal.onrender.com/login/oauth2/code/github

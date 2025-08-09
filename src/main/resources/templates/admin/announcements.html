@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::Layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Announcement - Admin</title>
+    <link href="/css/announcements.css" rel="stylesheet">
+</head>
+<body>
+
+<section>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center py-4">
+                        <i class='bx bx-megaphone' style="font-size: 3rem;"></i>
+                        <h2 class="mt-3 mb-2">Create New Announcement</h2>
+                        <p class="mb-0">Admin announcement creation - Reach all users with important updates</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcement Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-gradient-warning text-white border-0">
+                        <button class="btn btn-link p-0 text-decoration-none w-100 text-start text-white" type="button" data-bs-toggle="collapse" data-bs-target="#adminAnnouncementForm" aria-expanded="false">
+                            <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                                <span><i class='bx bx-megaphone me-2'></i>Announcement Details</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <small class="opacity-75">Click to create</small>
+                                    <i class='bx bx-chevron-down'></i>
+                                </div>
+                            </h5>
+                        </button>
+                    </div>
+                    <div class="collapse" id="adminAnnouncementForm">
+                        <div class="card-body p-4">
+                        <form th:action="@{/admin/announcements/create}" method="post" id="announcementForm">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            
+                            <!-- Title Row -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class='bx bx-edit-alt me-2 text-primary'></i>Announcement Title
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" name="title" id="title" required placeholder="Enter a compelling title...">
+                                </div>
+                            </div>
+                            
+                            <!-- Settings Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class='bx bx-group me-2 text-info'></i>Target Audience
+                                    </label>
+                                    <select class="form-select" name="targetAudience" id="targetAudience" required>
+                                        <option value="STUDENT" selected>👨🎓 Students</option>
+                                        <option value="TEACHER">👨🏫 Teachers</option>
+                                        <option value="ADMIN">👨💼 Admin</option>
+                                        <option value="ALL">👥 Everyone</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class='bx bx-category me-2 text-success'></i>Announcement Type
+                                    </label>
+                                    <select class="form-select" name="announcementType" id="announcementType">
+                                        <option value="GENERAL">📢 General Announcement</option>
+                                        <option value="EVENT" selected>📅 Event/Meeting</option>
+                                        <option value="DEADLINE">⏰ Important Deadline</option>
+                                        <option value="HOLIDAY">🌞 Holiday Notice</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Date & Time Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class='bx bx-calendar me-2 text-danger'></i>Event Date
+                                    </label>
+                                    <input type="date" class="form-control" name="eventDate" id="eventDate" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        <i class='bx bx-time me-2 text-warning'></i>Event Time
+                                        <span class="badge bg-light text-dark ms-2">Optional</span>
+                                    </label>
+                                    <input type="time" class="form-control" name="eventTime" id="eventTime">
+                                </div>
+                            </div>
+                            
+                            <!-- Content Row -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class='bx bx-message-detail me-2 text-secondary'></i>Announcement Content
+                                </label>
+                                <textarea class="form-control" name="content" id="content" rows="4" required placeholder="Write your announcement details here... Be clear and informative!"></textarea>
+                                <div class="form-text">
+                                    <i class='bx bx-info-circle me-1'></i>Tip: Include all important details like location, requirements, or deadlines.
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small">
+                                    <i class='bx bx-shield-check me-1'></i>Your announcement will be posted immediately
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg px-4" onclick="clearForm()">
+                                        <i class='bx bx-refresh me-2'></i>Clear Form
+                                    </button>
+                                    <button type="submit" class="btn btn-success btn-lg px-4">
+                                        <i class='bx bx-send me-2'></i>Post Announcement
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Announcements Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class='bx bx-list-ul me-2'></i>All Announcements</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div th:each="announcement : ${announcements}" class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="mb-0 fw-bold" th:text="${announcement.title}">Title</h6>
+                                            <div class="d-flex gap-1">
+                                                <span th:if="${announcement.announcementType == 'EVENT'}" class="badge bg-info badge-sm">
+                                                    <i class='bx bx-calendar-event'></i>
+                                                </span>
+                                                <span th:if="${announcement.announcementType == 'DEADLINE'}" class="badge bg-warning badge-sm">
+                                                    <i class='bx bx-alarm'></i>
+                                                </span>
+                                                <span th:if="${announcement.announcementType == 'HOLIDAY'}" class="badge bg-success badge-sm">
+                                                    <i class='bx bx-sun'></i>
+                                                </span>
+                                                <span th:if="${announcement.announcementType == 'GENERAL'}" class="badge bg-secondary badge-sm">
+                                                    <i class='bx bx-info-circle'></i>
+                                                </span>
+                                                <span class="badge bg-primary badge-sm" th:text="${announcement.targetAudience}">ALL</span>
+                                            </div>
+                                        </div>
+                                        <p class="card-text mb-2 text-muted small" th:text="${announcement.content}">Content</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class='bx bx-time me-1'></i>
+                                                <span th:text="${#temporals.format(announcement.createdAt, 'MMM dd, HH:mm')}">Created</span>
+                                            </small>
+                                            <small th:if="${announcement.eventDate != null}" class="text-primary">
+                                                <i class='bx bx-calendar me-1'></i>
+                                                <span th:text="${#temporals.format(announcement.eventDate, 'MMM dd')}">Event</span>
+                                                <span th:if="${announcement.eventTime != null}" th:text="' ' + ${announcement.eventTime}"></span>
+                                            </small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class='bx bx-user me-1'></i>By: <span th:text="${announcement.createdBy}">Admin</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center py-5" th:if="${announcements == null || #lists.isEmpty(announcements)}">
+                            <i class='bx bx-megaphone text-muted' style="font-size: 4rem;"></i>
+                            <h4 class="text-muted mt-3">No Announcements Yet</h4>
+                            <p class="text-muted">No announcements have been created yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="/admin/" class="btn btn-secondary me-3">
+                    <i class='bx bx-arrow-back'></i> Back to Dashboard
+                </a>
+                <a href="/admin/users" class="btn btn-primary">
+                    <i class='bx bx-users'></i> Manage Users
+                </a>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class='bx bx-check me-2'></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+        <div th:if="${error}" class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <i class='bx bx-error me-2'></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="/js/announcements.js"></script>
+
+</body>
+</html>

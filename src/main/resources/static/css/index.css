@@ -1,14 +1,14 @@
 /**
- * UserAuth Index Page Styles
+ * College Admission Portal Index Page Styles
  * 
  * This CSS file contains all styling for the index/landing page including:
- * - Hero section with gradient backgrounds and animations
- * - Text gradient effects for branding
+ * - Hero section with educational theme gradient backgrounds
+ * - Text gradient effects for college branding
  * - Floating animations for interactive elements
  * - Responsive design utilities
  * - Modern UI components with shadows and transitions
  * 
- * @author UserAuth Team
+ * @author College Portal Team
  * @version 1.0.0
  */
 
@@ -25,10 +25,16 @@
 }
 
 .text-gradient {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+    background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706, #ea580c);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: gradient-shift 3s ease-in-out infinite alternate;
+}
+
+@keyframes gradient-shift {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(10deg); }
 }
 
 .animate-fade-in {

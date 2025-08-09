@@ -1,0 +1,85 @@
+/* Register page specific styles */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+    border: none;
+}
+
+/* Social login icons styling */
+.social-icon {
+    width: 45px;
+    height: 45px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid #e9ecef;
+}
+
+.social-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.social-icon.google {
+    color: #db4437;
+    border-color: #db4437;
+}
+
+.social-icon.google:hover {
+    background-color: #db4437;
+    color: white;
+}
+
+.social-icon.github {
+    color: #333;
+    border-color: #333;
+}
+
+.social-icon.github:hover {
+    background-color: #333;
+    color: white;
+}
+
+.social-icon.linkedin {
+    color: #0077b5;
+    border-color: #0077b5;
+}
+
+.social-icon.linkedin:hover {
+    background-color: #0077b5;
+    color: white;
+}
+
+.social-icon.facebook {
+    color: #1877f2;
+    border-color: #1877f2;
+}
+
+.social-icon.facebook:hover {
+    background-color: #1877f2;
+    color: white;
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}

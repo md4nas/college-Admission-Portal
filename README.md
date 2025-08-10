@@ -475,6 +475,17 @@ GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
 GITHUB_REDIRECT_URI=http://localhost:8080/login/oauth2/code/github
 
+
+# User Configuration
+User_EMAIL=testStdMail@clgportal.com
+User_NAME=std1
+User_PASSWORD=123456
+
+# Teacher Configuration
+Teacher_EMAIL=testTdMail@clgportal.com
+Teacher_NAME=teacher1
+Teacher_PASSWORD=123456
+
 # Admin Configuration
 ADMIN_EMAIL=admin@collegeportal.com
 ADMIN_NAME=System Administrator
@@ -501,7 +512,6 @@ SPRING_PROFILES_ACTIVE=dev
 #### 📊 **Application Tracking**
 - **Real-time Status Updates** - Track application progress:
   - Pending → Under Review → Admitted/Rejected
-  - Email notifications for status changes
   - Timeline view of application milestones
 
 #### 💰 **Fee Management**
@@ -509,7 +519,6 @@ SPRING_PROFILES_ACTIVE=dev
   - Online banking, UPI, Credit/Debit cards
   - Receipt upload and verification
   - Payment history and transaction tracking
-  - Automatic payment reminders
 
 #### 📢 **Communication**
 - **Announcements & Notifications** - Stay updated with:
@@ -530,7 +539,6 @@ SPRING_PROFILES_ACTIVE=dev
 - **Application Review** - Comprehensive student oversight:
   - View all student applications with detailed information
   - Filter by course, branch, status, and academic performance
-  - Export student data for analysis
   - Bulk operations for application processing
 
 #### 📢 **Communication Tools**
@@ -538,21 +546,12 @@ SPRING_PROFILES_ACTIVE=dev
   - Create announcements for specific audiences
   - Schedule announcements for future dates
   - Event management with date/time scheduling
-  - Rich text editor for formatted content
 
 #### 💰 **Payment Verification**
 - **Fee Management** - Payment oversight:
   - Review submitted payment receipts
   - Verify and approve/reject payments
   - Generate payment reports
-  - Track pending payments and send reminders
-
-#### 📊 **Analytics & Reports**
-- **Performance Insights** - Data-driven decisions:
-  - Application statistics by course and branch
-  - Payment collection reports
-  - Student performance analytics
-  - Admission trends and patterns
 
 ### 👑 **For Administrators (ADMIN Role)**
 
@@ -561,14 +560,7 @@ SPRING_PROFILES_ACTIVE=dev
   - User management (students, teachers, admins)
   - System configuration and settings
   - Database management and backups
-  - Security monitoring and audit logs
-
-#### 📊 **Advanced Analytics**
-- **Comprehensive Reporting** - Business intelligence:
-  - Admission statistics and trends
-  - Financial reports and revenue tracking
-  - User activity and engagement metrics
-  - System performance monitoring
+  - Security monitoring
 
 #### ⚙️ **Configuration Management**
 - **System Settings** - Customize portal behavior:
@@ -647,25 +639,16 @@ BREVO_SMTP_PASSWORD=your_brevo_api_key
 - Welcome email with verification link
 - Professional HTML template
 - Secure token with expiration
-- Resend verification option
 
 #### **Password Recovery**
 - OTP-based password reset
 - 6-digit secure OTP (10-minute expiry)
 - Clear instructions and security tips
-- Multiple language support
 
 #### **Application Notifications**
-- Application submission confirmation
-- Status update notifications
 - Admission confirmation emails
-- Rejection notifications with feedback
-
-#### **Payment Confirmations**
-- Payment receipt emails
-- Transaction details and reference numbers
-- Payment verification status updates
-- Fee reminder notifications
+- Reset Password
+- 
 
 ---
 
@@ -674,20 +657,11 @@ BREVO_SMTP_PASSWORD=your_brevo_api_key
 ### 💳 **Payment Methods**
 - **Online Banking** - Direct bank transfers
 - **UPI** - PhonePe, Google Pay, Paytm
-- **Credit/Debit Cards** - Visa, MasterCard, RuPay
-- **Net Banking** - All major banks supported
 
 ### 📄 **Payment Features**
 - **Receipt Upload** - PDF/image receipt submission
 - **Payment Verification** - Manual verification by staff
 - **Transaction Tracking** - Complete payment history
-- **Refund Management** - Automated refund processing
-
-### 📊 **Payment Analytics**
-- Payment collection reports
-- Method-wise payment statistics
-- Pending payment tracking
-- Revenue analytics and forecasting
 
 ---
 
@@ -1004,35 +978,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **Deployment Guide:** [DEPLOYMENT.md](DEPLOYMENT.md)
 - **Setup Instructions:** [SETUP_GUIDE.md](SETUP_GUIDE.md)
 - **API Documentation:** [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
-- **Security Guide:** [SECURITY_GUIDE.md](SECURITY_GUIDE.md)
-
-### 🆘 **Getting Help**
-- **GitHub Issues:** [Report bugs and request features](https://github.com/your-username/college-admission-portal/issues)
-- **Discussions:** [Community discussions and Q&A](https://github.com/your-username/college-admission-portal/discussions)
-- **Email Support:** support@collegeportal.com
-- **Documentation:** Comprehensive guides and tutorials
-
-### 🌟 **Community**
-- **Contributors:** 10+ active contributors
-- **Stars:** 100+ GitHub stars
-- **Forks:** 50+ project forks
-- **Issues Resolved:** 95%+ resolution rate
-
----
-
-## 🎯 **Roadmap**
-
-### 🚀 **Version 2.0 (Upcoming)**
-- **Mobile App** - Native iOS and Android applications
-- **AI Integration** - Automated application screening
-- **Advanced Analytics** - Machine learning insights
-- **Multi-language Support** - Internationalization
-
-### 🔮 **Future Enhancements**
-- **Blockchain Integration** - Secure certificate verification
-- **Video Interviews** - Online interview scheduling
-- **Document Scanner** - AI-powered document processing
-- **Chatbot Support** - 24/7 automated assistance
 
 ---
 

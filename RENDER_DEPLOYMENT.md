@@ -61,15 +61,15 @@ git push origin main
    SPRING_PROFILES_ACTIVE=prod
    
    # Admin Configuration
-   ADMIN_EMAIL=admin@collegeportal.com
-   ADMIN_PASSWORD=Admin@123
+   Email: Eg: "abcAdmin@test.com" 
+   Password: Eg: "Abc@pass"
    ADMIN_NAME=System Administrator
    
    # Email Configuration (REQUIRED)
    MAIL_USERNAME=your_brevo_email@domain.com
    BREVO_SMTP_PASSWORD=your_brevo_smtp_key
    
-   # OAuth2 Configuration (Optional)
+   # OAuth2 Configuration 
    GOOGLE_CLIENT_ID=your_google_client_id
    GOOGLE_CLIENT_SECRET=your_google_client_secret
    GOOGLE_REDIRECT_URI=https://your-app-name.onrender.com/login/oauth2/code/google
@@ -134,8 +134,8 @@ git push origin main
 
 3. **Admin Access**
    - Login with admin credentials
-   - Email: `admin@collegeportal.com`
-   - Password: `Admin@123`
+   - Email: Eg: "abcAdmin@test.com" 
+   - Password: Eg: "Abc@pass"
 
 ## 🔧 **Troubleshooting**
 

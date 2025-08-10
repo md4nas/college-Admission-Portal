@@ -1,482 +1,1235 @@
-# 📚 College Admission Portal - Complete Documentation
+# 📡 College Admission Portal - API Documentation
 
-## 🔗 Base URL
-```
-http://localhost:8080
-```
+<div align="center">
+  <h2>🔌 Complete REST API Reference</h2>
+  <p>Comprehensive documentation for all API endpoints, authentication, and integration</p>
+</div>
 
-## 🚀 Recent Updates & New Features
+---
 
-### ✅ **Completed User Features:**
-- **User registration/login** (local + OAuth2 Google/GitHub)
-- **Dashboard with application status** - Real-time application tracking
-- **New application submission** - Complete college application form
-- **Application status viewing** - Detailed application progress
-- **Profile editing** - Update personal information and user ID
-- **Password management** - Secure password change with validation
-- **Payment portal with fee calculator** - Dynamic fee calculation by course/branch
-- **Role-based navigation** - Context-aware navigation system
+## 📋 **API Overview**
 
-### 🔄 **Features That Could Be Enhanced:**
+### **Base Information**
+- **Base URL**: `https://your-domain.com` (Replace with your actual domain)
+- **API Version**: v1.0
+- **Protocol**: HTTPS
+- **Authentication**: Session-based + OAuth2
+- **Content Type**: `application/json`, `multipart/form-data`
+- **Response Format**: JSON, HTML (for web endpoints)
 
-#### **1. Notifications System**
-- Currently just a placeholder page
-- Could add real notifications for application updates, payment confirmations, etc.
+### **API Categories**
+1. **Authentication APIs** - Login, registration, OAuth2
+2. **User Management APIs** - Profile, user operations
+3. **Application APIs** - Admission applications
+4. **Payment APIs** - Fee management
+5. **Announcement APIs** - Communication system
+6. **Admin APIs** - System administration
+7. **Teacher APIs** - Academic management
+8. **Health Check APIs** - System monitoring
 
-#### **2. My Courses Page**
-- Currently placeholder
-- Could show enrolled courses after admission confirmation
+---
 
-#### **3. Application Status Page**
-- Could add document upload functionality
-- Print/download application feature
+## 🔐 **Authentication**
 
-#### **4. Payment Integration**
-- Currently simulation - could integrate real payment gateway
-- Payment history tracking
-- Receipt generation
+### **Authentication Methods**
 
-#### **5. Missing Small Features**
-- Email notifications for status changes
-- Application deadline reminders
-- Document verification status
-- Seat acceptance deadline countdown
-
-### 🎯 **Priority Assessment:**
-
-**High Priority (Essential):**
-- Notifications system (for application updates)
-- Document upload in application
-
-**Medium Priority (Nice to have):**
-- Real payment gateway integration
-- Email notifications
-- Print application feature
-
-**Low Priority (Future enhancement):**
-- Advanced reporting
-- Mobile app features
-
-### 🐛 **Recent Bug Fixes:**
-- Fixed navbar visibility issues on user pages
-- Resolved change password page message conflicts
-- Fixed application ID display showing user ID correctly
-- Corrected submission date and status display logic
-- Added parents phone number field to application forms
-- Fixed template parsing errors in new application page
-
-## 🔐 Authentication Endpoints
-
-### Public Endpoints (No Authentication Required)
-
-#### 🏠 Landing Page
+#### **1. Session-Based Authentication**
 ```http
-GET /
-```
-**Description:** Main landing page with features and registration options  
-**Response:** HTML page with hero section, features, and call-to-action
+POST /login
+Content-Type: application/x-www-form-urlencoded
 
-#### 📝 User Registration
+username=user@example.com&password=userpassword
+```
+
+**Response:**
 ```http
-GET /register
-POST /register
+HTTP/1.1 302 Found
+Location: /user/
+Set-Cookie: JSESSIONID=ABC123; Path=/; HttpOnly; Secure
 ```
-**Description:** User registration form and processing  
-**POST Parameters:**
-- `fullName` (String): User's full name
-- `email` (String): Valid email address
-- `password` (String): Password (min 6 characters)
-- `confirmPassword` (String): Password confirmation
 
-**Response:** Redirect to registration page with success/error message
-
-#### 🔐 User Login
-```http
-GET /signin
-POST /signin
-```
-**Description:** User login form and authentication  
-**POST Parameters:**
-- `email` (String): User's email
-- `password` (String): User's password
-
-**Response:** Redirect based on user role (admin/teacher/user)
-
-#### ✅ Email Verification
-```http
-GET /verify?code={verificationCode}
-```
-**Description:** Verify user email with token  
-**Parameters:**
-- `code` (String): Email verification token
-
-**Response:** Success or failure verification page
-
-#### 🔑 Password Recovery
-```http
-GET /forgot-password
-POST /forgot-password
-```
-**Description:** Forgot password form and OTP generation  
-**POST Parameters:**
-- `email` (String): User's registered email
-
-**Response:** OTP sent to email with verification form
-
-#### 🔄 Password Reset
-```http
-GET /reset-password
-POST /reset-password
-GET /verify-otp
-POST /verify-otp
-```
-**Description:** Complete password reset workflow with OTP verification  
-**POST Parameters:**
-- `email` (String): User's email
-- `otp` (String): 6-digit OTP from email
-- `newPassword` (String): New password
-
-**Features:**
-- 10-minute OTP expiry
-- Secure token validation
-- Professional email templates
-
-## 🔒 Protected Endpoints (Authentication Required)
-
-### 👑 Admin Endpoints (ROLE_ADMIN)
-
-#### 📊 Admin Dashboard
-```http
-GET /admin/
-```
-**Description:** Admin dashboard with comprehensive system overview  
-**Response:** Admin home page with user statistics and management tools
-
-#### 👥 User Management
-```http
-GET /admin/users
-POST /admin/users/{action}
-```
-**Description:** Complete user management functionality  
-**Features:**
-- View all users with application status
-- Edit user roles and permissions
-- Enable/disable accounts
-- Delete users and applications
-
-#### 📋 Application Management
-```http
-GET /admin/applications
-GET /admin/statistics
-```
-**Description:** System-wide application management  
-**Features:**
-- View all submitted applications
-- Generate admission statistics
-- Manage seat allocations
-- Export application data
-
-### 🎓 Teacher Endpoints (ROLE_TEACHER)
-
-#### 📚 Teacher Dashboard
-```http
-GET /teacher/
-```
-**Description:** Teacher dashboard with student management  
-**Response:** Teacher home page showing only ROLE_USER data
-
-#### 👨‍🎓 Student Management
-```http
-GET /teacher/applications
-GET /teacher/applications/approved
-```
-**Description:** Teacher-specific application review and seat allocation management  
-**Features:**
-- Review submitted applications
-- Approve/reject applications
-- Manage seat allocations
-- View student academic records
-
-### 👤 User Endpoints (ROLE_USER, ROLE_TEACHER, ROLE_ADMIN)
-
-#### 🏡 User Dashboard
-```http
-GET /user/
-```
-**Description:** Enhanced user dashboard with comprehensive application status  
-**Features:**
-- Application status grid (6 key metrics)
-- Admission process timeline
-- Quick actions for seat acceptance
-- Profile information display
-**Response:** User home page with complete application tracking
-
-#### 📝 College Application
-```http
-GET /user/application
-POST /user/application/submit
-```
-**Description:** Complete college application submission system  
-**Features:**
-- Personal information form
-- Academic details (Class 10 & 12)
-- Entrance exam information
-- Branch preferences
-- Parents contact information
-**POST Parameters:** Complete application object with all academic and personal details
-
-#### 📊 Application Status
-```http
-GET /user/application/status
-```
-**Description:** Detailed application status viewing  
-**Features:**
-- Current application status
-- Personal information display
-- Academic records (Class 10 & 12)
-- Entrance exam details
-- Seat allocation information
-**Response:** Complete application details with status tracking
-
-#### 🎯 Seat Management
-```http
-POST /user/application/accept-seat
-POST /user/application/decline-seat
-```
-**Description:** Seat acceptance/decline functionality  
-**Features:**
-- Accept allocated seat
-- Decline allocated seat with confirmation
-**Response:** Redirect to dashboard with status update
-
-#### ⚙️ Settings
-```http
-GET /user/settings/changePass
-POST /user/settings/updatePassword
-GET /user/settings/editProfile
-POST /user/settings/updateProfile
-```
-**Description:** User settings management  
-**Features:**
-- Change password with validation
-- Edit profile information
-- Update user ID (read-only)
-**POST Parameters:**
-- Password change: `oldPass`, `newPass`
-- Profile update: `fullName`, `id` (readonly)
-
-#### 💳 Payment Portal
-```http
-GET /user/payment
-```
-**Description:** Advanced fee payment system  
-**Features:**
-- Dynamic fee calculator by course/branch
-- Multiple payment options (UPI, Bank Transfer, Receipt Upload)
-- College bank account details
-- Payment form with validation
-- Fee structure breakdown
-**Response:** Complete payment portal with interactive fee calculator
-
-#### 📚 Additional Pages
-```http
-GET /user/notifications
-GET /user/courses
-```
-**Description:** Additional user features (placeholder for future enhancement)  
-**Status:** Currently placeholder pages for future development
-
-## 🔗 OAuth2 Endpoints
-
-### Google OAuth2
+#### **2. OAuth2 Authentication**
 ```http
 GET /oauth2/authorization/google
-GET /login/oauth2/code/google
-```
-**Description:** Google OAuth2 integration for seamless login  
-**Features:**
-- One-click Google account login
-- Automatic user profile creation
-- Role assignment (default: ROLE_USER)
-- Profile synchronization
-
-### GitHub OAuth2
-```http
 GET /oauth2/authorization/github
-GET /login/oauth2/code/github
 ```
-**Description:** GitHub OAuth2 integration for developer-friendly login  
-**Features:**
-- GitHub account authentication
-- Developer profile integration
-- Automatic account linking
-- Secure token handling
 
-## 🚪 Logout
+**OAuth2 Flow:**
+1. Redirect to provider authorization URL
+2. User authorizes application
+3. Provider redirects back with authorization code
+4. Application exchanges code for access token
+5. User profile created/updated automatically
+
+### **Session Management**
+- **Session Timeout**: 30 minutes of inactivity
+- **Concurrent Sessions**: 1 per user
+- **Session Security**: HttpOnly, Secure, SameSite=Strict
+
+---
+
+## 👤 **Authentication APIs**
+
+### **User Registration**
+```http
+POST /createUser
+Content-Type: application/x-www-form-urlencoded
+
+fullName=John Doe&email=john@example.com&password=password123&confirmPassword=password123
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| fullName | string | Yes | User's full name |
+| email | string | Yes | Valid email address |
+| password | string | Yes | Minimum 6 characters |
+| confirmPassword | string | Yes | Must match password |
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /register?success=true
+```
+
+**Error Response:**
+```http
+HTTP/1.1 302 Found
+Location: /register?error=email_exists
+```
+
+### **Email Verification**
+```http
+GET /verify?code={verification_code}
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| code | string | Yes | Email verification token |
+
+**Response:**
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<!-- Verification success page -->
+```
+
+### **Login**
+```http
+POST /login
+Content-Type: application/x-www-form-urlencoded
+
+username=user@example.com&password=userpassword
+```
+
+**Response (Success):**
+```http
+HTTP/1.1 302 Found
+Location: /user/  # or /admin/ or /teacher/ based on role
+Set-Cookie: JSESSIONID=ABC123; Path=/; HttpOnly; Secure
+```
+
+**Response (Failure):**
+```http
+HTTP/1.1 302 Found
+Location: /signin?error=invalid_credentials
+```
+
+### **Logout**
 ```http
 POST /logout
 ```
-**Description:** Secure logout with session invalidation  
-**Features:**
-- Complete session cleanup
-- CSRF token invalidation
-- Secure redirect to login page
-- Logout confirmation message
-**Response:** Redirect to signin page with logout confirmation
 
-## 📊 Response Codes
-
-| Code | Description | Usage |
-|------|-------------|-------|
-| 200 | Success | Successful page loads and data retrieval |
-| 302 | Redirect | Post-form submissions and navigation |
-| 400 | Bad Request | Invalid form data or parameters |
-| 401 | Unauthorized | Not logged in or session expired |
-| 403 | Forbidden | Insufficient permissions for resource |
-| 404 | Not Found | Page or resource not found |
-| 500 | Internal Server Error | Server-side errors and exceptions |
-
-## 🔍 **Application Status Values**
-
-| Status | Description | User Action |
-|--------|-------------|-------------|
-| PENDING | Initial application status | Wait for review |
-| SUBMITTED | Application under review | Wait for evaluation |
-| APPROVED | Application approved | Wait for seat allocation |
-| ALLOCATED | Seat allocated to student | Accept or decline seat |
-| ACCEPTED | Seat accepted by student | Proceed to fee payment |
-| DECLINED | Seat declined by student | Application closed |
-| REJECTED | Application not approved | Contact administration |
-
-## 🔒 Security Features
-
-- **CSRF Protection:** All forms include CSRF tokens
-- **Session Management:** Secure session handling with timeout
-- **Password Encryption:** BCrypt with salt rounds
-- **Email Verification:** Required for account activation
-- **Role-Based Access:** Granular permission system
-- **OAuth2 Integration:** Secure third-party authentication
-- **Input Validation:** Server-side and client-side validation
-- **File Upload Security:** Restricted file types and size limits
-- **SQL Injection Protection:** Parameterized queries with JPA
-
-## 🎯 **Application Workflow**
-
-1. **User Registration** → Email verification → Account activation
-2. **Login** → Dashboard with application status
-3. **Submit Application** → Fill comprehensive form → Submit
-4. **Track Status** → View application progress → Await allocation
-5. **Seat Allocation** → Accept/Decline seat → Confirm admission
-6. **Fee Payment** → Calculate fees → Choose payment method → Submit payment
-7. **Admission Complete** → Access courses and notifications
-
-## 🚀 **Future Roadmap**
-
-The system is currently **production-ready** for basic college admission management. Future enhancements will focus on:
-
-- **Real-time notifications** for application updates
-- **Document upload** functionality
-- **Payment gateway integration** (Razorpay, PayU)
-- **Email automation** for status changes
-- **Advanced reporting** and analytics
-- **Mobile application** development
-
-## 📧 Email Integration
-
-The system uses **Brevo SMTP** for email delivery:
-- Account verification emails
-- Password reset OTP emails
-- Professional HTML templates
-- Secure token-based validation
-
-## 💾 **Data Models**
-
-### **UserApplication Model**
-```java
-// Personal Information
-String userEmail, gender, phoneNo, address, religion, caste
-String city, state, parentsName, parentsPhoneNo
-Integer pincode
-LocalDate dob, submissionDate
-
-// Academic Information (Class 10)
-Integer passing10Year, class10Math, class10Science, class10English
-Integer class10Hindi, class10Social, total10Marks, obtain10Marks
-String schoolName10, board10Name, rollNo10
-Double percentage10
-
-// Academic Information (Class 12)
-Integer passing12Year, class12Physics, class12Chemistry, class12Maths
-Integer class12English, class12Optional, total12Marks, obtain12Marks
-String schoolName12, board12Name, rollNo12
-Double percentage12
-
-// Entrance Exam (Optional)
-String entranceName, entranceRollNo
-Integer entranceYear, entranceRank
-
-// Course Preferences
-String course, branch1, branch2
-
-// Status Management
-String status, allocatedBranch
-Boolean seatAccepted
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /signin?logout=true
 ```
 
-### **UserDtls Model**
-```java
-String id, fullName, email, password, role, provider
-Boolean enable
-String verificationCode
+---
+
+## 🔑 **Password Recovery APIs**
+
+### **Forgot Password**
+```http
+POST /send-otp
+Content-Type: application/x-www-form-urlencoded
+
+email=user@example.com
 ```
 
-## 🎨 **New UI/UX Features**
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /verify-otp-page
+```
 
-### **Enhanced Dashboard Design**
-- **Application Status Grid:** 6-card layout showing key metrics
-- **Admission Process Timeline:** Visual progress indicator
-- **Interactive Cards:** Hover effects and smooth transitions
-- **Responsive Design:** Mobile-first approach
+### **Verify OTP**
+```http
+POST /verify-otp
+Content-Type: application/x-www-form-urlencoded
 
-### **Advanced Payment Portal**
-- **Dynamic Fee Calculator:** Course/branch-specific pricing
-- **Multiple Payment Methods:** UPI, Bank Transfer, Receipt Upload
-- **Interactive Forms:** Progressive disclosure and validation
-- **Bank Details Display:** Complete college account information
+otp=123456
+```
 
-### **Application Management**
-- **Comprehensive Forms:** Multi-section application with validation
-- **Status Tracking:** Real-time application progress
-- **Seat Management:** Accept/decline functionality
-- **Data Persistence:** Complete application data storage
+**Response:**
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html
 
-## 🔧 **Technical Improvements**
+<!-- Password reset form -->
+```
 
-### **Database Enhancements**
-- Added `submissionDate` field to UserApplication model
-- Enhanced application tracking with proper status management
-- Unified ID system (user ID = application ID)
-- Added parents phone number field
+### **Reset Password**
+```http
+POST /reset-password
+Content-Type: application/x-www-form-urlencoded
 
-### **Controller Updates**
-- Enhanced UserController with application management
-- Improved session message handling
-- Added proper null checks and validation
-- Fixed template variable passing
+password=newpassword123&confirmPassword=newpassword123
+```
 
-### **Template Improvements**
-- Fixed Thymeleaf parsing errors
-- Enhanced navbar visibility logic
-- Improved responsive design
-- Added interactive JavaScript functionality
+**Response:**
+```http
+HTTP/1.1 200 OK
+Content-Type: text/html
 
-## 🛡️ **Error Handling & Bug Fixes**
+<!-- Success message -->
+```
 
-All endpoints include proper error handling with:
-- User-friendly error messages
-- Secure error responses (no sensitive data exposure)
-- Proper HTTP status codes
-- Redirect-based error flow
-- Fixed template parsing issues
-- Resolved navbar visibility problems
-- Corrected application status display logic
+---
+
+## 👥 **User Management APIs**
+
+### **Get User Profile**
+```http
+GET /user/profile/{userId}
+Authorization: Session-based
+```
+
+**Response:**
+```json
+{
+  "id": "USER_123",
+  "fullName": "John Doe",
+  "email": "john@example.com",
+  "role": "ROLE_USER",
+  "provider": "local",
+  "enabled": true,
+  "createdAt": "2025-01-15T10:30:00Z"
+}
+```
+
+### **Update User Profile**
+```http
+POST /user/update-profile
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based
+
+fullName=John Smith&email=johnsmith@example.com
+```
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /user/profile?success=true
+```
+
+---
+
+## 📝 **Application APIs**
+
+### **Submit Application**
+```http
+POST /user/submit-application
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based (ROLE_USER)
+
+dob=2003-05-15&gender=Male&phoneNo=9876543210&address=123 Main St&city=Mumbai&state=Maharashtra&pincode=400001&parentsName=Robert Doe&parentsPhoneNo=9876543211&class10PassingYear=2019&class10SchoolName=ABC School&class10Board=CBSE&class10Percentage=95.5&class12PassingYear=2021&class12SchoolName=XYZ School&class12Board=CBSE&class12Percentage=92.75&entranceExamName=JEE Main&entranceExamRollNo=JEE2021123456&entranceExamYear=2021&entranceExamRank=1250&course=B.Tech&branch1=Computer Science&branch2=Electronics
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| dob | date | Yes | Date of birth (YYYY-MM-DD) |
+| gender | string | Yes | Male/Female/Other |
+| phoneNo | string | Yes | 10-digit phone number |
+| address | string | Yes | Full address |
+| city | string | Yes | City name |
+| state | string | Yes | State name |
+| pincode | string | Yes | 6-digit pincode |
+| parentsName | string | Yes | Parent/Guardian name |
+| parentsPhoneNo | string | Yes | Parent contact number |
+| class10PassingYear | integer | Yes | Class 10 passing year |
+| class10SchoolName | string | Yes | School name |
+| class10Board | string | Yes | Education board |
+| class10Percentage | decimal | Yes | Percentage (0-100) |
+| class12PassingYear | integer | Yes | Class 12 passing year |
+| class12SchoolName | string | Yes | School name |
+| class12Board | string | Yes | Education board |
+| class12Percentage | decimal | Yes | Percentage (0-100) |
+| entranceExamName | string | No | Exam name (JEE, NEET, etc.) |
+| entranceExamRollNo | string | No | Roll number |
+| entranceExamYear | integer | No | Exam year |
+| entranceExamRank | integer | No | Rank obtained |
+| course | string | Yes | Course (B.Tech, M.Tech, MBA) |
+| branch1 | string | Yes | First preference |
+| branch2 | string | No | Second preference |
+
+**⚠️ SECURITY WARNING**: Application submissions are rate-limited to prevent spam. Only 1 application per user allowed.
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /user/application-status?success=true
+```
+
+### **Get Application Status**
+```http
+GET /user/application-status/{userId}
+Authorization: Session-based (ROLE_USER)
+```
+
+**Response:**
+```json
+{
+  "applicationId": "APP_123",
+  "status": "UNDER_REVIEW",
+  "course": "B.Tech",
+  "branch1": "Computer Science",
+  "branch2": "Electronics",
+  "allocatedBranch": null,
+  "seatAccepted": false,
+  "applicationDate": "2025-01-15T10:30:00Z",
+  "lastUpdated": "2025-01-20T14:45:00Z"
+}
+```
+
+**Status Values:**
+- `PENDING` - Application submitted, awaiting review
+- `UNDER_REVIEW` - Being reviewed by admission committee
+- `ADMITTED` - Application accepted
+- `REJECTED` - Application rejected
+
+### **Accept/Reject Seat**
+```http
+POST /user/seat-response
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based (ROLE_USER)
+
+applicationId=APP_123&response=accept
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| applicationId | string | Yes | Application ID |
+| response | string | Yes | "accept" or "reject" |
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /user/application-status?seat_response=success
+```
+
+---
+
+## 💰 **Payment APIs**
+
+### **Submit Payment**
+```http
+POST /user/submit-payment
+Content-Type: multipart/form-data
+Authorization: Session-based (ROLE_USER)
+
+studentName=John Doe&course=B.Tech&branch=Computer Science&amount=150000&paymentMethod=bank_transfer&transactionId=TXN123456789&receiptFile=@receipt.pdf
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| studentName | string | Yes | Student's full name |
+| course | string | Yes | Course name |
+| branch | string | Yes | Branch name |
+| amount | decimal | Yes | Payment amount |
+| paymentMethod | string | Yes | bank_transfer/upi/card/cash |
+| transactionId | string | Yes | Transaction reference |
+| receiptFile | file | Yes | Payment receipt (PDF/Image, **MAX: 5MB**) |
+
+**⚠️ SECURITY WARNING**: File uploads are scanned for malware and limited to 5MB. Only PDF and image formats allowed.
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /user/payment-history?success=true
+```
+
+### **Get Payment History**
+```http
+GET /user/payment-history/{userId}
+Authorization: Session-based (ROLE_USER)
+```
+
+**Response:**
+```json
+{
+  "payments": [
+    {
+      "id": 1,
+      "studentName": "John Doe",
+      "course": "B.Tech",
+      "branch": "Computer Science",
+      "amount": 150000.00,
+      "paymentMethod": "bank_transfer",
+      "transactionId": "TXN123456789",
+      "status": "VERIFIED",
+      "submissionDate": "2025-01-15T10:30:00Z",
+      "verificationDate": "2025-01-16T09:15:00Z",
+      "verifiedBy": "teacher@collegeportal.com"
+    }
+  ],
+  "totalAmount": 150000.00,
+  "pendingAmount": 0.00
+}
+```
+
+**Payment Status Values:**
+- `PENDING` - Payment submitted, awaiting verification
+- `VERIFIED` - Payment verified and approved
+- `REJECTED` - Payment rejected (invalid receipt/details)
+
+---
+
+## 📢 **Announcement APIs**
+
+### **Get Announcements**
+```http
+GET /api/announcements?audience=STUDENTS&active=true
+Authorization: Session-based
+```
+
+**Query Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| audience | string | No | ALL/STUDENTS/TEACHERS/PROSPECTIVE/ADMITTED |
+| active | boolean | No | Filter by active status |
+| type | string | No | GENERAL/ADMISSION/EXAM/PAYMENT/EVENT |
+| limit | integer | No | Number of results (default: 10) |
+
+**Response:**
+```json
+{
+  "announcements": [
+    {
+      "id": 1,
+      "title": "Application Deadline Extended",
+      "content": "The application deadline has been extended to March 31, 2025.",
+      "createdBy": "admin@collegeportal.com",
+      "createdAt": "2025-01-15T10:30:00Z",
+      "creatorRole": "ROLE_ADMIN",
+      "eventDate": "2025-03-31",
+      "eventTime": "23:59",
+      "active": true,
+      "targetAudience": "PROSPECTIVE",
+      "announcementType": "ADMISSION"
+    }
+  ],
+  "totalCount": 5,
+  "hasMore": false
+}
+```
+
+---
+
+## 👑 **Admin APIs**
+
+### **Get All Users**
+```http
+GET /admin/users?role=ROLE_USER&page=0&size=10
+Authorization: Session-based (ROLE_ADMIN)
+```
+
+**Query Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| role | string | No | Filter by role |
+| enabled | boolean | No | Filter by account status |
+| provider | string | No | Filter by auth provider |
+| page | integer | No | Page number (0-based) |
+| size | integer | No | Page size (default: 10, **MAX: 50**) |
+
+**⚠️ SECURITY WARNING**: This endpoint is rate-limited to prevent server overload. Maximum 50 records per request.
+
+**Response:**
+```json
+{
+  "users": [
+    {
+      "id": "USER_123",
+      "fullName": "John Doe",
+      "email": "john@example.com",
+      "role": "ROLE_USER",
+      "enabled": true,
+      "provider": "local",
+      "createdAt": "2025-01-15T10:30:00Z",
+      "lastLogin": "2025-01-20T14:30:00Z"
+    }
+  ],
+  "totalElements": 150,
+  "totalPages": 15,
+  "currentPage": 0,
+  "hasNext": true
+}
+```
+
+### **Update User Role**
+```http
+POST /admin/update-user-role
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based (ROLE_ADMIN)
+
+userId=USER_123&newRole=ROLE_TEACHER
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| userId | string | Yes | User ID to update |
+| newRole | string | Yes | ROLE_USER/ROLE_TEACHER/ROLE_ADMIN |
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /admin/users?success=role_updated
+```
+
+### **Get System Statistics**
+```http
+GET /admin/statistics
+Authorization: Session-based (ROLE_ADMIN)
+```
+
+**⚠️ PERFORMANCE WARNING**: This endpoint performs expensive database calculations. Results are cached for 5 minutes. Rate limited to 2 requests per minute per admin.
+
+**Response:**
+```json
+{
+  "userStats": {
+    "totalUsers": 1250,
+    "activeUsers": 1180,
+    "newUsersThisMonth": 85,
+    "usersByProvider": {
+      "local": 800,
+      "google": 300,
+      "github": 150
+    }
+  },
+  "applicationStats": {
+    "totalApplications": 950,
+    "pendingApplications": 120,
+    "admittedApplications": 680,
+    "rejectedApplications": 150,
+    "applicationsByStatus": {
+      "PENDING": 120,
+      "UNDER_REVIEW": 45,
+      "ADMITTED": 680,
+      "REJECTED": 150
+    }
+  },
+  "paymentStats": {
+    "totalPayments": 720,
+    "verifiedPayments": 680,
+    "pendingPayments": 25,
+    "rejectedPayments": 15,
+    "totalRevenue": 102000000.00,
+    "revenueThisMonth": 8500000.00
+  },
+  "announcementStats": {
+    "totalAnnouncements": 45,
+    "activeAnnouncements": 12,
+    "announcementsByType": {
+      "GENERAL": 15,
+      "ADMISSION": 12,
+      "EXAM": 8,
+      "PAYMENT": 6,
+      "EVENT": 4
+    }
+  }
+}
+```
+
+### **Create Announcement**
+```http
+POST /admin/create-announcement
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based (ROLE_ADMIN)
+
+title=Important Notice&content=This is an important announcement&targetAudience=ALL&announcementType=GENERAL&eventDate=2025-02-15&eventTime=10:00
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| title | string | Yes | Announcement title |
+| content | text | Yes | Announcement content |
+| targetAudience | string | Yes | ALL/STUDENTS/TEACHERS/PROSPECTIVE/ADMITTED |
+| announcementType | string | Yes | GENERAL/ADMISSION/EXAM/PAYMENT/EVENT |
+| eventDate | date | No | Event date (YYYY-MM-DD) |
+| eventTime | string | No | Event time (HH:MM) |
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /admin/announcements?success=created
+```
+
+---
+
+## 🎓 **Teacher APIs**
+
+### **Get Students**
+```http
+GET /teacher/students?course=B.Tech&status=ADMITTED&page=0&size=20
+Authorization: Session-based (ROLE_TEACHER)
+```
+
+**Query Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| course | string | No | Filter by course |
+| branch | string | No | Filter by branch |
+| status | string | No | Filter by application status |
+| page | integer | No | Page number (0-based) |
+| size | integer | No | Page size (default: 20, **MAX: 100**) |
+
+**⚠️ SECURITY WARNING**: Large queries are cached and rate-limited to prevent database overload.
+
+**Response:**
+```json
+{
+  "students": [
+    {
+      "applicationId": "APP_123",
+      "studentName": "John Doe",
+      "email": "john@example.com",
+      "course": "B.Tech",
+      "branch": "Computer Science",
+      "status": "ADMITTED",
+      "class12Percentage": 92.75,
+      "entranceExamRank": 1250,
+      "applicationDate": "2025-01-15T10:30:00Z",
+      "allocatedBranch": "Computer Science",
+      "seatAccepted": true
+    }
+  ],
+  "totalElements": 85,
+  "totalPages": 5,
+  "currentPage": 0
+}
+```
+
+### **Update Application Status**
+```http
+POST /teacher/update-application-status
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based (ROLE_TEACHER)
+
+applicationId=APP_123&status=ADMITTED&allocatedBranch=Computer Science
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| applicationId | string | Yes | Application ID |
+| status | string | Yes | PENDING/UNDER_REVIEW/ADMITTED/REJECTED |
+| allocatedBranch | string | No | Branch allocated (for ADMITTED status) |
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /teacher/applications?success=status_updated
+```
+
+### **Verify Payment**
+```http
+POST /teacher/verify-payment
+Content-Type: application/x-www-form-urlencoded
+Authorization: Session-based (ROLE_TEACHER)
+
+paymentId=1&status=VERIFIED&remarks=Payment verified successfully
+```
+
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| paymentId | integer | Yes | Payment ID |
+| status | string | Yes | VERIFIED/REJECTED |
+| remarks | string | No | Verification remarks |
+
+**Response:**
+```http
+HTTP/1.1 302 Found
+Location: /teacher/payments?success=payment_verified
+```
+
+---
+
+## 🏥 **Health Check APIs**
+
+### **Application Health**
+```http
+GET /actuator/health
+```
+
+**Response:**
+```json
+{
+  "status": "UP",
+  "components": {
+    "db": {
+      "status": "UP",
+      "details": {
+        "database": "PostgreSQL",
+        "validationQuery": "isValid()"
+      }
+    },
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 10737418240,
+        "free": 8589934592,
+        "threshold": 10485760,
+        "exists": true
+      }
+    },
+    "mail": {
+      "status": "UP",
+      "details": {
+        "location": "smtp-relay.brevo.com:587"
+      }
+    }
+  }
+}
+```
+
+### **Application Info**
+```http
+GET /actuator/info
+```
+
+**Response:**
+```json
+{
+  "app": {
+    "name": "College Admission Portal",
+    "version": "1.0.0",
+    "description": "Complete college admission management system"
+  },
+  "build": {
+    "version": "1.0.0",
+    "artifact": "UserManagemetPortal",
+    "name": "College Admission Portal",
+    "time": "2025-02-04T10:30:00.000Z"
+  },
+  "java": {
+    "version": "17.0.2",
+    "vendor": {
+      "name": "Eclipse Adoptium"
+    }
+  }
+}
+```
+
+### **Metrics**
+```http
+GET /actuator/metrics
+Authorization: Session-based (ROLE_ADMIN)
+```
+
+**⚠️ CRITICAL WARNING**: This endpoint exposes sensitive system metrics and is restricted to ADMIN users only. Rate limited to 5 requests per minute.
+
+**Response:**
+```json
+{
+  "names": [
+    "jvm.memory.used",
+    "jvm.memory.max",
+    "http.server.requests",
+    "hikaricp.connections.active",
+    "hikaricp.connections.max",
+    "system.cpu.usage",
+    "process.uptime"
+  ]
+}
+```
+
+### **Specific Metric**
+```http
+GET /actuator/metrics/http.server.requests
+Authorization: Session-based (ROLE_ADMIN)
+```
+
+**Response:**
+```json
+{
+  "name": "http.server.requests",
+  "description": "Duration of HTTP server request handling",
+  "baseUnit": "seconds",
+  "measurements": [
+    {
+      "statistic": "COUNT",
+      "value": 1250.0
+    },
+    {
+      "statistic": "TOTAL_TIME",
+      "value": 45.5
+    },
+    {
+      "statistic": "MAX",
+      "value": 2.1
+    }
+  ],
+  "availableTags": [
+    {
+      "tag": "exception",
+      "values": ["None", "HttpMessageNotReadableException"]
+    },
+    {
+      "tag": "method",
+      "values": ["GET", "POST"]
+    },
+    {
+      "tag": "status",
+      "values": ["200", "302", "404", "500"]
+    },
+    {
+      "tag": "uri",
+      "values": ["/", "/login", "/user/**", "/admin/**"]
+    }
+  ]
+}
+```
+
+---
+
+## 🔒 **Security & Authorization**
+
+### **Role-Based Access Control**
+
+| Endpoint Pattern | ADMIN | TEACHER | USER | Anonymous |
+|------------------|-------|---------|------|-----------|
+| `/` | ✅ | ✅ | ✅ | ✅ |
+| `/register` | ✅ | ✅ | ✅ | ✅ |
+| `/signin` | ✅ | ✅ | ✅ | ✅ |
+| `/forgot-password` | ✅ | ✅ | ✅ | ✅ |
+| `/oauth2/**` | ✅ | ✅ | ✅ | ✅ |
+| `/user/**` | ✅ | ❌ | ✅ | ❌ |
+| `/teacher/**` | ✅ | ✅ | ❌ | ❌ |
+| `/admin/**` | ✅ | ❌ | ❌ | ❌ |
+| `/actuator/health` | ✅ | ✅ | ✅ | ✅ |
+| `/actuator/**` | ✅ | ❌ | ❌ | ❌ |
+
+### **Security Headers**
+All API responses include security headers:
+```http
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Content-Security-Policy: default-src 'self'
+```
+
+### **Rate Limiting & Security Controls**
+- **Login Attempts**: 5 attempts per 15 minutes per IP
+- **Registration**: 3 registrations per hour per IP
+- **Password Reset**: 3 OTP requests per hour per email
+- **API Calls**: 100 requests per minute per session
+- **Admin Endpoints**: 10 requests per minute (STRICT)
+- **Data Export**: 1 request per 5 minutes per user
+- **File Uploads**: 5MB max size, 3 files per hour
+- **Bulk Operations**: Admin only, 1 per minute
+
+---
+
+## 📊 **Error Handling**
+
+### **HTTP Status Codes**
+| Status Code | Description | Usage |
+|-------------|-------------|-------|
+| 200 | OK | Successful GET requests |
+| 201 | Created | Successful resource creation |
+| 302 | Found | Successful form submissions (redirect) |
+| 400 | Bad Request | Invalid request parameters |
+| 401 | Unauthorized | Authentication required |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource not found |
+| 409 | Conflict | Resource already exists |
+| 422 | Unprocessable Entity | Validation errors |
+| 500 | Internal Server Error | Server-side errors |
+
+### **Error Response Format**
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input parameters",
+    "details": [
+      {
+        "field": "email",
+        "message": "Email address is required"
+      },
+      {
+        "field": "password",
+        "message": "Password must be at least 6 characters"
+      }
+    ],
+    "timestamp": "2025-02-04T10:30:00Z",
+    "path": "/createUser"
+  }
+}
+```
+
+### **Common Error Codes**
+| Error Code | Description |
+|------------|-------------|
+| `VALIDATION_ERROR` | Input validation failed |
+| `AUTHENTICATION_FAILED` | Invalid credentials |
+| `AUTHORIZATION_DENIED` | Insufficient permissions |
+| `RESOURCE_NOT_FOUND` | Requested resource not found |
+| `DUPLICATE_RESOURCE` | Resource already exists |
+| `EXTERNAL_SERVICE_ERROR` | Third-party service error |
+| `DATABASE_ERROR` | Database operation failed |
+| `FILE_UPLOAD_ERROR` | File upload failed |
+
+---
+
+## 🧪 **API Testing**
+
+### **Postman Collection**
+```json
+{
+  "info": {
+    "name": "College Admission Portal API",
+    "description": "Complete API collection for testing",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Set base URL",
+          "pm.globals.set('baseUrl', 'https://your-domain.com');"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "fullName",
+                  "value": "Test User"
+                },
+                {
+                  "key": "email",
+                  "value": "test@example.com"
+                },
+                {
+                  "key": "password",
+                  "value": "password123"
+                },
+                {
+                  "key": "confirmPassword",
+                  "value": "password123"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/createUser",
+              "host": ["{{baseUrl}}"],
+              "path": ["createUser"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "test@example.com"
+                },
+                {
+                  "key": "password",
+                  "value": "password123"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["login"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### **cURL Examples**
+
+#### **Register User**
+```bash
+curl -X POST https://your-domain.com/createUser \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "fullName=Test User&email=test@example.com&password=password123&confirmPassword=password123"
+```
+
+#### **Login**
+```bash
+curl -X POST https://your-domain.com/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=test@example.com&password=password123" \
+  -c cookies.txt
+```
+
+#### **Submit Application**
+```bash
+curl -X POST https://your-domain.com/user/submit-application \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -b cookies.txt \
+  -d "dob=2003-05-15&gender=Male&phoneNo=9876543210&address=123 Main St&city=Mumbai&state=Maharashtra&pincode=400001&parentsName=Robert Doe&parentsPhoneNo=9876543211&class10PassingYear=2019&class10SchoolName=ABC School&class10Board=CBSE&class10Percentage=95.5&class12PassingYear=2021&class12SchoolName=XYZ School&class12Board=CBSE&class12Percentage=92.75&entranceExamName=JEE Main&entranceExamRollNo=JEE2021123456&entranceExamYear=2021&entranceExamRank=1250&course=B.Tech&branch1=Computer Science&branch2=Electronics"
+```
+
+#### **Health Check**
+```bash
+curl -X GET https://your-domain.com/actuator/health
+```
+
+---
+
+## 📚 **SDK & Integration**
+
+### **JavaScript SDK Example**
+```javascript
+class CollegePortalAPI {
+  constructor(baseUrl) {
+    this.baseUrl = baseUrl;
+    this.sessionId = null;
+  }
+
+  async login(email, password) {
+    const response = await fetch(`${this.baseUrl}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        username: email,
+        password: password
+      }),
+      credentials: 'include'
+    });
+    
+    if (response.redirected) {
+      return { success: true, redirectUrl: response.url };
+    }
+    return { success: false };
+  }
+
+  async submitApplication(applicationData) {
+    const response = await fetch(`${this.baseUrl}/user/submit-application`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(applicationData),
+      credentials: 'include'
+    });
+    
+    return response.ok;
+  }
+
+  async getAnnouncements(audience = 'ALL') {
+    const response = await fetch(`${this.baseUrl}/api/announcements?audience=${audience}`, {
+      credentials: 'include'
+    });
+    
+    if (response.ok) {
+      return await response.json();
+    }
+    throw new Error('Failed to fetch announcements');
+  }
+}
+
+// Usage
+const api = new CollegePortalAPI('https://your-domain.com');
+
+// Login
+await api.login('user@example.com', 'password123');
+
+// Submit application
+await api.submitApplication({
+  dob: '2003-05-15',
+  gender: 'Male',
+  phoneNo: '9876543210',
+  // ... other fields
+});
+
+// Get announcements
+const announcements = await api.getAnnouncements('STUDENTS');
+```
+
+### **Python SDK Example**
+```python
+import requests
+from typing import Dict, Any, Optional
+
+class CollegePortalAPI:
+    def __init__(self, base_url: str):
+        self.base_url = base_url
+        self.session = requests.Session()
+    
+    def login(self, email: str, password: str) -> bool:
+        """Login to the portal"""
+        response = self.session.post(
+            f"{self.base_url}/login",
+            data={
+                'username': email,
+                'password': password
+            },
+            allow_redirects=False
+        )
+        return response.status_code == 302
+    
+    def submit_application(self, application_data: Dict[str, Any]) -> bool:
+        """Submit admission application"""
+        response = self.session.post(
+            f"{self.base_url}/user/submit-application",
+            data=application_data
+        )
+        return response.status_code == 302
+    
+    def get_announcements(self, audience: str = 'ALL') -> Optional[Dict]:
+        """Get announcements"""
+        response = self.session.get(
+            f"{self.base_url}/api/announcements",
+            params={'audience': audience}
+        )
+        if response.status_code == 200:
+            return response.json()
+        return None
+    
+    def health_check(self) -> Dict:
+        """Check application health"""
+        response = self.session.get(f"{self.base_url}/actuator/health")
+        return response.json()
+
+# Usage
+api = CollegePortalAPI('https://your-domain.com')
+
+# Login
+if api.login('user@example.com', 'password123'):
+    print("Login successful")
+    
+    # Submit application
+    application_data = {
+        'dob': '2003-05-15',
+        'gender': 'Male',
+        'phoneNo': '9876543210',
+        # ... other fields
+    }
+    
+    if api.submit_application(application_data):
+        print("Application submitted successfully")
+    
+    # Get announcements
+    announcements = api.get_announcements('STUDENTS')
+    print(f"Found {len(announcements['announcements'])} announcements")
+```
+
+---
+
+## 📋 **API Changelog**
+
+### **Version 1.0.0 (Current)**
+- **Release Date**: February 4, 2025
+- **Features**:
+  - Complete authentication system (local + OAuth2)
+  - User management APIs
+  - Application submission and tracking
+  - Payment management
+  - Announcement system
+  - Admin and teacher management APIs
+  - Health check and monitoring endpoints
+
+### **Planned Version 1.1.0**
+- **Expected Release**: March 2025
+- **Planned Features**:
+  - REST API for mobile applications
+  - Webhook support for real-time notifications
+  - Bulk operations APIs
+  - Advanced search and filtering
+  - File upload APIs with cloud storage
+  - SMS notification APIs
+  - Advanced analytics APIs
+
+---
+
+## 📞 **API Support**
+
+### **Support Channels**
+- **Technical Support**: api-support@collegeportal.com
+- **Documentation Issues**: docs@collegeportal.com
+- **Bug Reports**: GitHub Issues
+- **Feature Requests**: GitHub Discussions
+
+### **SLA & Support Hours**
+- **Response Time**: 24 hours for technical issues
+- **Support Hours**: Monday-Friday, 9 AM - 6 PM IST
+- **Emergency Support**: Available for production issues
+- **Documentation Updates**: Weekly
+
+### **Rate Limits & Quotas**
+- **Free Tier**: 1000 requests/hour
+- **Standard Tier**: 10,000 requests/hour
+- **Premium Tier**: 100,000 requests/hour
+- **Burst Limit**: 2x normal rate for 5 minutes
+
+---
+
+**📡 API Version**: 1.0.0  
+**📅 Last Updated**: February 4, 2025  
+**👨💻 API Team**: College Technical Team  
+**📧 Support**: api-support@collegeportal.com  
+**🌐 Base URL**: https://your-domain.com

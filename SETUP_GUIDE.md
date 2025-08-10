@@ -1,6 +1,6 @@
-# 🚀 UserAuth - Complete Setup Guide
+# 🚀 College Admission Portal - Complete Setup Guide
 
-This guide will help you set up the UserAuth system from scratch. Follow these steps carefully to ensure everything works properly.
+This comprehensive guide will help you set up the College Admission Portal from scratch. Follow these steps carefully to ensure everything works properly.
 
 ## 📋 Prerequisites
 
@@ -16,8 +16,8 @@ Before starting, ensure you have:
 ### 1️⃣ Clone and Setup Project
 
 ```bash
-git clone https://github.com/md4nas/AdvanceAuthPortal.git
-cd UserAuth-System
+git clone https://github.com/your-username/college-admission-portal.git
+cd college-admission-portal
 ```
 
 ### 2️⃣ Database Setup
@@ -28,9 +28,9 @@ cd UserAuth-System
 psql -U postgres
 
 -- Create database and user
-CREATE DATABASE user_management;
-CREATE USER userauth_user WITH PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE user_management TO userauth_user;
+CREATE DATABASE college_portal_db;
+CREATE USER college_user WITH PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE college_portal_db TO college_user;
 
 -- Exit PostgreSQL
 \q
@@ -38,7 +38,7 @@ GRANT ALL PRIVILEGES ON DATABASE user_management TO userauth_user;
 
 #### Test Database Connection:
 ```bash
-psql -h localhost -U userauth_user -d user_management
+psql -h localhost -U college_user -d college_portal_db
 ```
 
 ### 3️⃣ Environment Configuration
@@ -51,8 +51,8 @@ cp .env.template .env
 #### Edit `.env` file with your credentials:
 ```env
 # Database Configuration
-DATABASE_URL=jdbc:postgresql://localhost:5432/user_management
-DATABASE_USERNAME=userauth_user
+DATABASE_URL=jdbc:postgresql://localhost:5432/college_portal_db
+DATABASE_USERNAME=college_user
 DATABASE_PASSWORD=your_secure_password
 
 # Email Configuration (REQUIRED)
@@ -62,13 +62,22 @@ BREVO_SMTP_PASSWORD=your_brevo_smtp_key
 # OAuth2 Configuration (Optional)
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:8080/login/oauth2/code/google
+GOOGLE_AUTHORIZATION_URI=https://accounts.google.com/o/oauth2/auth
+GOOGLE_TOKEN_URI=https://oauth2.googleapis.com/token
+GOOGLE_USER_INFO_URI=https://www.googleapis.com/oauth2/v2/userinfo
+
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
+GITHUB_REDIRECT_URI=http://localhost:8080/login/oauth2/code/github
 
 # Admin Configuration
-ADMIN_EMAIL=admin@yourcompany.com
-ADMIN_PASSWORD=SecureAdminPass123!
+ADMIN_EMAIL=admin@collegeportal.com
+ADMIN_PASSWORD=YourSecureAdminPassword
 ADMIN_NAME=System Administrator
+
+# Server Configuration
+SERVER_PORT=8080
 ```
 
 ### 4️⃣ Email Setup (CRITICAL)
@@ -117,6 +126,15 @@ mvn spring-boot:run
 java -jar target/UserManagemetPortal-0.0.1-SNAPSHOT.jar
 ```
 
+#### For Production:
+```bash
+# Build for production
+mvn clean package -Pprod
+
+# Run with production profile
+java -jar -Dspring.profiles.active=prod target/UserManagemetPortal-0.0.1-SNAPSHOT.jar
+```
+
 ### 7️⃣ Access Application
 
 - 🌐 **URL**: http://localhost:8080
@@ -127,9 +145,10 @@ java -jar target/UserManagemetPortal-0.0.1-SNAPSHOT.jar
 
 ### Database Connection:
 - [ ] PostgreSQL is running
-- [ ] Database `user_management` exists
+- [ ] Database `college_portal_db` exists
 - [ ] User can connect to database
 - [ ] Application starts without database errors
+- [ ] Tables are created automatically (user_dtls, user_applications, payments, announcements)
 
 ### Email System:
 - [ ] SMTP credentials configured in `.env`
@@ -144,16 +163,19 @@ java -jar target/UserManagemetPortal-0.0.1-SNAPSHOT.jar
 - [ ] Admin account created automatically
 
 ### Role-Based Access:
-- [ ] Admin can access `/admin/**` endpoints
-- [ ] Teacher can access `/teacher/**` endpoints
-- [ ] User can access `/user/**` endpoints
-- [ ] Unauthorized access is blocked
+- [ ] Admin can access `/admin/**` endpoints (user management, system reports)
+- [ ] Teacher can access `/teacher/**` endpoints (student management, announcements)
+- [ ] User can access `/user/**` endpoints (application, payment, status)
+- [ ] Unauthorized access is blocked with proper redirects
 
 ### UI/UX:
-- [ ] Landing page loads correctly
-- [ ] All 22 screenshots match your interface
-- [ ] Responsive design works on mobile
-- [ ] Navigation works properly
+- [ ] Landing page loads correctly with hero section
+- [ ] All 39 screenshots match your interface (9 index + 9 admin + 12 teacher + 18 user)
+- [ ] Responsive design works on mobile and tablet
+- [ ] Navigation works properly across all roles
+- [ ] Forms have proper validation and feedback
+- [ ] Payment calculator works correctly
+- [ ] File upload functionality works for receipts
 
 ## 🚨 Common Issues & Solutions
 
@@ -193,12 +215,48 @@ If you encounter issues:
 ## 🎯 Next Steps
 
 After successful setup:
-1. Change default admin password
-2. Configure additional OAuth2 providers if needed
-3. Customize email templates
-4. Set up production deployment
-5. Configure monitoring and logging
+1. **Change default admin password** - Login and update admin credentials
+2. **Configure OAuth2 providers** - Set up Google and GitHub OAuth2 if needed
+3. **Customize email templates** - Update email templates in `src/main/resources/templates/`
+4. **Test all features** - Create test applications, payments, and announcements
+5. **Set up production deployment** - Configure production environment variables
+6. **Configure monitoring** - Set up application monitoring and logging
+7. **Backup strategy** - Implement database backup procedures
+8. **SSL certificate** - Configure HTTPS for production
+
+## 🔧 Advanced Configuration
+
+### Custom Email Templates
+Email templates are located in `src/main/resources/templates/`:
+- `verification-mail-template.html` - Account verification email
+- `forget_otp_mail.html` - Password reset OTP email
+
+### Database Migrations
+The application uses Hibernate DDL auto-update. For production, consider:
+```properties
+spring.jpa.hibernate.ddl-auto=validate
+```
+
+### File Upload Configuration
+```properties
+# Maximum file size for receipt uploads
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+```
+
+### Production Security
+```properties
+# Enable HTTPS in production
+server.ssl.enabled=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=your_keystore_password
+server.ssl.key-store-type=PKCS12
+```
 
 ---
 
-**🎉 Congratulations! Your UserAuth system is now ready to use!**
+**🎉 Congratulations! Your College Admission Portal is now ready to use!**
+
+**🌐 Live Demo**: https://college-admission-portal-ax6b.onrender.com  
+**📧 Support**: support@collegeportal.com  
+**📚 Documentation**: See README.md for complete feature overview

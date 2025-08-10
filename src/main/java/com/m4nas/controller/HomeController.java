@@ -80,8 +80,7 @@ public class HomeController {
         String url = request.getRequestURL().toString();
         url = url.replace(request.getServletPath(), "");
         
-        System.out.println("Registration URL: " + url);
-        System.out.println("User email: " + user.getEmail());
+
 
         boolean f = userService.checkEmail(user.getEmail());
 
@@ -91,14 +90,13 @@ public class HomeController {
             try {
                 UserDtls userDtls = userService.createUser(user, url);
                 if(userDtls != null) {
-                    System.out.println("User created successfully: " + userDtls.getEmail());
+
                     redirectAttributes.addFlashAttribute("msg","Registration Successful! Check your email for verification.");
                 } else {
                     redirectAttributes.addFlashAttribute("msg","Something Error in Server");
                 }
             } catch (Exception e) {
-                System.out.println("Error during user creation: " + e.getMessage());
-                e.printStackTrace();
+
                 redirectAttributes.addFlashAttribute("msg","Error sending verification email: " + e.getMessage());
             }
         }
